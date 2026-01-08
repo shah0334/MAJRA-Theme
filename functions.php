@@ -324,6 +324,11 @@ require get_template_directory() . '/inc/wp-bakery-custom-widgets.php';
  */
 require get_template_directory() . '/inc/class-sic-db.php';
 
+/**
+ * SIC Access Control
+ */
+require get_template_directory() . '/inc/auth-check.php';
+
 
 // Add Image Upload Field to "faq-categories" (Edit and Add Screens)
 function faq_categories_image_field($term) {

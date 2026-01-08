@@ -87,34 +87,52 @@ class SIC_DB {
     /**
      * Get or create an Applicant record for a WP User.
      */
+    /**
+     * Get or create an Applicant record for a WP User.
+     */
     public function get_applicant_by_wp_user( $user_id ) {
+        // ... (existing logic if needed, or deprecate/ignore for now)
+        return false; 
+    }
+
+    /**
+     * Get or create a dummy applicant for mock authentication.
+     */
+    public function get_or_create_dummy_applicant() {
+        $email = 'dummy@sic.ae';
+        
+        // Check if exists
         $row = $this->wpdb->get_row( $this->wpdb->prepare( 
-            "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE wp_user_id = %d", 
-            $user_id 
+            "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE email = %s", 
+            $email 
         ) );
 
         if ( $row ) {
             return $row;
         }
 
-        // Create if not exists
-        $user_info = get_userdata( $user_id );
-        if ( ! $user_info ) return false;
-
+        // Create
         $this->wpdb->insert( 
             self::TBL_APPLICANTS, 
             [
-                'wp_user_id' => $user_id,
-                'email'      => $user_info->user_email,
-                'first_name' => $user_info->first_name,
-                'last_name'  => $user_info->last_name
+                'email'      => $email,
+                'first_name' => 'SIC',
+                'last_name'  => 'User',
+                'phone'      => '0500000000'
             ],
-            ['%d', '%s', '%s', '%s']
+            ['%s', '%s', '%s', '%s']
         );
 
         return $this->wpdb->get_row( $this->wpdb->prepare( 
             "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE applicant_id = %d", 
             $this->wpdb->insert_id
+        ) );
+    }
+
+    public function get_applicant_by_id($id) {
+        return $this->wpdb->get_row( $this->wpdb->prepare( 
+            "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE applicant_id = %d", 
+            $id 
         ) );
     }
 
