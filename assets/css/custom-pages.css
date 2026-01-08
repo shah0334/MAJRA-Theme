@@ -331,3 +331,94 @@
   background-color: var(--cp-coral-sunset);
   border-color: var(--cp-coral-sunset);
 }
+
+/* Create Organization Page Styles */
+.border-dashed {
+  border-style: dashed !important;
+  border-width: 2px !important;
+  border-color: #e5e7eb !important;
+  transition: all 0.3s ease;
+}
+
+.custom-upload-zone:hover {
+  background-color: #fff7ed !important; /* light coral tint */
+  border-color: var(--cp-coral-sunset) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Form Styles Override */
+.form-control,
+.form-select {
+  padding: 1rem 1.25rem;
+  font-family: "Graphik Arabic", sans-serif;
+  color: var(--cp-deep-ocean);
+  border: 1px solid transparent;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: #fff;
+  border-color: var(--cp-coral-sunset);
+  box-shadow: 0 0 0 4px rgba(252, 156, 99, 0.1);
+  color: var(--cp-deep-ocean);
+}
+
+.form-label {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+/* Icon Circle */
+.icon-circle {
+  transition: transform 0.3s ease;
+}
+
+.custom-upload-zone:hover .icon-circle {
+  transform: translateY(-5px);
+}
+
+.btn-custom-aqua {
+  background-color: var(--cp-aqua-marine);
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-custom-aqua:hover {
+  background-color: #2daaa4;
+  color: white;
+}
+
+/* Guidance Panel Styles */
+.bg-cp-sandstone {
+  background-color: #faebda;
+}
+
+.border-cp-coral-sunset {
+  border-color: var(--cp-coral-sunset) !important;
+}
+
+.guidance-icon-container {
+  width: 35px;
+  height: 35px;
+  top: 20px;
+  left: -17.5px; /* Half of width to overlap border */
+  z-index: 2;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.guidance-panel {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  margin-left: 20px; /* Space for the overlapping icon */
+}
+
+/* Eligibility Banner */
+.eligibility-banner {
+  background: linear-gradient(180deg, #f0f9f8 0%, #ffffff 100%);
+  border: 1px solid var(--cp-coral-sunset);
+  border-radius: 14px;
+}
