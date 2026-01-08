@@ -104,16 +104,16 @@ global $isRTL;
                         <?php if ( has_custom_logo() ) : 
                             the_custom_logo();
                         else : ?>
-                            <a href="<?php echo home_url('/sic2026-home/'); ?>"><img src="<?php bloginfo('template_directory'); ?>/assets/img/logo.svg" alt="<?php bloginfo('name'); ?>" /></a>
+                            <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>"><img src="<?php bloginfo('template_directory'); ?>/assets/img/logo.svg" alt="<?php bloginfo('name'); ?>" /></a>
                         <?php endif; ?>
                     </div>
 
                     <!-- Center: Navigation -->
                     <div class="d-none d-lg-block">
                         <nav class="dashboard-nav">
-                            <a href="<?php echo home_url('/sic2026-home/'); ?>" class="nav-link active"><?php pll_e('Home'); ?></a>
-                            <a href="<?php echo home_url('/sic-organizations/'); ?>" class="nav-link"><?php pll_e('My Organizations'); ?></a>
-                            <a href="<?php echo home_url('/sic-projects/'); ?>" class="nav-link"><?php pll_e('My Projects'); ?></a>
+                            <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="nav-link active"><?php pll_e('Home'); ?></a>
+                            <a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>" class="nav-link"><?php pll_e('My Organizations'); ?></a>
+                            <a href="<?php echo SIC_Routes::get_my_projects_url(); ?>" class="nav-link"><?php pll_e('My Projects'); ?></a>
                         </nav>
                     </div>
 
@@ -152,9 +152,9 @@ global $isRTL;
             </div>
             <div class="menu">
                 <ul class="navbar-nav">
-                     <li><a href="<?php echo home_url('/sic2026-home/'); ?>"><?php pll_e('Home'); ?></a></li>
-                     <li><a href="<?php echo home_url('/sic-organizations/'); ?>"><?php pll_e('My Organizations'); ?></a></li>
-                     <li><a href="<?php echo home_url('/sic-projects/'); ?>"><?php pll_e('My Projects'); ?></a></li>
+                     <li><a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>"><?php pll_e('Home'); ?></a></li>
+                     <li><a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>"><?php pll_e('My Organizations'); ?></a></li>
+                     <li><a href="<?php echo SIC_Routes::get_my_projects_url(); ?>"><?php pll_e('My Projects'); ?></a></li>
                 </ul>
             </div>
         </div>
