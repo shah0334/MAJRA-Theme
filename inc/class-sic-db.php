@@ -468,6 +468,19 @@ class SIC_DB {
     }
 
     /**
+     * Get Project Files
+     */
+    public function get_project_files( $project_id ) {
+        $sql = "
+            SELECT pf.file_role, f.file_name, f.file_path, f.original_name
+            FROM " . self::TBL_PROJECT_FILES . " pf
+            JOIN " . self::TBL_FILES . " f ON pf.file_id = f.file_id
+            WHERE pf.project_id = %d
+        ";
+        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $project_id ) );
+    }
+
+    /**
      * Save Project Link
      */
     public function save_project_link( $project_id, $role, $url ) {

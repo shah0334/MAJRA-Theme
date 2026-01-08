@@ -8,7 +8,46 @@
     <!-- Centered Content Column -->
     <div class="col-lg-10">
         
-        <form>
+        <?php
+        $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+        
+        // Handle Submission
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) && $_POST['sic_project_action'] === 'submit_project') {
+            if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_submit_project' ) ) {
+                wp_die( 'Security check failed' );
+            }
+            
+            // Check if disclaimer is checked (Server side check)
+            if ( !isset($_POST['disclaimer_accepted']) ) {
+                $error_message = "Please accept the declaration to proceed.";
+            } else {
+                $db = SIC_DB::get_instance();
+                $update_result = $db->update_project($project_id, [
+                    'submission_status' => 'submitted',
+                    'profile_completed' => 1 // Mark profile/application as complete
+                ]);
+                
+                if ( $update_result ) {
+                    // Redirect to self with success flag to show modal
+                    $current_url = remove_query_arg(['_wpnonce', 'sic_project_action'], $_SERVER['REQUEST_URI']);
+                    $success_url = add_query_arg(['submission_success' => '1'], $current_url);
+                    wp_redirect($success_url);
+                    exit;
+                } else {
+                     $error_message = "An error occurred while submitting your project. Please try again.";
+                }
+            }
+        }
+        
+        if ( isset($error_message) ) {
+            echo '<div class="alert alert-danger rounded-3 mb-4">' . esc_html($error_message) . '</div>';
+        }
+        ?>
+
+        <form method="POST">
+            <?php wp_nonce_field( 'sic_submit_project' ); ?>
+            <input type="hidden" name="sic_project_action" value="submit_project">
+            
             <div class="bg-white rounded-4 p-5 shadow-sm mb-5 text-center">
                 
                 <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-5">Accept Disclaimer</h2>
@@ -16,7 +55,7 @@
                  <!-- Disclaimer Checkbox -->
                  <div class="d-flex align-items-start justify-content-center mb-4 text-start" style="max-width: 800px; margin: 0 auto;">
                      <div class="me-3 mt-1">
-                         <input class="form-check-input border-2" type="checkbox" id="disclaimerParams" style="width: 20px; height: 20px;">
+                         <input class="form-check-input border-2" type="checkbox" name="disclaimer_accepted" id="disclaimerParams" style="width: 20px; height: 20px;" required>
                      </div>
                      <div>
                          <label class="form-check-label font-graphik fw-bold text-cp-deep-ocean fs-6 mb-2" for="disclaimerParams" style="line-height:1.5;">
@@ -38,8 +77,9 @@
 
                 <!-- Navigation Buttons -->
                 <div class="d-flex justify-content-center gap-3">
-                    <a href="?step=5" class="btn btn-white border px-5 py-2 rounded-3 text-cp-deep-ocean fw-medium" style="min-width: 140px;">Back</a>
-                    <button type="button" class="btn btn-custom-aqua px-5 py-2 rounded-3 text-white fw-medium" style="min-width: 140px;" data-bs-toggle="modal" data-bs-target="#completionModal">Done</button>
+                    <a href="<?php echo add_query_arg(['step' => 5, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-5 py-2 rounded-3 text-cp-deep-ocean fw-medium" style="min-width: 140px;">Back</a>
+                    <!-- Changed type to submit to trigger PHP processing -->
+                    <button type="submit" class="btn btn-custom-aqua px-5 py-2 rounded-3 text-white fw-medium" style="min-width: 140px;">Done</button>
                 </div>
 
             </div>
@@ -65,15 +105,24 @@
         <p class="font-graphik text-secondary mb-3">Your project has been successfully submitted and is now under review.</p>
         <p class="font-graphik text-secondary mb-4">We'll keep you informed via email with confirmation and updates on progress.</p>
         
-        <a href="<?php echo home_url('/dashboard/projects'); ?>" class="btn btn-white border border-custom-aqua text-cp-deep-ocean px-4 py-2 rounded-3 fw-medium" style="border-color: #3BC4BD !important;">Close</a>
-      </div>
-    </div>
-  </div>
+        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border border-custom-aqua text-cp-deep-ocean px-4 py-2 rounded-3 fw-medium" style="border-color: #3BC4BD !important;">Close</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Scripts required for Modal functionality (Footer is removed) -->
+<!-- Scripts required for Modal functionality -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Trigger Modal if Success -->
+<?php if ( isset($_GET['submission_success']) && $_GET['submission_success'] == '1' ): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var myModal = new bootstrap.Modal(document.getElementById('completionModal'), {
+            keyboard: false
+        });
+        myModal.show();
+    });
+</script>
+<?php endif; ?>

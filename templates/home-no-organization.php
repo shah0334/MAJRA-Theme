@@ -68,8 +68,10 @@ get_header('dashboard');
     <!-- Dynamic Content -->
     <?php
     $db = SIC_DB::get_instance();
-    $org_profile = $db->get_organization_by_applicant_id( $_SESSION['sic_user_id'] );
-    $projects = $db->get_projects_by_applicant( $_SESSION['sic_user_id'] );
+    $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id();
+    
+    $org_profile = $db->get_organization_by_applicant_id( $user_id );
+    $projects = $db->get_projects_by_applicant( $user_id );
 
     // If Organization exists (Complete or Draft but linked correctly to show "Home with Org" logic?)
     // The current logic only checked $org_profile. 

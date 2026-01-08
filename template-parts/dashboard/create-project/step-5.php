@@ -21,7 +21,64 @@
     <div class="col-lg-8">
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4">Demographic Information</h2>
 
-        <form>
+         <?php
+        $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+        $project = null;
+
+        if ($project_id) {
+            $db = SIC_DB::get_instance();
+            $project = $db->get_project($project_id);
+        }
+
+        // Handle Form Submission
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) && $_POST['sic_project_action'] === 'save_step_5') {
+            if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_save_step_5' ) ) {
+                wp_die( 'Security check failed' );
+            }
+
+            $project_data = [
+                'leadership_women_pct' => floatval($_POST['leadership_women_pct']),
+                'team_women_pct'       => floatval($_POST['team_women_pct']),
+                'leadership_pod_pct'   => floatval($_POST['leadership_pod_pct']),
+                'team_pod_pct'         => floatval($_POST['team_pod_pct']),
+                'team_youth_pct'       => floatval($_POST['team_youth_pct']),
+                'engages_youth'        => isset($_POST['engages_youth']) ? sanitize_text_field($_POST['engages_youth']) : 'No', // DB might expect 1/0 or Yes/No, checking schema... schema says VARCHAR usually or boolean. Reviewing update_project logic... it just passes data. Let's assume Yes/No string based on dropdown.
+                'involves_influencers' => isset($_POST['involves_influencers']) ? sanitize_text_field($_POST['involves_influencers']) : 'No',
+                'demographics_completed' => 1
+            ];
+            
+            // Note: engages_youth and involves_influencers are likely boolean or tinyint in DB? 
+            // Checking Step-5 HTML, they are Yes/No. 
+            // In typical SQL boolean is 0/1. Let's convert to 1/0 if needed.
+            // Just checked schema in memory: `engages_youth` tinyint(1), `involves_influencers` tinyint(1).
+            // So we should convert 'Yes' to 1 and 'No' to 0.
+            
+            $project_data['engages_youth'] = ($_POST['engages_youth'] === 'Yes') ? 1 : 0;
+            $project_data['involves_influencers'] = ($_POST['involves_influencers'] === 'Yes') ? 1 : 0;
+
+            $db->update_project($project_id, $project_data);
+
+            // Redirect to Step 6
+            $next_url = add_query_arg(['step' => 6, 'project_id' => $project_id], SIC_Routes::get_create_project_url());
+            wp_redirect($next_url);
+            exit;
+        }
+        
+        // Helper for values
+        $leadership_women = $project ? $project->leadership_women_pct : '';
+        $team_women       = $project ? $project->team_women_pct : '';
+        $leadership_pod   = $project ? $project->leadership_pod_pct : '';
+        $team_pod         = $project ? $project->team_pod_pct : '';
+        $team_youth       = $project ? $project->team_youth_pct : '';
+        
+        $engages_youth_val = $project ? $project->engages_youth : 0;
+        $influencers_val   = $project ? $project->involves_influencers : 0;
+        ?>
+
+        <form method="POST">
+            <?php wp_nonce_field( 'sic_save_step_5' ); ?>
+            <input type="hidden" name="sic_project_action" value="save_step_5">
+
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
                 
                 <!-- Gender Balance -->
@@ -33,7 +90,7 @@
                                  <span class="text-danger">*</span> % of leadership team who are women
                              </label>
                              <div class="input-group">
-                                 <input type="text" class="form-control bg-light border-0 fs-6" placeholder="e.g., 50">
+                                 <input type="number" step="0.01" min="0" max="100" name="leadership_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 50" value="<?php echo esc_attr($leadership_women); ?>" required>
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
                          </div>
@@ -42,7 +99,7 @@
                                  <span class="text-danger">*</span> % of project team who are women
                              </label>
                              <div class="input-group">
-                                 <input type="text" class="form-control bg-light border-0 fs-6" placeholder="e.g., 65">
+                                 <input type="number" step="0.01" min="0" max="100" name="team_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 65" value="<?php echo esc_attr($team_women); ?>" required>
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
                          </div>
@@ -58,7 +115,7 @@
                                  <span class="text-danger">*</span> % of leadership team who are People of Determination
                              </label>
                              <div class="input-group">
-                                 <input type="text" class="form-control bg-light border-0 fs-6" placeholder="e.g., 10">
+                                 <input type="number" step="0.01" min="0" max="100" name="leadership_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 10" value="<?php echo esc_attr($leadership_pod); ?>">
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
                          </div>
@@ -67,7 +124,7 @@
                                  <span class="text-danger">*</span> % of project team who are People of Determination
                              </label>
                              <div class="input-group">
-                                 <input type="text" class="form-control bg-light border-0 fs-6" placeholder="e.g., 15">
+                                 <input type="number" step="0.01" min="0" max="100" name="team_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 15" value="<?php echo esc_attr($team_pod); ?>">
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
                          </div>
@@ -82,7 +139,7 @@
                              <span class="text-danger">*</span> What percentage of the project team is youth?
                          </label>
                          <div class="input-group">
-                                 <input type="text" class="form-control bg-light border-0 fs-6" placeholder="e.g., 25">
+                                 <input type="number" step="0.01" min="0" max="100" name="team_youth_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 25" value="<?php echo esc_attr($team_youth); ?>">
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                          </div>
                      </div>
@@ -90,10 +147,10 @@
                          <label class="form-label font-graphik text-cp-deep-ocean small">
                              <span class="text-danger">*</span> Does the project actively engage youth?
                          </label>
-                         <select class="form-select bg-light border-0 fs-6">
-                             <option selected disabled></option>
-                             <option value="Yes">Yes</option>
-                             <option value="No">No</option>
+                         <select name="engages_youth" class="form-select bg-light border-0 fs-6">
+                             <option disabled <?php selected($engages_youth_val, 0); ?>>Select</option>
+                             <option value="Yes" <?php selected($engages_youth_val, 1); ?>>Yes</option>
+                             <option value="No" <?php if($project && $engages_youth_val == 0) echo 'selected'; ?>>No</option>
                          </select>
                      </div>
                 </div>
@@ -105,10 +162,10 @@
                          <label class="form-label font-graphik text-cp-deep-ocean small">
                              <span class="text-danger">*</span> Does the project involve influencers?
                          </label>
-                         <select class="form-select bg-light border-0 fs-6">
-                             <option selected disabled></option>
-                             <option value="Yes">Yes</option>
-                             <option value="No">No</option>
+                         <select name="involves_influencers" class="form-select bg-light border-0 fs-6">
+                             <option disabled <?php selected($influencers_val, 0); ?>>Select</option>
+                             <option value="Yes" <?php selected($influencers_val, 1); ?>>Yes</option>
+                             <option value="No" <?php if($project && $influencers_val == 0) echo 'selected'; ?>>No</option>
                          </select>
                      </div>
                 </div>
@@ -124,8 +181,8 @@
 
              <!-- Navigation Buttons -->
             <div class="d-flex justify-content-between pt-4 border-top">
-                <a href="?step=4" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
-                <a href="?step=6" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</a>
+                <a href="<?php echo add_query_arg(['step' => 4, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
+                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</button>
             </div>
 
         </form>
