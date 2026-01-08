@@ -180,9 +180,11 @@ class SIC_DB {
         }
 
         // 3. Get or Create Parent Organization
+        // Check if user already has an organization with THIS name
         $org_id = $this->wpdb->get_var( $this->wpdb->prepare( 
-            "SELECT organization_id FROM " . self::TBL_ORGANIZATIONS . " WHERE created_by_applicant_id = %d", 
-            $applicant_id
+            "SELECT organization_id FROM " . self::TBL_ORGANIZATIONS . " WHERE created_by_applicant_id = %d AND canonical_name = %s", 
+            $applicant_id,
+            $data['organization_name']
         ));
 
         if ( ! $org_id ) {
@@ -270,6 +272,67 @@ class SIC_DB {
             ['org_profile_id' => $profile_id, 'file_role' => $role, 'file_id' => $file_id],
             ['%d', '%s', '%d']
         );
+    }
+
+    /**
+     * Get Organization Profile by Applicant ID for Active Cycle
+     */
+    public function get_organization_by_applicant_id( $applicant_id ) {
+        $cycle_id = $this->get_active_cycle_id();
+        if ( ! $cycle_id ) return null;
+
+        $sql = "
+            SELECT 
+                op.*, 
+                o.canonical_name 
+            FROM " . self::TBL_ORG_PROFILES . " op
+            JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE op.created_by_applicant_id = %d 
+            AND op.cycle_id = %d
+        ";
+
+        return $this->wpdb->get_row( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
+    }
+
+    /**
+     * Get All Organization Profiles by Applicant ID for Active Cycle
+     */
+    public function get_organizations_by_applicant_id( $applicant_id ) {
+        $cycle_id = $this->get_active_cycle_id();
+        if ( ! $cycle_id ) return [];
+
+        $sql = "
+            SELECT 
+                op.*, 
+                o.canonical_name 
+            FROM " . self::TBL_ORG_PROFILES . " op
+            JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE op.created_by_applicant_id = %d 
+            AND op.cycle_id = %d
+        ";
+
+        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
+    }
+
+    /**
+     * Get File URL by File ID
+     */
+    public function get_file_url( $file_id ) {
+        $sql = "SELECT storage_url FROM " . self::TBL_FILES . " WHERE file_id = %d";
+        return $this->wpdb->get_var( $this->wpdb->prepare( $sql, $file_id ) );
+    }
+
+    /**
+     * Get Organization Profile File URL
+     */
+    public function get_org_profile_file_url( $profile_id, $role ) {
+        $sql = "
+            SELECT f.storage_url 
+            FROM " . self::TBL_ORG_PROFILE_FILES . " opf
+            JOIN " . self::TBL_FILES . " f ON opf.file_id = f.file_id
+            WHERE opf.org_profile_id = %d AND opf.file_role = %s
+        ";
+        return $this->wpdb->get_var( $this->wpdb->prepare( $sql, $profile_id, $role ) );
     }
 }
 ?>

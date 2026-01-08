@@ -65,6 +65,17 @@ get_header('dashboard');
         </div>
     </section>
 
+    <!-- Dynamic Content -->
+    <?php
+    $db = SIC_DB::get_instance();
+    $org_profile = $db->get_organization_by_applicant_id( $_SESSION['sic_user_id'] );
+
+    if ( $org_profile ) {
+        // Show Projects Table (Included from separate template part or logic)
+        // For now, mirroring the requested partial logic
+        get_template_part('template-parts/dashboard/home-with-organization');
+    } else {
+    ?>
     <!-- No Organization State -->
     <section class="no-org-state">
         <div class="container">
@@ -79,9 +90,11 @@ get_header('dashboard');
             </div>
         </div>
     </section>
+    <?php } ?>
 
 </main>
 
 <?php
 get_footer('dashboard');
 ?>
+

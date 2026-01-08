@@ -95,7 +95,7 @@ get_header('dashboard');
         <div class="row">
             <!-- Left Column: Form -->
             <div class="col-lg-8">
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" action="<?php echo esc_url(SIC_Routes::get_create_org_url()); ?>" id="createOrgForm">
                     <input type="hidden" name="action" value="sic_create_org">
                     
                     <!-- Organization Details Section -->
@@ -277,6 +277,29 @@ get_header('dashboard');
         </div>
     </div>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('createOrgForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // If we get here, validation passed or novalidate is on.
+            // console.log('Form submitting...');
+        });
+
+        // Catch invalid fields
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('invalid', function() {
+                input.classList.add('is-invalid'); // Add bootstrap error class
+            });
+            input.addEventListener('input', function() {
+                input.classList.remove('is-invalid');
+            });
+        });
+    }
+});
+</script>
 
 <?php
 get_footer('dashboard');
