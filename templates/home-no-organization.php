@@ -75,7 +75,7 @@ get_header('dashboard');
                 </div>
                 <h3>No Organization</h3>
                 <p>To submit your sustainability projects and compete for recognition, you'll need to add your organization details first.</p>
-                <a href="#" class="btn-custom-primary">Add Your Organization</a>
+                <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn-custom-primary">Add Your Organization</a>
             </div>
         </div>
     </section>

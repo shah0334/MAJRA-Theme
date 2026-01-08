@@ -5,7 +5,7 @@
 
 // If logged in, redirect to dashboard
 if ( isset($_SESSION['sic_user_id']) ) {
-    wp_redirect(home_url('/sic2026-home/'));
+    wp_redirect( SIC_Routes::get_dashboard_home_url() );
     exit;
 }
 
@@ -17,7 +17,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
     if ( $applicant ) {
         $_SESSION['sic_user_id'] = $applicant->applicant_id;
         $_SESSION['sic_user_name'] = $applicant->first_name . ' ' . $applicant->last_name;
-        wp_redirect(home_url('/sic2026-home/'));
+        wp_redirect( SIC_Routes::get_dashboard_home_url() );
         exit;
     }
 }

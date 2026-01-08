@@ -32,7 +32,7 @@ get_header('dashboard');
                     <p class="font-graphik text-secondary mb-4 mx-auto" style="max-width: 450px;">
                         To submit your sustainability projects and compete for recognition, you'll need to add your organization details first.
                     </p>
-                    <a href="#" class="btn-custom-primary">Add Your Organization</a>
+                    <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn-custom-primary">Add Your Organization</a>
                 </div>
             </div>
         </div>

@@ -25,7 +25,7 @@ function sic_check_dashboard_access() {
     if ( is_page_template( $protected_templates ) ) {
         
         if ( ! isset($_SESSION['sic_user_id']) ) {
-            wp_redirect( home_url('/sic-auth/') );
+            wp_redirect( SIC_Routes::get_login_url() );
             exit;
         }
     }

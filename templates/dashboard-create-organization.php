@@ -1,6 +1,74 @@
 <?php
 /* Template Name: Dashboard - Create Organization */
 
+// Form Handling Logic
+$error_msg = '';
+$success_msg = '';
+
+if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'sic_create_org' ) {
+    
+    if ( ! isset($_SESSION['sic_user_id']) ) {
+        wp_redirect( SIC_Routes::get_login_url() );
+        exit;
+    }
+
+    $db = SIC_DB::get_instance();
+    $storage = SIC_Storage::get_instance();
+    $user_id = $_SESSION['sic_user_id'];
+    $cycle_id = $db->get_active_cycle_id();
+
+    // 1. Handle File Uploads
+    $logo_id = null;
+    $license_id = null;
+
+    if ( !empty($_FILES['org_logo']['name']) ) {
+        $upload = $storage->upload_file($_FILES['org_logo'], 'org-logos');
+        $logo_id = $db->save_file($upload, $cycle_id, $user_id);
+    }
+
+    if ( !empty($_FILES['org_license_file']['name']) ) {
+        $upload = $storage->upload_file($_FILES['org_license_file'], 'org-licenses');
+        $license_id = $db->save_file($upload, $cycle_id, $user_id);
+    }
+
+    // 2. Prepare Data
+    $org_data = [
+        'organization_name'    => sanitize_text_field($_POST['org_name']),
+        'trade_license_number' => sanitize_text_field($_POST['org_license_number']),
+        'website_url'          => esc_url_raw($_POST['org_website']),
+        'emirate'              => sanitize_text_field($_POST['org_emirate']),
+        'entity_type'          => sanitize_text_field($_POST['org_entity_type']),
+        'industry'             => sanitize_text_field($_POST['org_industry']),
+        'is_freezone'          => sanitize_text_field($_POST['org_is_freezone']),
+        'business_activity'    => sanitize_text_field($_POST['org_activity_type']),
+        'employees'            => intval($_POST['org_employees']),
+        'turnover'             => sanitize_text_field($_POST['org_turnover']),
+        'csr_activity'         => $_POST['csr_activity'] ?? 'no',
+        'csr_initiatives'      => []
+    ];
+
+    if ( !empty($_POST['csr_name']) ) {
+        $org_data['csr_initiatives'][] = [
+            'name'   => sanitize_text_field($_POST['csr_name']),
+            'amount' => floatval($_POST['csr_amount'])
+        ];
+    }
+
+    // 3. Save to DB
+    $result = $db->create_organization( $user_id, $org_data, [
+        'logo_id' => $logo_id,
+        'license_id' => $license_id
+    ]);
+
+    if ( is_wp_error($result) ) {
+        $error_msg = $result->get_error_message();
+    } else {
+        // Success
+        wp_redirect( SIC_Routes::get_dashboard_home_url() ); // Redirect to dashboard
+        exit;
+    }
+}
+
 get_header('dashboard');
 ?>
 
@@ -13,6 +81,10 @@ get_header('dashboard');
             </p>
         </div>
 
+        <?php if ($error_msg): ?>
+            <div class="alert alert-danger mb-4"><?php echo esc_html($error_msg); ?></div>
+        <?php endif; ?>
+
         <!-- Page Header -->
         <div class="row mb-5">
             <div class="col-12">
@@ -23,50 +95,50 @@ get_header('dashboard');
         <div class="row">
             <!-- Left Column: Form -->
             <div class="col-lg-8">
-                <form>
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="sic_create_org">
+                    
                     <!-- Organization Details Section -->
                     <div class="bg-white rounded-lg p-5 shadow-sm mb-4">
                         <div class="row g-4">
                             <!-- Row 1 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Organization name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-lg bg-light border-0 fs-6" value="Neutral Fuels LLC">
+                                <input type="text" name="org_name" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Trade License / Certificate Number <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-lg bg-light border-0 fs-6" value="652605">
+                                <input type="text" name="org_license_number" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
 
                             <!-- Row 2 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Logo <span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <input type="file" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5">
+                                    <input type="file" name="org_logo" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" accept="image/png, image/jpeg">
                                     <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                                 </div>
                                 <div class="form-text text-secondary mt-2">Upload your organization's logo in PNG or JPG (Max 2MB)</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Organization Website <span class="text-danger">*</span></label>
-                                <input type="url" class="form-control form-control-lg bg-light border-0 fs-6" value="http://neutralfuels.com">
+                                <input type="url" name="org_website" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
 
                             <!-- Row 3 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Trade License / Certificate <span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <input type="file" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5">
+                                    <input type="file" name="org_license_file" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" accept="application/pdf">
                                     <i class="bi bi-file-earmark-text position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                                 </div>
                                 <div class="form-text text-secondary mt-2">Upload a clear, valid trade license (PDF only, max 5MB)</div>
-                                <div class="mt-2 text-cp-app-blue">
-                                     <a href="#" class="text-decoration-none small">Neutral-Fuels-LLC-DXB-trade-license-2024-2025.pdf</a>
-                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Emirate of Registration <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-lg bg-light border-0 fs-6">
-                                    <option selected>Dubai</option>
+                                <select name="org_emirate" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                    <option value="" disabled selected>Select Emirate</option>
+                                    <option value="Dubai">Dubai</option>
                                     <option value="Abu Dhabi">Abu Dhabi</option>
                                     <option value="Sharjah">Sharjah</option>
                                     <option value="Ajman">Ajman</option>
@@ -79,27 +151,38 @@ get_header('dashboard');
                             <!-- Row 4 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Type of Legal Entity <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-lg bg-light border-0 fs-6">
-                                    <option selected>Limited Liability Company</option>
+                                <select name="org_entity_type" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                    <option value="" disabled selected>Select Entity Type</option>
+                                    <option value="Limited Liability Company">Limited Liability Company</option>
                                     <option value="Sole Proprietorship">Sole Proprietorship</option>
                                     <option value="Partnership">Partnership</option>
+                                    <option value="Public Joint Stock Company">Public Joint Stock Company</option>
+                                    <option value="Private Joint Stock Company">Private Joint Stock Company</option>
+                                    <option value="Branch">Branch of Foreign/Local Company</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Industry <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-lg bg-light border-0 fs-6">
-                                    <option selected>Select the primary industry sector</option>
+                                <select name="org_industry" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                    <option value="" disabled selected>Select the primary industry sector</option>
                                     <option value="Energy">Energy</option>
                                     <option value="Technology">Technology</option>
                                     <option value="Manufacturing">Manufacturing</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Real Estate">Real Estate</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
 
                             <!-- Row 5 -->
                              <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Is your organization registered in a Freezone? <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-lg bg-light border-0 fs-6">
-                                    <option selected>No</option>
+                                <select name="org_is_freezone" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                    <option value="No">No</option>
                                     <option value="Yes">Yes</option>
                                 </select>
                             </div>
@@ -114,22 +197,24 @@ get_header('dashboard');
                             <!-- Row 1 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Type of business activity <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-lg bg-light border-0 fs-6">
-                                    <option selected>Industry</option>
+                                <select name="org_activity_type" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                    <option value="" disabled selected>Select Activity Type</option>
+                                    <option value="Industry">Industry</option>
                                     <option value="Service">Service</option>
                                     <option value="Trading">Trading</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Number of employees <span class="text-danger">*</span></label>
-                                 <input type="number" class="form-control form-control-lg bg-light border-0 fs-6" value="32">
+                                 <input type="number" name="org_employees" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
                             
                             <!-- Row 2 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Annual turnover <span class="text-danger">*</span></label>
-                                 <select class="form-select form-select-lg bg-light border-0 fs-6">
-                                    <option selected>< AED 50 million</option>
+                                 <select name="org_turnover" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                    <option value="" disabled selected>Select Turnover</option>
+                                    <option value="< AED 50 million">< AED 50 million</option>
                                     <option value="AED 50m - 100m">AED 50m - 100m</option>
                                     <option value="> AED 100m">> AED 100m</option>
                                 </select>
@@ -146,24 +231,24 @@ get_header('dashboard');
                                  <label class="form-label font-graphik fw-medium text-cp-deep-ocean d-block mb-3">Has your organization implemented any CSR activities or programs in the UAE? <span class="text-danger">*</span></label>
                                  <div class="d-flex gap-4">
                                      <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="csrActivities" id="csrYes" checked>
+                                        <input class="form-check-input" type="radio" name="csr_activity" id="csrYes" value="yes" checked>
                                         <label class="form-check-label font-graphik" for="csrYes">Yes</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="csrActivities" id="csrNo">
+                                        <input class="form-check-input" type="radio" name="csr_activity" id="csrNo" value="no">
                                         <label class="form-check-label font-graphik" for="csrNo">No</label>
                                     </div>
                                  </div>
                             </div>
 
-                            <div class="row g-4">
+                            <div class="row g-4" id="csr-fields">
                                 <div class="col-md-6">
                                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project / Program name</label>
-                                    <input type="text" class="form-control form-control-lg bg-light border-0 fs-6">
+                                    <input type="text" name="csr_name" class="form-control form-control-lg bg-light border-0 fs-6">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Allocated monetary amount (AED)</label>
-                                    <input type="text" class="form-control form-control-lg bg-light border-0 fs-6">
+                                    <input type="number" name="csr_amount" class="form-control form-control-lg bg-light border-0 fs-6" step="0.01">
                                 </div>
                             </div>
                         </div>
