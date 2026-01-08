@@ -13,8 +13,9 @@ $steps = [
     1 => 'Project Profile',
     2 => 'Project Details',
     3 => 'Supporting Evidence',
-    4 => 'Verification',
-    5 => 'Review'
+    4 => 'Pinpoint',
+    5 => 'Demographic Information',
+    6 => 'Review & Submit'
 ];
 
 ?>
@@ -22,8 +23,8 @@ $steps = [
 <main id="primary" class="site-main bg-cp-cream-light py-5">
     <div class="container">
         
-        <!-- Stepper (Visible for steps 1-5 only) -->
-        <?php if ($current_step <= 5): ?>
+        <!-- Stepper (Visible for steps 1-6 only, excluding completion) -->
+        <?php if ($current_step <= 6): ?>
         <div class="stepper-container bg-cp-cream-light border-bottom border-light-gray mb-5 pb-4">
              <div class="d-flex justify-content-between align-items-center position-relative">
                 <!-- Connector Line -->
@@ -82,7 +83,7 @@ $steps = [
                      get_template_part('template-parts/dashboard/create-project/step', '5');
                     break;
                 case 6:
-                     get_template_part('template-parts/dashboard/create-project/completion');
+                     get_template_part('template-parts/dashboard/create-project/step', '6');
                     break;
                 default:
                     get_template_part('template-parts/dashboard/create-project/step', '1');
@@ -94,5 +95,5 @@ $steps = [
 </main>
 
 <?php
-get_footer('dashboard');
+// get_footer('dashboard');
 ?>
