@@ -155,6 +155,9 @@ function majra_scripts() {
 	wp_enqueue_style( 'majra-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'majra-style', 'rtl', 'replace' );
 
+    // Enqueue Custom Pages Styles
+    wp_enqueue_style( 'majra-custom-pages', get_template_directory_uri() . '/assets/css/custom-pages.css', array(), _S_VERSION );
+
 	wp_enqueue_script( 'majra-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
