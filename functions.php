@@ -329,6 +329,11 @@ require get_template_directory() . '/inc/class-sic-db.php';
  */
 require get_template_directory() . '/inc/auth-check.php';
 
+/**
+ * SIC Storage
+ */
+require get_template_directory() . '/inc/class-sic-storage.php';
+
 
 // Add Image Upload Field to "faq-categories" (Edit and Add Screens)
 function faq_categories_image_field($term) {
