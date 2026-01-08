@@ -466,5 +466,39 @@ class SIC_DB {
             ['%d', '%s', '%d']
         );
     }
+
+    /**
+     * Save Project Link
+     */
+    public function save_project_link( $project_id, $role, $url ) {
+        // Simple check if exists
+        $existing = $this->wpdb->get_var( $this->wpdb->prepare(
+            "SELECT link_id FROM " . self::TBL_PROJECT_LINKS . " WHERE project_id = %d AND link_role = %s",
+            $project_id, $role
+        ));
+
+        if ( $existing ) {
+            $this->wpdb->update( 
+                self::TBL_PROJECT_LINKS, 
+                ['url' => $url], 
+                ['link_id' => $existing]
+            );
+        } else {
+            $this->wpdb->insert( 
+                self::TBL_PROJECT_LINKS, 
+                ['project_id' => $project_id, 'link_role' => $role, 'url' => $url]
+            );
+        }
+    }
+
+    /**
+     * Get Project Links
+     */
+    public function get_project_links( $project_id ) {
+        return $this->wpdb->get_results( $this->wpdb->prepare( 
+            "SELECT link_role, url FROM " . self::TBL_PROJECT_LINKS . " WHERE project_id = %d", 
+            $project_id 
+        ));
+    }
 }
 ?>

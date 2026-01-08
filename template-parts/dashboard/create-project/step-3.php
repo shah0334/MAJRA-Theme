@@ -2,6 +2,83 @@
 /**
  * Step 3: Supporting Evidence
  */
+$db = SIC_DB::get_instance();
+$storage = SIC_Storage::get_instance();
+$project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+
+if ( ! $project_id ) {
+    wp_redirect( SIC_Routes::get_create_project_url() );
+    exit;
+}
+
+$project = $db->get_project($project_id);
+if ( ! $project ) {
+    wp_die('Project not found');
+}
+
+// Fetch existing link
+$existing_links = $db->get_project_links($project_id);
+$media_link = '';
+foreach ($existing_links as $link) {
+    if ($link->link_role === 'testimonials_media_coverage') {
+        $media_link = $link->url;
+        break;
+    }
+}
+
+// Handle Form Submission
+if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) ) {
+    // Verify nonce
+    if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_save_step_3' ) ) {
+        wp_die( 'Security check failed' );
+    }
+
+    $errors = [];
+    $cycle_id = $project->cycle_id;
+    $applicant_id = $project->created_by_applicant_id;
+
+    // Helper to upload and link
+    $handle_upload = function($file_input_name, $role) use ($db, $storage, $cycle_id, $applicant_id, $project_id, &$errors) {
+        if ( !empty($_FILES[$file_input_name]['name']) ) {
+            $upload = $storage->upload_file($_FILES[$file_input_name], 'project-evidence');
+            if ( ! is_wp_error($upload) ) {
+                $file_id = $db->save_file($upload, $cycle_id, $applicant_id);
+                if ( $file_id ) {
+                    $db->link_project_file($project_id, $role, $file_id);
+                    return true;
+                }
+            } else {
+                $errors[] = "Error uploading $role: " . $upload->get_error_message();
+            }
+        }
+        return false;
+    };
+
+    // Process Uploads
+    $handle_upload('photos_file', 'photos');
+    $handle_upload('impact_report_file', 'impact_report');
+    $handle_upload('testimonials_file', 'testimonials_file');
+    $handle_upload('sustainable_plan_file', 'sustainable_impact_plan');
+
+    // Process Link
+    if ( isset($_POST['media_link']) ) {
+        $url = esc_url_raw($_POST['media_link']);
+        if ( $url ) {
+            $db->save_project_link($project_id, 'testimonials_media_coverage', $url);
+        }
+    }
+
+    // Update Status
+    if ( empty($errors) ) {
+        $db->update_project($project_id, ['evidence_completed' => 1]);
+        
+        // Redirect to Step 4
+        wp_redirect( add_query_arg(['step' => 4, 'project_id' => $project_id], SIC_Routes::get_create_project_url()) );
+        exit;
+    } else {
+        $error_message = implode('<br>', $errors);
+    }
+}
 ?>
 
 <!-- Eligibility Banner -->
@@ -12,22 +89,32 @@
     </p>
 </div>
 
+<?php if ( isset($error_message) ): ?>
+    <div class="alert alert-danger mb-4"><?php echo $error_message; ?></div>
+<?php endif; ?>
+
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Supporting Evidence</h2>
         <p class="font-graphik text-secondary mb-5">Help us understand the scope, impact, and alignment of your project</p>
 
-        <form>
+        <form method="POST" enctype="multipart/form-data">
+            <?php wp_nonce_field( 'sic_save_step_3' ); ?>
+            <input type="hidden" name="sic_project_action" value="save_step_3">
+            
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
                 
                 <!-- Photos -->
                 <div class="mb-5">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1">Photos</label>
+                    <div class="d-flex justify-content-between">
+                         <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1">Photos</label>
+                         <?php // TODO: Show existing file indicator if previously uploaded ?>
+                    </div>
                     <p class="font-graphik text-secondary small mb-3">Upload a consolidated file of your photos showing project implementation.</p>
                     
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
+                        <input type="file" name="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
                         <div class="mb-3">
                             <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
                                 <i class="bi bi-upload text-secondary fs-4"></i>
@@ -45,7 +132,7 @@
                     <p class="font-graphik text-secondary small mb-3">Upload a consolidated document detailing measurable project results, beneficiary outcomes, and supporting data (e.g. surveys, focus groups).</p>
                     
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
+                        <input type="file" name="impact_report_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
                         <div class="mb-3">
                             <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
                                 <i class="bi bi-upload text-secondary fs-4"></i>
@@ -64,12 +151,12 @@
                     
                     <div class="mb-3">
                         <label class="form-label font-graphik text-cp-deep-ocean small">Link</label>
-                        <input type="url" class="form-control bg-light border-0 fs-6" placeholder="https://example.com">
+                        <input type="url" name="media_link" class="form-control bg-light border-0 fs-6" placeholder="https://example.com" value="<?php echo esc_url($media_link); ?>">
                     </div>
 
                     <label class="form-label font-graphik text-cp-deep-ocean small">File</label>
                      <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
+                        <input type="file" name="testimonials_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
                         <div class="mb-3">
                             <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
                                 <i class="bi bi-upload text-secondary fs-4"></i>
@@ -90,7 +177,7 @@
                     <p class="font-graphik text-secondary small mb-3">Upload a consolidated brief plan outlining how you intend to scale your project's impact and ensure long-term sustainability.</p>
                     
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
+                        <input type="file" name="sustainable_plan_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
                         <div class="mb-3">
                             <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
                                 <i class="bi bi-upload text-secondary fs-4"></i>
@@ -106,8 +193,8 @@
 
             <!-- Navigation Buttons -->
             <div class="d-flex justify-content-between pt-4 border-top">
-                <a href="?step=2" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
-                <a href="?step=4" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</a>
+                <a href="<?php echo add_query_arg(['step' => 2, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
+                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</button>
             </div>
 
         </form>
