@@ -438,7 +438,22 @@ class SIC_DB {
 
         if ( ! $project ) return null;
 
+        // Fetch relations
+        $project->impact_areas = $this->get_project_relations($project_id, self::TBL_PROJECT_IMPACT_AREAS, 'impact_area_id');
+        $project->sdgs = $this->get_project_relations($project_id, self::TBL_PROJECT_SDGS, 'sdg_id');
+        $project->beneficiaries = $this->get_project_relations($project_id, self::TBL_PROJECT_BENEFICIARIES, 'beneficiary_type_id');
+
         return $project;
+    }
+
+    /**
+     * Get Project Relations (Helper)
+     */
+    private function get_project_relations( $project_id, $table, $col_name ) {
+        return $this->wpdb->get_col( $this->wpdb->prepare( 
+            "SELECT $col_name FROM $table WHERE project_id = %d", 
+            $project_id 
+        ));
     }
 
     /**
