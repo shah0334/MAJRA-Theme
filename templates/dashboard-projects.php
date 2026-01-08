@@ -42,75 +42,67 @@ get_header('dashboard');
                         <tr>
                             <th scope="col">Project Name</th>
                             <th scope="col">Organization Name</th>
-                            <th scope="col">Category</th>
+                            <th scope="col">Stage</th>
                             <th scope="col">Submission Date</th>
                             <th scope="col">Status</th>
                             <th scope="col" class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Row 1 -->
-                        <tr>
-                            <td class="fw-semibold text-cp-deep-ocean">Net-Zero Biofuel</td>
-                            <td class="text-secondary">Neutral Fuels LLC</td>
-                            <td><span class="badge bg-light text-cp-deep-ocean border rounded-pill px-3 py-2 fw-normal">Environment</span></td>
-                            <td class="text-secondary">Mar 28, 2025</td>
-                            <td><span class="status-badge status-review">Under Review</span></td>
-                            <td class="text-end">
-                                <button class="btn btn-link text-secondary p-0">
-                                    <i class="bi bi-three-dots-vertical fs-5"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Row 2 -->
-                        <tr>
-                            <td class="fw-semibold text-cp-deep-ocean">Green Education Initiative</td>
-                            <td class="text-secondary">Future Skills Academy</td>
-                            <td><span class="badge bg-light text-cp-deep-ocean border rounded-pill px-3 py-2 fw-normal">Social</span></td>
-                            <td class="text-secondary">Apr 02, 2025</td>
-                            <td><span class="status-badge status-draft">Draft</span></td>
-                            <td class="text-end">
-                                <button class="btn btn-link text-secondary p-0">
-                                    <i class="bi bi-three-dots-vertical fs-5"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Row 3 -->
-                        <tr>
-                            <td class="fw-semibold text-cp-deep-ocean">Solar Powered Community</td>
-                            <td class="text-secondary">Green Earth Co.</td>
-                            <td><span class="badge bg-light text-cp-deep-ocean border rounded-pill px-3 py-2 fw-normal">Environment</span></td>
-                            <td class="text-secondary">Mar 15, 2025</td>
-                            <td><span class="status-badge status-approved">Approved</span></td>
-                            <td class="text-end">
-                                <button class="btn btn-link text-secondary p-0">
-                                    <i class="bi bi-three-dots-vertical fs-5"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        <?php
+                        $db = SIC_DB::get_instance();
+                        $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id(); // Fallback
+                        // If using dummy login, session variable should be set
+                        
+                        $projects = $db->get_projects_by_applicant( $user_id );
+
+                        if ( empty($projects) ):
+                        ?>
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <p class="text-secondary mb-0">No projects found. <a href="<?php echo SIC_Routes::get_create_project_url(); ?>">Create your first project</a>.</p>
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ( $projects as $project ): 
+                                $status_class = 'status-draft';
+                                $status_label = 'Draft';
+                                if ( $project->submission_status === 'submitted' ) {
+                                    $status_class = 'status-review'; // or approved
+                                    $status_label = 'Submitted';
+                                }
+                                $edit_url = add_query_arg( ['step' => 1, 'project_id' => $project->project_id], SIC_Routes::get_create_project_url() );
+                            ?>
+                            <tr>
+                                <td class="fw-semibold text-cp-deep-ocean"><?php echo esc_html( $project->project_name ); ?></td>
+                                <td class="text-secondary"><?php echo esc_html( $project->organization_name ); ?></td>
+                                <td><span class="badge bg-light text-cp-deep-ocean border rounded-pill px-3 py-2 fw-normal"><?php echo esc_html( $project->project_stage ); ?></span></td>
+                                <td class="text-secondary"><?php echo date( 'M d, Y', strtotime($project->created_at) ); ?></td>
+                                <td><span class="status-badge <?php echo $status_class; ?>"><?php echo $status_label; ?></span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical fs-5"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>">Edit</a></li>
+                                            <!-- <li><a class="dropdown-item text-danger" href="#">Delete</a></li> -->
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Empty State (Hidden by default, shown if no rows) -->
-             <!-- 
-            <div class="text-center py-5">
-                <i class="bi bi-folder2-open fs-1 text-secondary opacity-50 mb-3 d-block"></i>
-                <p class="text-secondary">No projects submitted yet.</p>
-            </div> 
-            -->
-
-            <!-- Pagination -->
+            <!-- Pagination (Hidden for now until implemented) -->
+            <!-- 
             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                <p class="text-secondary mb-0 small">Showing 1 to 3 of 3 entries</p>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link border-0 rounded-circle mx-1" href="#"><i class="bi bi-chevron-left"></i></a></li>
-                        <li class="page-item active"><a class="page-link border-0 rounded-circle mx-1 bg-cp-coral-sunset" href="#">1</a></li>
-                        <li class="page-item disabled"><a class="page-link border-0 rounded-circle mx-1" href="#"><i class="bi bi-chevron-right"></i></a></li>
-                    </ul>
-                </nav>
+                ... 
             </div>
+            -->
         </div>
     </div>
 </main>

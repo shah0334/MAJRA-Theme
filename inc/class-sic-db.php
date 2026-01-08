@@ -500,5 +500,28 @@ class SIC_DB {
             $project_id 
         ));
     }
+
+    /**
+     * Get Projects by Applicant ID (Draft & Submitted)
+     */
+    public function get_projects_by_applicant( $applicant_id ) {
+        $cycle_id = $this->get_active_cycle_id();
+        if ( ! $cycle_id ) return [];
+
+        $sql = "
+            SELECT 
+                p.*, 
+                o.canonical_name as organization_name,
+                o.organization_id
+            FROM " . self::TBL_PROJECTS . " p
+            LEFT JOIN " . self::TBL_ORG_PROFILES . " op ON p.org_profile_id = op.org_profile_id
+            LEFT JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE p.created_by_applicant_id = %d 
+            AND p.cycle_id = %d
+            ORDER BY p.created_at DESC
+        ";
+
+        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
+    }
 }
 ?>
