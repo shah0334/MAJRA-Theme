@@ -1,0 +1,1982 @@
+<?php
+function custom_video_player_element() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Homepage Banner', 'text-domain'),
+        'base'        => 'homepage_banner',
+        'description' => __('A customized homepage video banner with text', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Video URL', 'text-domain'),
+                'param_name' => 'video_url',
+                'description' => __('Provide the video URL.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Banner Text', 'text-domain'),
+                'param_name' => 'banner_text',
+                'value'      => '',
+                'description' => __('Set the banner title', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Button Text', 'text-domain'),
+                'param_name' => 'banner_btn_text',
+                'value'      => '',
+                'description' => __('Set button text', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'custom_video_player_element');
+
+
+function render_custom_homepage_banner($atts) {
+    extract(shortcode_atts(array(
+        'video_url'    => '',
+        'banner_text' => '',
+        'banner_btn_text' => 'Learn more',
+    ), $atts));
+
+    if (empty($video_url)) {
+        return '<p>Please provide a video URL.</p>';
+    }
+
+
+    ob_start();
+    ?>
+    <div class="main-banner">
+        <video playsinline autoplay preload loop muted class="video-element">
+            <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+		<div class="content w-100 position-relative">
+			<div class="container">
+				<?php
+					if(!empty($banner_text)){
+				?>
+						<h1 class="head-h1 mb-4"><?php echo esc_html($banner_text); ?></h1>
+				<?php	
+					}
+					if(!empty($banner_btn_text)){
+				?>	
+						<a href="about-us" class="btn btn-default bg-orange text-white rounded-pill px-4"><?php echo esc_html($banner_btn_text); ?></a>
+				<?php	
+					}
+				?>
+			</div>
+		</div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('homepage_banner', 'render_custom_homepage_banner');
+
+
+// Custom Container
+function custom_vc_container() {
+    vc_map(array(
+        'name' => __('Custom Container', 'text-domain'),
+        'base' => 'custom_container',
+        'category' => __('Custom Elements', 'text-domain'),
+        'content_element' => true,
+        'as_parent' => array('except' => ''), // Allows adding any child elements
+        'js_view' => 'VcColumnView', // Enables WPBakery’s drag & drop
+        'show_settings_on_create' => true,
+        'params' => array(
+            array(
+                'type' => 'textfield',
+                'heading' => __('Custom Class', 'text-domain'),
+                'param_name' => 'custom_class',
+                'description' => __('Add custom CSS class', 'text-domain'),
+            ),
+            array(
+                'type' => 'colorpicker',
+                'heading' => __('Background Color', 'text-domain'),
+                'param_name' => 'bg_color',
+                'description' => __('Set background color', 'text-domain'),
+            ),
+            array(
+                'type' => 'textfield',
+                'heading' => __('Padding', 'text-domain'),
+                'param_name' => 'padding',
+                'description' => __('Set padding (e.g., 20px)', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'custom_vc_container');
+
+/**
+ * Render the container shortcode
+ */
+function custom_container_shortcode($atts, $content = null) {
+    extract(shortcode_atts(array(
+        'custom_class' => '',
+        'bg_color' => '',
+        'padding' => '',
+    ), $atts));
+
+    $style = '';
+    if ($bg_color) $style .= "background-color: $bg_color;";
+    if ($padding) $style .= "padding: $padding;";
+
+    return '<div class="container ' . esc_attr($custom_class) . '" style="' . esc_attr($style) . '">' . do_shortcode($content) . '</div>';
+}
+add_shortcode('custom_container', 'custom_container_shortcode');
+
+/**
+ * Allows the container to have child elements
+ */
+function custom_container_as_parent() {
+    return array('custom_container', 'custom_div');
+}
+add_filter('vc_shortcodes_custom_css_filter', 'custom_container_as_parent');
+
+/**
+ * Required for nesting elements inside the container
+ */
+if (class_exists('WPBakeryShortCodesContainer')) {
+    class WPBakeryShortCode_Custom_Container extends WPBakeryShortCodesContainer {}
+}
+
+
+
+// By Numbers
+function vc_majra_by_numbers() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra By Number', 'text-domain'),
+        'base'        => 'vc_majra_by_numbers',
+        'description' => __('A customized image with stats', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'       => 'attach_image',
+                'heading'    => __('Image', 'text-domain'),
+                'param_name' => 'image',
+                'description' => __('Select an image.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Value', 'text-domain'),
+                'param_name' => 'value',
+                'description' => __('Enter the numeric value or statistic.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Title', 'text-domain'),
+                'param_name' => 'title',
+                'description' => __('Enter the accompanying title.', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_by_numbers');
+
+function vc_majra_by_numbers_render($atts) {
+    $atts = shortcode_atts(array(
+        'image' => '',
+        'value' => '',
+        'title'  => '',
+    ), $atts);
+    
+
+    $image_url = '';
+    if (!empty($atts['image'])) {
+        $image_url = wp_get_attachment_image_url($atts['image'], 'full');
+    }
+
+
+    ob_start(); ?>
+        <div class="impact-box">
+            <?php if ($image_url) : ?>
+                <img loading="lazy" src="<?php echo esc_url($image_url); ?>">
+            <?php endif; ?>
+            
+            <div class="content">
+                <h3 class="text-white fw-semibold"><?php echo esc_html($atts['value']); ?></h3>
+                <h5 class="fs-1 fw-semibold text-aqua-marine"><?php echo esc_html($atts['title']); ?></h5>
+            </div>
+        </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('vc_majra_by_numbers', 'vc_majra_by_numbers_render');
+
+// Partners Slider
+function vc_image_slider() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Image Slider', 'text-domain'),
+        'base'        => 'vc_image_slider',
+        'description' => __('A customized muti-image slider', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'       => 'attach_images', // Change from 'attach_image' to 'attach_images'
+                'heading'    => __('Images', 'text-domain'),
+                'param_name' => 'images', // Use a plural name to indicate multiple images
+                'description' => __('Select multiple images.', 'text-domain'),
+            ),   
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_image_slider');
+
+function vc_render_image_slider($atts) {
+    $atts = shortcode_atts(array(
+        'images' => '', // Comma-separated image IDs
+    ), $atts);
+
+    if (empty($atts['images'])) {
+        return ''; // No images selected
+    }
+
+    // Convert comma-separated IDs into an array
+    $image_ids = explode(',', $atts['images']);
+
+    // Generate a unique ID for the slider
+    $slider_id = 'swiper-' . uniqid();
+
+    // Start output buffering
+    ob_start();
+    ?>
+    <div class="swiper-container position-relative">
+        <div class="swiper <?php echo esc_attr($slider_id); ?>">
+            <div class="swiper-wrapper">
+                <?php foreach ($image_ids as $image_id): 
+                    $image_url = wp_get_attachment_image_url($image_id, 'full');
+                    if ($image_url): ?>
+                        <div class="swiper-slide text-center">
+                            <img src="<?php echo esc_url($image_url); ?>" alt="Slider Image">
+                        </div>
+                <?php endif; endforeach; ?>
+            </div>
+        </div>
+        <!-- Swiper Navigation & Pagination -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            new Swiper(".<?php echo esc_attr($slider_id); ?>", {
+                loop: true,
+                slidesPerView: 1,
+                spaceBetween: 30,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 40,
+                    },
+                    1024: {
+                        slidesPerView: 5,
+                        spaceBetween: 50,
+                    },
+                },
+                // loop: true,
+                // autoplay: { delay: 3000 },
+                // navigation: {
+                //     nextEl: ".swiper-button-next",
+                //     prevEl: ".swiper-button-prev"
+                // },
+                // pagination: {
+                //     el: ".swiper-pagination",
+                //     clickable: true
+                // }
+            });
+        });
+    </script>
+    <?php
+
+    return ob_get_clean();
+}
+add_shortcode('vc_image_slider', 'vc_render_image_slider');
+
+// Custom Video Player
+function majra_video_player_element() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Video Player', 'text-domain'),
+        'base'        => 'majra_video_player',
+        'description' => __('A customized video player', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Video URL', 'text-domain'),
+                'param_name' => 'video_url',
+                'description' => __('Provide the video URL.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Minimum Height (px)', 'text-domain'),
+                'param_name' => 'min_height',
+                'description' => __('Set a minimum height for the video container (e.g., 400px).', 'text-domain'),
+            ),
+            array(
+                'type'       => 'colorpicker',
+                'heading'    => __('Background Color', 'text-domain'),
+                'param_name' => 'background_color',
+                'description' => __('Set a default background color for the player.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Extra class name', 'text-domain'),
+                'param_name' => 'extra_class',
+                'description' => __('Style particular content element differently - add a class name and refer to it in custom CSS.', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'majra_video_player_element');
+
+
+function render_majra_video_player($atts) {
+    extract(shortcode_atts(array(
+        'video_url'    => '',
+        'min_height'    => '',
+        'background_color'    => '',
+        'extra_class' => ''
+    ), $atts));
+
+    if (empty($video_url)) {
+        return '<p>Please provide a video URL.</p>';
+    }
+
+    // Inline styles
+    $style = 'style="';
+    if (!empty($background_color)) {
+        $style .= 'background-color: ' . esc_attr($background_color) . '; ';
+    }
+    if (!empty($min_height)) {
+        $style .= 'min-height: ' . esc_attr($min_height) . '; ';
+    }
+    $style .= '"';
+
+
+    ob_start();
+    ?>
+    <div class="majra-video-player <?php echo esc_attr($extra_class); ?>" <?php echo $style; ?>>
+        <video playsinline autoplay preload loop muted class="video-element">
+            <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_video_player', 'render_majra_video_player');
+
+// Majra Toggleable card
+function majra_toggleable_card_element() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Toggle-able Card', 'text-domain'),
+        'base'        => 'majra_toggleable_card',
+        'description' => __('A customized toggle-able card', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Card Heading', 'text-domain'),
+                'param_name' => 'card_heading',
+                'description' => __('Provide the card heading.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textarea',
+                'heading'    => __('Card Content', 'text-domain'),
+                'param_name' => 'card_content',
+                'description' => __('Provide the card heading..', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Video URL', 'text-domain'),
+                'param_name' => 'video_url',
+                'description' => __('Provide the video URL.', 'text-domain'),
+            ),
+            array(
+                'type'        => 'checkbox',
+                'heading'     => __('Is Open', 'text-domain'),
+                'param_name'  => 'is_open',
+                'description' => __('Set if card is open by default', 'text-domain'),
+                'value'       => array(__('Yes', 'text-domain') => 'true'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'majra_toggleable_card_element');
+
+
+function render_majra_toggleable_card($atts) {
+    extract(shortcode_atts(array(
+        'card_heading' => '',
+        'card_content' => '',
+        'is_open'      => '',
+        'video_url'    => ''
+    ), $atts));
+
+    if (empty($card_heading)) {
+        return '<p>Please provide card heading.</p>';
+    }
+
+    if (empty($card_content)) {
+        return '<p>Please provide card content.</p>';
+    }
+
+    if (empty($video_url)) {
+        return '<p>Video url is required.</p>';
+    }
+
+    $is_open = (!empty($atts['is_open']) && $atts['is_open'] === 'true') ? true : false;
+
+    ob_start();
+    ?>
+    <div class="pupose-box">
+		<h3><?php echo $card_heading; ?></h3>
+		<div class="to-show" style="display: <?php echo $is_open ? 'block' : 'none' ?>;">
+            <?php echo esc_html($card_content); ?>
+		</div>
+        <div data-video="<?php echo esc_url($video_url); ?>" class="open-box" style="display: <?php echo $is_open ? 'none' : 'open' ?>;">
+            <img loading="lazy" src="https://uaemajra.ae/wp-content/themes/majra/assets/img/arr-d.svg">
+        </div>
+        <div class="close-box" style="display: <?php echo $is_open ? 'block' : 'none' ?>;">
+            <img loading="lazy" src="https://uaemajra.ae/wp-content/themes/majra/assets/img/arr-d.svg">
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_toggleable_card', 'render_majra_toggleable_card');
+
+// Majra Latest Media Posts
+function majra_media_posts_element() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Media Posts', 'text-domain'),
+        'base'        => 'majra_media_posts',
+        'description' => __('A customized widget to show latest media center posts', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Show no. of post', 'text-domain'),
+                'param_name' => 'post_length',
+                'description' => __('Provide number of posts which you want to show', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'majra_media_posts_element');
+
+function render_majra_media_posts($atts) {
+    global $language;
+
+    extract(shortcode_atts(array(
+        'post_length' => '3',
+    ), $atts));
+    ob_start();
+
+    $mediaCenterPosts = array();
+	$args = array(
+        'posts_per_page' => 3,
+        'post_type' => 'media-center-post',
+        'orderby' => 'date',
+        'order' =>  'DESC',
+        'post_status' => 'publish',
+    );
+	$query = new WP_Query($args);
+	$total_posts = $query->found_posts;
+	if ( $query->have_posts() ) :
+		$index = 0;
+    ?>
+        <div class="row gap-3 gap-md-0">
+			<?php
+				while ($query->have_posts()) : 
+					$query->the_post();
+					$index++;
+
+					$featured_image = get_the_post_thumbnail_url(get_the_ID(), 'full');
+
+					if($index == 1){
+			?>
+						<div class="col-md-6">
+							<div class="mc-gallery-post">
+								<div class="thumnail">
+									<?php
+										if( !empty($featured_image)){
+											echo '<img loading="lazy" class="img-fluid" src="'.$featured_image.'" />';
+										}
+									?>
+									<div class="overlay white"></div>
+								</div>
+								
+								<div class="content">
+									<div class="text-deep-ocean">
+
+										<span class="tags mb-3"><?php echo get_the_date('j F Y'); ?></span>
+										<h3 class="text-deep-ocean mb-3 fw-bold"><?php echo wp_trim_words(get_the_title(), 15, '...'); ?></h3>
+										<div class="text-deep-ocean mb-3">
+											<?php
+												echo wp_trim_words( get_the_content(), 16, '...' );
+											?>
+										</div>
+
+										<a href="<?php echo esc_url(get_permalink()) ?>"><?php echo $language['LINKS']['READ_MORE']; ?></a>
+									</div>
+								</div>
+							</div>
+						</div>
+			<?php
+					}
+					if($index == 2){
+						echo '<div class="col-md-6"> <div class="d-flex flex-column gap-3">';
+					}
+					if($index > 1){
+			?>
+							<div class="mc-gallery-post bg-white">
+								<div class="thumnail">
+									<?php
+										if( !empty($featured_image)){
+											echo '<img loading="lazy" class="img-fluid" src="'.$featured_image.'" />';
+										}
+									?>
+									<div class="overlay"></div>
+								</div>
+								<div class="content">
+									<span class="tags mb-3 text-white border-white"><?php echo get_the_date('j F Y'); ?></span>
+									<a class="text-white text-decoration-none" href="<?php echo esc_url(get_permalink()) ?>">
+										<h3><?php the_title(); ?></h3>
+									</a>
+								</div>
+							</div>
+			<?php
+					}
+					if($index == $total_posts){
+						echo '</div></div>';
+					}
+				endwhile;
+				wp_reset_postdata();
+			?>
+			</div>
+			<?php
+				endif;
+    return ob_get_clean();
+}
+add_shortcode('majra_media_posts', 'render_majra_media_posts');
+
+// Custom Social Post
+function vc_majra_social_post() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Social Post', 'text-domain'),
+        'base'        => 'majra_social_post',
+        'description' => __('A customized social post', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        // 'icon'        => 'icon-wpb-film-youtube',
+        'params'      => array(
+            array(
+                'type'        => 'attach_image',
+                'heading'     => __('Post Image', 'text-domain'),
+                'param_name'  => 'post_image',
+                'description' => __('Upload an image for the social post.', 'text-domain'),
+            ),
+            array(
+                'type'        => 'dropdown',
+                'heading'     => __('Social Platform', 'text-domain'),
+                'param_name'  => 'platform',
+                'value'       => array(
+                    'Select'    => '',
+                    'X (formly Twitter)' => 'twitter',
+                    'Instagram' => 'instagram',
+                    'LinkedIn'  => 'linkedin',
+                ),
+                'description' => __('Select the social media platform.', 'text-domain'),
+            ),
+            array(
+                'type'        => 'textfield',
+                'heading'     => __('Post URL', 'text-domain'),
+                'param_name'  => 'post_url',
+                'description' => __('Enter the URL of the social post.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Extra class name', 'text-domain'),
+                'param_name' => 'extra_class',
+                'description' => __('Style particular content element differently - add a class name and refer to it in custom CSS.', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_social_post');
+
+
+function render_majra_social_post($atts) {
+    extract(shortcode_atts(array(
+        'post_image' => '',
+        'platform'   => '',
+        'post_url'   => '',
+        'extra_class'=> ''
+    ), $atts));
+
+    if (empty($post_url) || empty($platform)) {
+        return '<p>Please provide a valid social media post URL and select a platform.</p>';
+    }
+
+    // Get Image URL
+    $image_url = wp_get_attachment_image_src($post_image, 'full');
+    $image_html = $image_url ? '<img src="' . esc_url($image_url[0]) . '" class="img-fluid rounded-lg">' : '';
+
+    // Icons
+    $icons = array(
+        'twitter'   => get_template_directory_uri().'/assets/img/x.svg',
+        'instagram' => get_template_directory_uri().'/assets/img/insta.svg',
+        'linkedin'  => get_template_directory_uri().'/assets/img/linkedin.svg',
+    );
+
+
+    ob_start();
+    ?>
+    <div class="social-post <?php echo $extra_class; ?>">
+		<?php echo $image_html; ?>
+		<img loading="lazy" src="<?php echo $icons[$platform] ?? ''; ?>" class="soc-icon" style="width:40px; height:40px; left:unset">
+		<div class="on-hover">
+			<a class="fs-3 text-decoration-none text-white fw-semibold" target="_blank" href="<?php echo esc_url($post_url); ?>">See Post</a>
+		</div>
+	</div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_social_post', 'render_majra_social_post');
+
+// Majra Page Header
+function vc_majra_page_header() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Page Header', 'text-domain'),
+        'base'        => 'majra_page_header',
+        'description' => __('A customized page header', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'params'      => array(
+            array(
+                'type'       => 'attach_image',
+                'heading'    => __('Background Image', 'text-domain'),
+                'param_name' => 'bg_image',
+                'description' => __('Select background image.', 'text-domain'),
+            ),
+            // array(
+            //     'type' => 'colorpicker',
+            //     'heading' => __('Background Color', 'text-domain'),
+            //     'param_name' => 'bg_color',
+            //     'description' => __('Set background color', 'text-domain'),
+            // ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Heading', 'text-domain'),
+                'param_name' => 'heading',
+                'description' => __('Provide the page heading.', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textarea',
+                'heading'    => __('Content', 'text-domain'),
+                'param_name' => 'page_content',
+                'description' => __('Provide the page content.', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_page_header');
+
+
+function render_majra_page_header($atts) {
+    extract(shortcode_atts(array(
+        'bg_image' => '',
+        'heading'  => '',
+        'page_content'  => ''
+    ), $atts));
+
+    if (empty($heading)) {
+        return '<p>Please provide page heading.</p>';
+    }
+
+    $image_url = '';
+    if( isset($bg_image) && !empty($bg_image) ){
+        $source = wp_get_attachment_image_src($bg_image, 'full');
+        $image_url = $source[0];
+    }
+
+    ob_start();
+    ?>
+    <div class="page-heading" style="background-image: url('<?php echo $image_url; ?>')">
+        <div class="container d-flex align-items-center h-100 text-white">
+            <div>
+                <h1 class="head-h1"><?php echo esc_html($heading); ?></h1>
+                <?php
+                    if( !empty($page_content) ){
+                ?>
+                        <div class="row mt-3">
+                            <div class="col-md-7">
+                                <h5 class="fs-6 ff-ga"><?php echo esc_html($page_content); ?></h5>
+                            </div>
+                        </div>
+                <?php  
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_page_header', 'render_majra_page_header');
+
+
+function vc_custom_div_element() {
+    vc_map(array(
+        'name'        => __('Custom Div Box', 'text-domain'),
+        'base'        => 'custom_div',
+        'description' => __('A customizable div with nested elements', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-row',
+        'as_parent' => array('except' => ''), // Allows adding any child elements // Allows nesting inside this element
+        'content_element' => true, // Enables this as a content element
+        'js_view' => 'VcColumnView', // Enables nested elements visually
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('CSS Classes', 'text-domain'),
+                'param_name' => 'css_classes',
+                'description'=> __('Add custom CSS classes for styling', 'text-domain'),
+            ),
+            array(
+                'type'       => 'colorpicker',
+                'heading'    => __('Background Color', 'text-domain'),
+                'param_name' => 'bg_color',
+                'description'=> __('Choose a background color for the div', 'text-domain'),
+            ),
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Border Radius', 'text-domain'),
+                'param_name' => 'border_radius',
+                'description'=> __('Set border radius (e.g., 10px, 50%)', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_custom_div_element');
+
+function render_custom_div_element($atts, $content = null) {
+    extract(shortcode_atts(array(
+        'css_classes'   => '',
+        'bg_color'      => '',
+        'border_radius' => '',
+    ), $atts));
+
+    $style = '';
+    if (!empty($bg_color)) {
+        $style .= "background-color: {$bg_color}; ";
+    }
+    if (!empty($border_radius)) {
+        $style .= "border-radius: {$border_radius}; ";
+    }
+
+    return '<div class="custom-div ' . esc_attr($css_classes) . '" style="' . esc_attr($style) . '">' . do_shortcode($content) . '</div>';
+}
+add_shortcode('custom_div', 'render_custom_div_element');
+
+
+// Majra Board of Trustee
+function vc_majra_board_trustee() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Board Trustee', 'text-domain'),
+        'base'        => 'majra_board_trustee',
+        'description' => __('A customized widget to show Board of Trustee', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_board_trustee');
+
+function render_majra_board_trustee($atts) {
+    ob_start();
+	$args = array(
+        'post_type'      => 'board-of-trustees',
+        'posts_per_page' => -1, // Fetch all posts
+        'post_status'    => 'publish', // Only published posts
+    );
+    $query = new WP_Query($args);
+	if ($query->have_posts()) :
+    ?>
+        <div class="row">
+    <?php 
+        while ($query->have_posts()) : $query->the_post();
+    ?>
+            <div class="col-12 col-md-4 col-lg-3 mb-5">
+                <div class="trustee-card">
+                    <div class="mb-4 px-2 py-3" style="background-image: url('<?php echo get_template_directory_uri();?>/assets/img/design-bar-single.png')">
+                        <?php
+                            if (has_post_thumbnail()) {
+                                echo get_the_post_thumbnail(get_the_ID(), 'full', ['class' => 'img-fluid']);
+                            } else {
+                                echo '<img src="https://via.placeholder.com/100" alt="Default Image" class="img-fluid">';
+                            }
+                        ?>
+                    </div>
+                    <div class="content">
+                        <h3 class="mb-2 text-primary ff-macky fs-4"><?php echo get_the_title(); ?></h3>
+                        <p class="para m-0"><?php echo get_the_content(); ?></p>
+                    </div>
+                </div>
+            </div>
+    <?php 
+		endwhile;
+    ?>
+        </div>
+    <?php 
+		wp_reset_postdata();
+    else :
+	?>
+        <p>No Board of Trustees found.</p>
+    <?php
+	endif;
+    return ob_get_clean();
+}
+add_shortcode('majra_board_trustee', 'render_majra_board_trustee');
+
+// Majra Slider
+function vc_majra_slider() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Image Slider', 'text-domain'),
+        'base'        => 'majra_slider',
+        'description' => __('A customized Majra slider with multiple slides', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-images-carousel',
+        'params'      => array(
+            array(
+                'type'        => 'param_group',
+                'heading'     => __('Slides', 'text-domain'),
+                'param_name'  => 'slides',
+                'description' => __('Add multiple slides with images and content.', 'text-domain'),
+                'params'      => array(
+                    array(
+                        'type'       => 'attach_image',
+                        'heading'    => __('Image', 'text-domain'),
+                        'param_name' => 'image',
+                        'description'=> __('Please select a slide image.', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Subtitle', 'text-domain'),
+                        'param_name' => 'subtitle',
+                        'description'=> __('Enter the slide subtitle', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Slide Heading', 'text-domain'),
+                        'param_name' => 'heading',
+                        'description'=> __('Enter the slide heading', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textarea',
+                        'heading'    => __('Slide Content', 'text-domain'),
+                        'param_name' => 'content',
+                        'description'=> __('Enter the slide content', 'text-domain'),
+                    ),
+                ),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_slider');
+
+function render_majra_slider($atts) {
+    extract(shortcode_atts(array(
+        'slides' => '', // This will store multiple slides
+    ), $atts));
+
+    $slides = vc_param_group_parse_atts($slides); // Convert JSON slides into an array
+
+    if (empty($slides)) {
+        return '<p class="text-danger">No slides added.</p>';
+    }
+
+    ob_start();
+    ?>
+        <div class="swiper swiper-dark single-swiper-slider">
+            <div class="swiper-wrapper py-5 text-white">
+    <?php
+                foreach ($slides as $x => $slide) {
+                    $isEven  = $x % 2 === 0;
+                    $orderClasses = $isEven ? 'order-1 order-md-2' : 'order-2 order-md-0';
+
+                    $image_url = wp_get_attachment_url($slide['image']);
+                    $subtitle  = isset($slide['subtitle']) ? esc_html($slide['subtitle']) : '';
+                    $heading   = isset($slide['heading']) ? esc_html($slide['heading']) : '';
+                    $content   = isset($slide['content']) ? wpautop($slide['content']) : '';
+    ?>
+                    <div class="swiper-slide">
+                        <div class="row align-items-center min-vh-60">
+                            <div class="col-12 col-md-6 <?php echo $orderClasses; ?>">
+                                <h5 class="text-aqua-marine mb-4"><?php echo $subtitle; ?></h5>
+                                <h2 class="head-h2 text-light-orange mb-4"><?php echo $heading; ?></h2>
+                                <p class="para m-0 text-white"><?php echo $content; ?></p>
+                            </div>
+                            <div class="col-12 col-md-6 mb-5 mb-md-0">
+                                <img src="<?php echo $image_url; ?>" class="d-block w-100 mx-auto" alt="..." style="max-width:500px">
+                            </div>
+                        </div>
+                    </div>
+    <?php
+                }
+    ?>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="autoplay-progress">
+                <svg viewBox="0 0 48 48">
+                    <circle cx="24" cy="24" r="20"></circle>
+                </svg>
+                <span></span>
+            </div>
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_slider', 'render_majra_slider');
+
+// Majra Strategic Goals
+function vc_majra_strategic_goals() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Strategic Goals', 'text-domain'),
+        'base'        => 'majra_strategic_goals',
+        'description' => __('A customized Majra Strategic Goals section', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'params'      => array(
+            array(
+                'type'        => 'param_group',
+                'heading'     => __('Goals', 'text-domain'),
+                'param_name'  => 'goals',
+                'description' => __('Add multiple goals with content.', 'text-domain'),
+                'params'      => array(
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Video Url', 'text-domain'),
+                        'param_name' => 'video_url',
+                        'description'=> __('Enter goal video url', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Goal Heading', 'text-domain'),
+                        'param_name' => 'heading',
+                        'description'=> __('Enter the goal heading', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textarea',
+                        'heading'    => __('Goal Content', 'text-domain'),
+                        'param_name' => 'content',
+                        'description'=> __('Enter the goal content', 'text-domain'),
+                    ),
+                ),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_strategic_goals');
+
+function render_majra_strategic_goals($atts) {
+    extract(shortcode_atts(array(
+        'goals' => '', // This will store multiple goals
+    ), $atts));
+
+    $goals = vc_param_group_parse_atts($goals); // Convert JSON slides into an array
+
+    if (empty($goals)) {
+        return '<p class="text-danger">No goal added.</p>';
+    }
+
+    ob_start();
+    ?>
+        <div class="row">
+    <?php
+                foreach ($goals as $x => $goal) {
+                    $video_url = isset($goal['video_url']) ? esc_url($goal['video_url']) : '';
+                    $heading   = isset($goal['heading']) ? esc_html($goal['heading']) : '';
+                    $content   = isset($goal['content']) ? esc_html($goal['content']) : '';
+    ?>
+                    <div class="col-12 col-md-6">
+                        <div class="strategic-goal-card mb-4 text-white bg-black p-4">
+                            <video playsinline="" autoplay="" preload="auto" loop="" muted="">
+                                <source class="pupose-box-video-src" src="<?php echo $video_url; ?>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="content d-flex flex-column">
+                                <div class="flex-grow-1 text-center">
+                                    <h5 class="mb-2 fs-1 ff-macky"><?php echo $heading; ?></h5>
+                                </div>
+                                <h5 class="mb-2 fs-3 ff-macky">0<?php echo $x+1; ?></h5>
+                                <p class="m-0 fw-semibold fs-5"><?php echo $content; ?></p>
+                            </div>
+                        </div>
+                    </div>
+    <?php
+                }
+    ?>
+        </div>
+    <?php
+
+    return ob_get_clean();
+}
+add_shortcode('majra_strategic_goals', 'render_majra_strategic_goals');
+
+// Majra Winners stories
+function vc_majra_winner_stories() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Winners stories', 'text-domain'),
+        'base'        => 'majra_winner_stories',
+        'description' => __('A customized section', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-images-carousel',
+        'params'      => array(
+            array(
+                'type'        => 'param_group',
+                'heading'     => __('Winners', 'text-domain'),
+                'param_name'  => 'winners',
+                'description' => __('Add multiple winners.', 'text-domain'),
+                'params'      => array(
+                    array(
+                        'type'       => 'attach_image',
+                        'heading'    => __('Cover', 'text-domain'),
+                        'param_name' => 'bg_image',
+                        'description' => __('Select winner background image.', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'attach_image',
+                        'heading'    => __('Logo', 'text-domain'),
+                        'param_name' => 'logo',
+                        'description' => __('Select winner logo.', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Winner name', 'text-domain'),
+                        'param_name' => 'name',
+                        'description' => __('Provide winner name', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Winner video url', 'text-domain'),
+                        'param_name' => 'video_url',
+                        'description'=> __('Provide winner video url', 'text-domain'),
+                    ),
+                ),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_winner_stories');
+
+
+function render_majra_winner_stories($atts) {
+    extract(shortcode_atts(array(
+        'winners' => ''
+    ), $atts));
+
+    $winners = vc_param_group_parse_atts($winners); // Convert JSON slides into an array
+
+    if ( empty($winners) || count($winners) == 0 ) {
+        return '<p class="text-danger">No winner added.</p>';
+    }
+
+    ob_start();
+
+    ?>
+        <div class="row">
+    <?php
+            foreach ($winners as $x => $winner) {
+                ?>
+                    <div class="col-md-6 mb-4">
+                <?php
+                if (empty($winner['bg_image'])) {
+                    ?>
+                        <p class="text-danger">Please provide winner background image.</p>
+                    <?php
+                }
+                else if (empty($winner['logo'])) {
+                    ?>
+                        <p class="text-danger">Please provide winner logo.</p>
+                    <?php
+                }
+                else if (empty($winner['name'])) {
+                    ?>
+                        <p class="text-danger">Please provide winner name.</p>
+                    <?php
+                }
+                else if (empty($winner['video_url'])) {
+                    ?>
+                        <p class="text-danger">Please provide winner video url.</p>
+                    <?php
+                }
+                else{
+                    $background = wp_get_attachment_url($winner['bg_image']);
+                    $logo = wp_get_attachment_url($winner['logo']);
+                    ?>
+                        <div class="winner-story p-3" style="background-image: url('<?php echo $background; ?>')">
+                            <div class="d-flex flex-column justify-content-end h-100 text-white">
+                                <div>
+                                    <img loading="lazy" src="<?php echo $logo; ?>" alt="Chairman" class="img-fluid mb-3" style="max-width:100px">
+                                    <h5 class="fw-semibold fs-4"><?php echo esc_html($winner['name']); ?></h5>
+                                </div>
+                            </div>
+                            <a class="play play-yt-video" data-title="ALDAR Properties" data-src="<?php echo esc_url($winner['video_url']); ?>" target="_blank">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70" fill="none">
+                                    <circle cx="35" cy="35" r="35" fill="white"></circle>
+                                    <path d="M27.1289 25.37C27.1289 22.9965 29.7546 21.563 31.7512 22.8465L45.9534 31.9765C47.7904 33.1574 47.7904 35.8426 45.9534 37.0235L31.7512 46.1535C29.7546 47.437 27.1289 46.0035 27.1289 43.63V25.37Z" fill="#FC9C63"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    <?php
+                }
+                ?>
+                    </div>
+                <?php
+            }
+    ?>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="ytVideoMModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ytVideoMModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content bg-transparent border-0">
+                <div class="modal-header bg-white">
+                    <h1 class="modal-title fs-5" id="ytVideoMModalLabel">Video</h1>
+                    <button type="button" class="btn-close close-yt-video" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe 
+                        class="w-100" 
+                        height="500" 
+                        src="https://www.youtube.com/embed/MOXdfqUED3c" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                $(document).on('click', '.play-yt-video', function() {
+                    const iframe = `<iframe 
+                        class="w-100" 
+                        height="500" 
+                        src="${$(this).data('src')}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>`;
+                    $('#ytVideoMModal .modal-title').html($(this).data('title'));
+                    $('#ytVideoMModal .modal-body').html(iframe);
+                    $('#ytVideoMModal').modal('show');
+                });
+
+                $('.close-yt-video').click(function() {
+                    $('#ytVideoMModal .modal-body').html('');
+                });
+            });
+        </script>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_winner_stories', 'render_majra_winner_stories');
+
+// Majra Knowledge Square Categories
+function vc_majra_ks_categories() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Knowledge Square Categories', 'text-domain'),
+        'base'        => 'majra_ks_categories',
+        'description' => __('A customized widget to show Knowledge Square Categories', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_ks_categories');
+
+function render_majra_ks_categories($atts) {
+    ob_start();
+    global $language;
+    global $isRTL;
+    
+    $terms = get_terms(array(
+        'taxonomy'   => 'knowledge_square_category',
+        'hide_empty' => false,
+        'lang' => pll_current_language(),
+    ));
+    if (!empty($terms) && !is_wp_error($terms)) {
+        $args = array(
+            'posts_per_page' => 20,
+            'taxonomy'   => 'post_tag',  // Tags taxonomy
+            'post_type'  => 'knowledge-square',  // Custom post type
+            'orderby'    => 'name',  // Optional: Order tags by name
+            'order'      => 'ASC',   // Optional: Ascending order
+            'hide_empty' => false,   // Show even empty tags
+        );
+        $tags = get_terms($args);
+
+        echo '<div class="row">';
+
+        foreach ($terms as $term) {
+            $image_url = '';
+            $image = get_term_meta($term->term_id, 'ks_category_image', true);
+            if( !empty($image) ){
+                $image_url = wp_get_attachment_url($image);
+            }
+
+            ?>
+
+                <div class="col-12 mb-5">
+                    <a style="border-radius:20px;min-height:200px;" href="<?php echo get_term_link($term);?>" class="d-flex h-100 flex-column flex-md-row bg-white rounded-lg align-items-center overflow-hidden text-decoration-none text-deep-ocean">
+                        <img  class="img-fluid h-100" style="width:350px;" loading="lazy" src="<?php echo $image_url;?>">
+                        <div class="p-5 flex-grow-1 pe-3">
+                                    <h3 class="mb-2 ff-macky"><?php echo esc_html($term->name); ?></h3>
+                                    <div class="border border-3 rounded-pill border-primary mb-2" style="width:50px"></div>
+                                    <p class="mb-5"><?php echo esc_html($term->description); ?></p>
+
+                                    <h6 class="ff-ga fw-bold"><?php echo $language['KNOWLEDGE_SQUARE']['RESEARCH']['TOPICS_WITHIN']; ?></h6>
+                                    <div>
+                                        <?php 
+                                            // $tags = explode(',', $research['TAGS']);
+                                            foreach ($tags as $tag) {
+                                                // Trim any extra whitespace and output
+                                                echo '<span class="badge rounded-pill text-bg-transparent mb-2 me-1">'.esc_html($tag->name).'</span>';
+                                            }
+                                        ?>
+                        </div>
+                        </div>
+                        <div class="pe-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46" fill="none" class="<?php echo $isRTL ? 'rotate-180' : ''; ?>">
+                                <path d="M17.25 34.5L28.75 23L17.25 11.5" stroke="#00041C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            <?php
+        }
+
+        echo '</div>';
+    } else {
+        echo 'No categories found.';
+    }
+    return ob_get_clean();
+}
+add_shortcode('majra_ks_categories', 'render_majra_ks_categories');
+
+// Majra Project Slider
+function vc_majra_project_slider() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Project Slider', 'text-domain'),
+        'base'        => 'majra_project_slider',
+        'description' => __('A customized Majra projects slider with multiple projects', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'icon'        => 'icon-wpb-images-carousel',
+        'params'      => array(
+            array(
+                'type'        => 'param_group',
+                'heading'     => __('Projects', 'text-domain'),
+                'param_name'  => 'projects',
+                'description' => __('Add multiple projects with images, logo and content.', 'text-domain'),
+                'params'      => array(
+                    array(
+                        'type'       => 'attach_image',
+                        'heading'    => __('Image', 'text-domain'),
+                        'param_name' => 'image',
+                        'description'=> __('Please select a slide image.', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Subtitle', 'text-domain'),
+                        'param_name' => 'subtitle',
+                        'description'=> __('Enter the slide subtitle', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'attach_image',
+                        'heading'    => __('Project Logo', 'text-domain'),
+                        'param_name' => 'logo',
+                        'description'=> __('Please select project logo.', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Project Name', 'text-domain'),
+                        'param_name' => 'heading',
+                        'description'=> __('Enter project name', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textarea',
+                        'heading'    => __('Project Details', 'text-domain'),
+                        'param_name' => 'content',
+                        'description'=> __('Enter project details', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Project Url', 'text-domain'),
+                        'param_name' => 'url',
+                        'description'=> __('Enter project url', 'text-domain'),
+                    ),
+                    array(
+                        'type'       => 'textfield',
+                        'heading'    => __('Project Url Text', 'text-domain'),
+                        'param_name' => 'url_text',
+                        'description'=> __('Enter project url Text', 'text-domain'),
+                    ),
+                    array(
+                        'type' => 'colorpicker',
+                        'heading' => __('Project theme', 'text-domain'),
+                        'param_name' => 'color',
+                        'description' => __('Set project theme', 'text-domain'),
+                    ),
+                ),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_project_slider');
+
+function render_majra_project_slider($atts) {
+
+    extract(shortcode_atts(array(
+        'projects' => '', // This will store multiple slides
+    ), $atts));
+
+    $projects = vc_param_group_parse_atts($projects); // Convert JSON projects into an array
+
+    if (empty($projects)) {
+        return '<p class="text-danger">No project added.</p>';
+    }
+
+    ob_start();
+    ?>
+
+    <section class="bg-white" id="partners">
+        <img loading="lazy" src="<?php echo get_template_directory_uri();?>/assets/img/projects/design-bar-gold-top.png" class="d-block w-100">
+        <div class="container position-relative">
+            <div class="swiper single-swiper-slider">
+                <div class="swiper-wrapper py-5">
+                <?php
+                    foreach ($projects as $x => $project) {
+                        if( !empty($project) ){
+                            $image_url = (isset($project['image']) && !empty($project['image'])) ? wp_get_attachment_url($project['image']) : '';
+                            $logo_url  = (isset($project['logo']) && !empty($project['logo'])) ? wp_get_attachment_url($project['logo']) : '';
+
+                            $subtitle  = isset($project['subtitle']) ? esc_html($project['subtitle']) : '';
+                            $heading   = isset($project['heading']) ? esc_html($project['heading']) : '';
+                            $content   = isset($project['content']) ? wpautop($project['content']) : '';
+                            $url       = isset($project['url']) ? esc_url($project['url']) : '';
+                            $url_text  = isset($project['url_text']) ? esc_html($project['url_text']) : '';
+                            $color     = isset($project['color']) ? esc_attr($project['color']) : '';
+                        
+                ?>
+                            <div class="swiper-slide">
+                                <div class="row align-items-center min-vh-60">
+                                    <div class="col-12 col-md-6 order-2 order-md-0">
+                                        <h5 class="fw-semibold mb-4" style="color: <?php echo $color; ?>"><?php echo $subtitle; ?></h5>
+                                        <h2 class="head-h2 mb-4 text-deep-ocean"><?php echo $heading; ?></h2>
+                                        <p class="para mb-4"><?php echo $content; ?></p>
+
+                                        <a target="_blank" href="<?php echo $url; ?>" class="btn btn-default rounded-pill btn-lg px-4 text-white mb-5 d-flex align-items-center gap-2" style="width:fit-content;background-color: <?php echo $color; ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M15 10.8333V15.8333C15 16.2754 14.8244 16.6993 14.5118 17.0118C14.1993 17.3244 13.7754 17.5 13.3333 17.5H4.16667C3.72464 17.5 3.30072 17.3244 2.98816 17.0118C2.67559 16.6993 2.5 16.2754 2.5 15.8333V6.66667C2.5 6.22464 2.67559 5.80072 2.98816 5.48816C3.30072 5.17559 3.72464 5 4.16667 5H9.16667" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M12.5 2.5H17.5V7.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8.33301 11.6667L17.4997 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            <?php echo $url_text; ?>
+                                        </a>
+
+                                        <img loading="lazy" src="<?php echo $logo_url;?>" class="d-block" alt="..." style="max-width:200px">
+                                    </div>
+                                    <div class="col-12 col-md-6 mb-5 mb-md-0">
+                                        <img loading="lazy" src="<?php echo $image_url;?>" class="d-block w-100 mx-auto" alt="..." style="max-width:500px">
+                                    </div>
+                                </div>
+                            </div>
+                <?php
+                        }else{
+                            echo '<p class="text-danger">No project added.</p>';
+                        }
+                    }
+                ?>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="autoplay-progress">
+                    <svg viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="20"></circle>
+                    </svg>
+                    <span></span>
+                </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+        <img loading="lazy" src="<?php echo get_template_directory_uri();?>/assets/img/projects/design-bar-gold-bottom.png" class="d-block w-100">
+    </section>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('majra_project_slider', 'render_majra_project_slider');
+
+// Majra Projects Grid
+function vc_majra_projects_grid() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Projects Grid', 'text-domain'),
+        'base'        => 'majra_projects_grid',
+        'description' => __('A customized widget to show majra project listing', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Title', 'text-domain'),
+                'param_name' => 'title',
+                'description'=> __('Add section title', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_projects_grid');
+
+function render_majra_projects_grid($atts) {
+    global $language;
+
+    extract(shortcode_atts(array(
+        'title' => '', // This will store multiple slides
+    ), $atts));
+
+    ob_start();
+
+    $category = 'all';
+    $order_by = 'DESC';
+    if( isset($_GET) ){
+        if( isset($_GET['category']) && !empty($_GET['category']) ){
+            $category = sanitize_text_field($_GET['category']);
+        }
+        if( isset($_GET['order']) && !empty($_GET['order']) ){
+            $order_by = $_GET['order'];
+        }
+    }
+    
+	$args = array(
+        'posts_per_page' => 20,
+        'post_type' => 'projects-post',
+        'orderby' => 'date',
+        'order' =>  $order_by,
+        'post_status' => 'publish',
+    );
+    if( $category != 'all' && !empty($category) ){
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'projects_category', // Replace with your taxonomy if custom
+                'field'    => 'slug',     // Can be 'slug', 'id', or 'name'
+                'terms'    => $category, // Replace with the desired category slug or ID
+            )
+        );
+    }
+    $query = new WP_Query($args);
+	if ($query->have_posts()) :
+    ?>
+        <form class="filter-form" action="#list">
+            <div class="d-flex mb-5 align-items-center justify-content-between">
+                <h2 class="head-h2 m-0"><?php echo $title; ?></h2>
+                <div>
+                    <select name="order" id="" class="form-select form-control-lg rounded-pill px-4 filter-input" style="width:120px">
+                        <option value="DESC" <?php echo $order_by == 'DESC' ? 'selected' : '' ?>><?php echo $language['LINKS']['LATEST']; ?></option>
+                        <option value="ASC" <?php echo $order_by == 'ASC' ? 'selected' : '' ?>><?php echo $language['LINKS']['OLDEST']; ?></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-12">
+                    <input type="hidden" name="category" value="<?php echo $category; ?>">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link <?php echo ($category=='all') ? 'active' : ''; ?>" data-category='all'><?php echo $language['LINKS']['ALL']; ?></a>
+                        </li>
+                        <?php
+                            $categories = get_terms(array(
+                                'taxonomy'   => 'projects_category',
+                                'hide_empty' => false, // Set to true if you only want terms with posts.
+                            ));
+                            if (!is_wp_error($categories) && !empty($categories)) {
+                                foreach ($categories as $cat) {
+                                    echo '<li class="nav-item">
+                                            <a href="#" class="nav-link '.(($category==$cat->slug) ? "active" : "").'" data-category="'.$cat->slug.'">'.$cat->name.'</a>
+                                        </li>';
+                                }
+                            }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+    <?php 
+        while ($query->have_posts()) : $query->the_post();
+            $post_slug = get_post_field('post_name', get_post());
+            $categories = get_the_terms(get_the_ID(), 'projects_category');
+            $sdgs = get_post_meta(get_the_ID(), '_sdgs', true);
+            $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'full');
+    ?>
+                        <div class="col-12 col-md-6 col-lg-4 col-xxl-3 mb-4">
+                            <a href="<?php echo get_permalink(); ?>" class="project-card shadow-sm text-decoration-none">
+                                <!-- <img loading="lazy" src="<?php echo get_template_directory_uri();?>/assets/img/projects/dummy.png" class="img-fluid preview"> -->
+                                <?php
+                                    if ($featured_image) {
+                                        echo '<img loading="lazy" src="'.$featured_image.'" class="img-fluid preview block">';
+                                    } else {
+                                        echo '<div class="img-fluid preview bg-deep-ocean position-relative text-white">
+                                                <div class="position-absolute top-50 start-50 translate-middle fs-5">'.$language["LINKS"]["NO_IMAGE"].'</div>
+                                            </div>';
+                                    }
+                                ?>
+                                <div class="d-flex flex-column bg-white p-4 text-deep-ocean flex-grow-1">
+                                    <?php
+                                        if( !empty($categories) ){
+                                            if( count($categories) > 1 ){
+                                    ?>
+                                                <div class="d-flex gap-2 align-items-center mb-3">
+                                                    <div><h5 class="fw-bold m-0"><?php echo count($categories); ?> <?php echo $language['PROJECTS']['EMIRATES']; ?></h5></div>
+                                                    <div class="border-top border-3 rounded-pill border-orange" style="width:54px; height:0px"></div>
+                                                </div>
+                                    <?php
+                                            }else{
+                                                foreach  ($categories as $category) { 
+                                    ?>
+                                                    <div class="d-flex gap-2 align-items-center mb-3">
+                                                        <div><h5 class="fw-bold m-0"><?php echo $category->name; ?></h5></div>
+                                                        <div class="border-top border-3 rounded-pill border-orange" style="width:54px; height:0px"></div>
+                                                    </div>
+                                    <?php
+                                                }
+                                            }
+                                        }
+                                    ?>
+                                    <h4 class="ff-macky fs-4 m-0 flex-grow-1 h-100"><?php echo the_title(); ?></h4>
+                                    <?php
+                                        if( !empty($sdgs) ){
+                                            $spliced_array = count($sdgs) > 4 ? array_slice($sdgs, 0, 4) : $sdgs;
+                                            $remaining = count($sdgs) > 4 ? count($sdgs)-4 : 0;
+                                            echo '<div class="d-flex icons mt-4 align-items-center gap-2">';
+                                            foreach  ($spliced_array as $sdg) { 
+                                    ?>
+                                                <img loading="lazy" src="<?php echo get_template_directory_uri();?>/assets/img/sdgs/SDG-<?php echo  $sdg; ?>.png" class="img-fluid">
+                                    <?php
+                                            }
+                                            echo $remaining > 0 ? '<b>+'.$remaining.'</b>' : '';
+                                            echo '</div>';
+                                        }
+                                    ?>
+                                </div>
+                            </a>
+                        </div>
+    <?php 
+		endwhile;
+    ?>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                jQuery('.filter-form select[name="order"]').change((e) => {
+                    e.preventDefault();
+                    jQuery('.filter-form').submit();
+                });
+
+                jQuery('.filter-form .nav-link').click(function(e){
+                    e.preventDefault();
+                    jQuery('.filter-form input[name="category"]').val($(this).data('category'));
+                    jQuery('.filter-form').submit();
+                });
+            });
+        </script>
+    <?php 
+		wp_reset_postdata();
+    else :
+	?>
+        <p>No project found.</p>
+    <?php
+	endif;
+    return ob_get_clean();
+}
+add_shortcode('majra_projects_grid', 'render_majra_projects_grid');
+
+
+// Majra Media Center Grid
+function vc_majra_media_center_grid() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Majra Media Center Grid', 'text-domain'),
+        'base'        => 'majra_media_center_grid',
+        'description' => __('A customized widget to show majra media center listing', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Title', 'text-domain'),
+                'param_name' => 'title',
+                'description'=> __('Add section title', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_media_center_grid');
+
+function render_majra_media_center_grid($atts) {
+    global $language;
+    global $isRTL;
+
+    extract(shortcode_atts(array(
+        'title' => '', // This will store multiple slides
+    ), $atts));
+
+    ob_start();
+
+    $search_query = '';
+    $order_by = 'DESC';
+    if( isset($_GET) ){
+        if( isset($_GET['query']) && !empty($_GET['query']) ){
+            $search_query = sanitize_text_field($_GET['query']);
+        }
+        if( isset($_GET['order']) && !empty($_GET['order']) ){
+            $order_by = $_GET['order'];
+        }
+    }
+    
+	$args = array(
+        'posts_per_page' => 30,
+        'post_type' => 'media-center-post',
+        'orderby' => 'date',
+        'order' =>  $order_by,
+        'post_status' => 'publish',
+        's'           => $search_query,
+    );
+    $query = new WP_Query($args);
+	if ($query->have_posts()) :
+    ?>
+        <div class="row mb-5 gap-4 gap-md-0 align-items-center">
+            <div class="col-md-4">
+                <h2 class="display-4 m-0 text-orange ff-macky"><?php echo esc_html($title); ?></h2>
+            </div>
+            <div class="col-md-8">
+                <form class="d-flex flex-column flex-md-row justify-content-end gap-2 align-items-center filter-form">
+                    <div>
+                        <!-- <input type="text" class="form-control form-control-lg rounded-pill" placeholder="Search" /> -->
+                        <div class="input-group input-group-lg rounded-pill overflow-hidden border">
+                            <input type="text" class="form-control border-0" placeholder="<?php echo $language['LINKS']['SEARCH']; ?>" name="query" value="<?php echo $search_query; ?>">
+                            <button class="btn btn-default bg-orange text-white position-relative" type="submit" style="width:50px">
+                                <div class="position-absolute start-50 translate-middle" style="top:19px">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 26 26" fill="none">
+                                        <path d="M11.9167 20.5833C16.7031 20.5833 20.5833 16.7031 20.5833 11.9167C20.5833 7.1302 16.7031 3.25 11.9167 3.25C7.1302 3.25 3.25 7.1302 3.25 11.9167C3.25 16.7031 7.1302 20.5833 11.9167 20.5833Z" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M22.7496 22.7496L18.0371 18.0371" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <select name="order" id="" class="form-select form-control-lg rounded-pill px-4 filter-input" style="width:120px">
+                            <option value="DESC" <?php echo $order_by == 'DESC' ? 'selected' : '' ?>><?php echo $language['LINKS']['LATEST']; ?></option>
+                            <option value="ASC" <?php echo $order_by == 'ASC' ? 'selected' : '' ?>><?php echo $language['LINKS']['OLDEST']; ?></option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+    <?php 
+        while ($query->have_posts()) : $query->the_post();
+            $post_slug = get_post_field('post_name', get_post());
+            $featured_image = get_the_post_thumbnail(get_the_ID(), 'full', array('class' => 'img-fluid preview'));
+    ?>
+                    <div class="col-12 col-md-6 col-lg-4 col-xxl-3 mb-4">
+                        <div class="project-card shadow-sm">
+                            <?php
+                                if ($featured_image) {
+                                    echo $featured_image;
+                                } else {
+                                    echo '<div class="img-fluid preview bg-deep-ocean position-relative text-white">
+                                            <div class="position-absolute top-50 start-50 translate-middle fs-5">'.$language["LINKS"]["NO_IMAGE"].'</div>
+                                        </div>';
+                                }
+                            ?>
+                            
+                            <div class="content p-4 flex-grow-1 d-flex flex-column gap-2">
+                                <small><?php echo get_the_date('j F Y'); ?></small>
+                                <div class="flex-grow-1 mb-3">
+                                    <h5 class="fs-5 m-0 fw-semibold text-deep-ocean"><?php the_title(); ?></h5>
+                                </div>
+                                <a href="<?php echo get_permalink(); ?>" class="text-orange text-decoration-none d-flex align-items-center gap-2">
+                                    <?php echo $language['LINKS']['READ_MORE']; ?>
+                                    <img class="<?php echo $isRTL ? 'rotate-180' : ''; ?>" loading="lazy" src="<?php echo get_template_directory_uri();?>/assets/img/chevron-right-orange.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+    <?php 
+		endwhile;
+    ?>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                jQuery('.filter-form select[name="order"]').change((e) => {
+                    e.preventDefault();
+                    jQuery('.filter-form').submit();
+                });
+            });
+        </script>
+    <?php 
+		wp_reset_postdata();
+    else :
+	?>
+        <p>No project found</p>
+    <?php
+	endif;
+    return ob_get_clean();
+}
+add_shortcode('majra_media_center_grid', 'render_majra_media_center_grid');
+
+
+// Majra Media FAQs
+function vc_majra_faqs() {
+    if (!defined('WPB_VC_VERSION')) {
+        return;
+    }
+
+    vc_map(array(
+        'name'        => __('Media FAQs', 'text-domain'),
+        'base'        => 'majra_faqs',
+        'description' => __('A customized widget to show majra faqs', 'text-domain'),
+        'category'    => __('Custom Elements', 'text-domain'),
+        'params'      => array(
+            array(
+                'type'       => 'textfield',
+                'heading'    => __('Title', 'text-domain'),
+                'param_name' => 'title',
+                'description'=> __('Add section title', 'text-domain'),
+            ),
+        ),
+    ));
+}
+add_action('vc_before_init', 'vc_majra_faqs');
+
+function render_majra_faqs($atts) {
+
+    extract(shortcode_atts(array(
+        'title' => '', // This will store multiple slides
+    ), $atts));
+
+    function get_terms_with_images($taxonomy = 'faq-categories') {
+        $terms = get_terms([
+            'taxonomy'   => $taxonomy,
+            'hide_empty' => false, // Show empty categories too
+            'meta_key'   => 'faq_category_order',
+            'orderby'    => 'meta_value_num',
+            'order'      => 'ASC'
+        ]);
+    
+        $terms_with_images = [];
+    
+        if (!empty($terms) && !is_wp_error($terms)) {
+            foreach ($terms as $term) {
+                $image_id  = get_term_meta($term->term_id, 'faq_category_image', true);
+                $image_url = $image_id ? wp_get_attachment_url($image_id) : '';
+    
+                $terms_with_images[] = [
+                    'id'    => $term->term_id,
+                    'name'  => $term->name,
+                    'slug'  => $term->slug,
+                    'image' => $image_url,
+                ];
+            }
+        }
+    
+        return $terms_with_images;
+    }
+
+    function get_faqs_by_category($category_slug) {
+        $args = [
+            'post_type'      => 'faqs',
+            'posts_per_page' => -1, // Retrieve all posts
+            'orderby'        => 'date',
+            'order'          => 'ASC',
+            'tax_query'      => [
+                [
+                    'taxonomy' => 'faq-categories', // Change to your taxonomy name
+                    'field'    => 'slug', // You can use 'id' instead of 'slug' if needed
+                    'terms'    => $category_slug, // Category slug or ID
+                ],
+            ],
+        ];
+    
+        $query = new WP_Query($args);
+
+        if ($query->have_posts()) {
+            $faqs_parts = divideNumber($query->found_posts);
+            $index = 0;
+            echo '<div class="row">';
+            while ($query->have_posts()) {
+                $collapsed = $index > 0 ? 'collapsed' : '';
+                $show = $index > 0 ? 'show' : '';
+
+                // index - 0
+                if( $index == 0 || $index == intval($faqs_parts[0]) ){
+                    echo '<div class="col-12 col-md-6">';
+                }
+
+                $query->the_post();
+                print_qa( $index, $category_slug );
+                $index++;
+
+                // index - 1
+                if( $index == intval($faqs_parts[0]) ||  $index == $query->found_posts ){
+                    echo '</div>';
+                }
+            }
+            echo '</div>';
+        } else {
+            echo 'No FAQs found in this category.';
+        }
+    
+        wp_reset_postdata();
+    }
+
+    function print_qa( $index, $category_slug ){
+        echo '
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="heading-'.$category_slug.'-'.$index.'">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-'.$category_slug.'-'.$index.'" aria-expanded="false" aria-controls="collapse-'.$category_slug.'-'.$index.'">
+                    '. get_the_title() .'
+                </button>
+                </h2>
+                <div id="collapse-'.$category_slug.'-'.$index.'" class="accordion-collapse collapse" aria-labelledby="heading-'.$category_slug.'-'.$index.'" data-bs-parent="#faqAccordionArea">
+                <div class="accordion-body">
+                    '. get_the_content() .'
+                </div>
+                </div>
+            </div>';
+    }
+
+    function divideNumber($num) {
+        $part1 = ceil($num / 2);
+        $part2 = $num - $part1;
+        return [$part1, $part2];
+    }
+
+    ob_start();
+
+    $faq_categories = get_terms_with_images();
+    ?>
+        <h1 class="head-h2 text-deep-ocean mb-5"><?php echo esc_html($title); ?></h1>
+
+        <div class="row">
+            <div class="accordion" id="faqAccordionArea">
+                <?php
+                    if( empty($faq_categories) ){
+                        echo 'No content found';
+                    }
+                    foreach ($faq_categories as $category) { 
+                ?>
+                    <div class="col-12 mb-5">
+                        <div class="d-flex align-items-center gap-4 mb-4">
+                            <?php
+                                if( isset( $category['image'] ) && !empty( $category['image'] ) ){
+                                    $image = $category['image'];
+                                    echo '<img src="'.$image.'" alt="" style="width:60px">';
+                                }
+                            ?>
+                            <h4 class="m-0 text-deep-ocean"><?php echo $category['name']; ?></h4>
+                        </div>
+                        
+                        <?php get_faqs_by_category($category['slug']); ?>
+                    </div>
+                <?php
+                    }
+                ?>
+            </div>
+        </div>
+    <?php 
+    return ob_get_clean();
+}
+add_shortcode('majra_faqs', 'render_majra_faqs');
+?>

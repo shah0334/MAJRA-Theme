@@ -1,0 +1,48 @@
+@media screen and (max-width: 991px){	.head-h1{		font-size: 34px;		line-height: 44px;	}	.desk-show{		display: none;	}	.head-h2{		font-size: 30px;		line-height: 38px;	}	.para{		font-size: 14px;		line-height: 22px;	}	.subhead{		font-size: 18px;		line-height: 20px;	}	.main-btn{		font-size: 14px;		line-height: 18px;	}	.impact-con h3{		font-size: 60px;		line-height: 60px;	}	.impact-con p{		font-size: 20px;		line-height: 24px;	}	.pupose-box h3{		font-size: 24px;		line-height: 28px;	}	.impact-box{		height: auto;		margin-bottom: 20px;	}	.pupose-box{		margin-bottom: 20px;	}	.to-show p{		font-size: 14px;		line-height: 22px;	}	.side-img img{		width: 100%;	}	.side-img{		margin-bottom: 30px;	}	.cta-div{		flex-direction: column;		gap: 20px;	}	.cta-div h3{		text-align: center;	}	.cta-div h3{		font-size: 20px;		line-height: 26px;	}	.blog-box-row{		flex-direction: column;		align-items: flex-start;	}	.blog-box-big , .side-blog-box{		padding: 50px 30px;	}	.blog-box-big{		margin-bottom: 25px;	}	.blog-box-con span{		font-size: 14px;	}	.blog-box-con h3{		font-size: 18px;		line-height: 26px;	}	.social-box{		margin-bottom: 20px;	}	.socials-cta{		flex-direction: column;		gap: 20px;	}	.cta-div.big h3{		font-size: 20px;		line-height: 26px;	}	.socials-cta a{		font-size: 16px;	}	.socials-cta a img{		width: 20px;		height: 20px;	}	.ft-links-main{		flex-direction: column;		align-items: flex-start;	}	.ft-subs-div{		margin-bottom: 30px;	}	.timming-box{		flex-direction: column;		align-items: flex-start;		gap: 20px;	}	.timming-list{		margin-top: 40px;		gap: 30px;	}	.det-btn a{		font-size: 14px;		line-height: 18px;	}	.timming-con h3{		font-size: 18px;		line-height: 24px;	}	.date p{		font-size: 24px;		line-height: 18px;	}	.date p span{		font-size: 14px;	}	.timming-box{		padding-bottom: 25px;	}	.mobile-nav.active {        transform: translateX(0px);        opacity: 1;        pointer-events: unset;        background: #fff;    }    .menu-open, .menu-close {        background: transparent;        border: none;    }    .head {        padding: 20px 0px;        text-align: right;        border-bottom: 1px solid #ccc;        margin-bottom: 30px;    }    .menu ul{        flex-direction: column;    }    .menu-open{    	display: inline-block;    }    .man{    	right: 25px;    	bottom: 25px;    }    .swiper-button-next, .swiper-rtl .swiper-button-prev{	right: 0px;}.swiper-button-prev, .swiper-rtl .swiper-button-next{	left: 0px;}}
+
+@media screen and (max-width: 1024px){
+    .menu ul{
+        gap: 15px;
+    }
+    .swiper-button-prev, .swiper-rtl .swiper-button-next{ left: -20px; }
+    .swiper-button-next, .swiper-rtl .swiper-button-prev{ right: -10px; }
+    .about-us-download-pdf img{
+        width: 80px;
+    }
+}
+
+@media screen and (max-width: 660px){
+    .swiper-button-prev, .swiper-rtl .swiper-button-next{ left: 0px; top: 40%; }
+    .swiper-button-next, .swiper-rtl .swiper-button-prev{ right: 0px; top: 40%; }
+    header{
+        padding: 5px 0px
+    }
+    header .logo img{
+        width: 33px;
+        height: 55px;
+    }
+    .py-10{
+        padding-top: 3rem;
+	    padding-bottom: 3rem;
+    }
+    .head-h1 {
+        font-size: 3rem;
+        line-height: 3rem;
+    }
+    .head-h2 {
+        font-size: 2.4rem;
+        line-height: 2.4rem;
+    }
+    .subs-sec{
+        padding: 4rem 0px;
+    }
+    .page-heading{
+        min-height: 300px;
+	    height: 100%;
+        background-position: bottom center;
+    }
+    .page-heading .head-h2 {
+        font-size: 1.8rem;
+        line-height: 2.2rem;
+    }
+}
