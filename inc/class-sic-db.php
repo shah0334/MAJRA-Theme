@@ -334,5 +334,122 @@ class SIC_DB {
         ";
         return $this->wpdb->get_var( $this->wpdb->prepare( $sql, $profile_id, $role ) );
     }
+
+    /**
+     * Create a new Project (Draft)
+     */
+    public function create_project( $org_profile_id, $user_id, $data ) {
+        $applicant = $this->get_applicant_by_id( $user_id );
+        if ( ! $applicant ) return new WP_Error( 'invalid_user', 'Applicant not found' );
+        
+        $cycle_id = $this->get_active_cycle_id();
+        if ( ! $cycle_id ) return new WP_Error( 'no_cycle', 'No active cycle' );
+
+        if ( ! $org_profile_id ) return new WP_Error( 'invalid_org', 'Organization is required' );
+
+        $project_data = [
+            'cycle_id'                => $cycle_id,
+            'org_profile_id'          => $org_profile_id,
+            'created_by_applicant_id' => $applicant->applicant_id,
+            'project_name'            => $data['project_name'],
+            'project_stage'           => $data['project_stage'] ?? 'Planned',
+            'submission_status'       => 'draft',
+            'profile_completed'       => 0 // Initial state
+        ];
+
+        $result = $this->wpdb->insert( self::TBL_PROJECTS, $project_data );
+        
+        if ( $result === false ) {
+            return new WP_Error( 'db_insert_error', 'Database Error: ' . $this->wpdb->last_error );
+        }
+        
+        return $this->wpdb->insert_id;
+    }
+
+    /**
+     * Update Project Data
+     */
+    public function update_project( $project_id, $data ) {
+        // Separate main table data from relations
+        $main_fields = [
+            'project_name', 'project_stage', 'project_description', 
+            'start_date', 'end_date', 'total_beneficiaries_targeted', 
+            'total_beneficiaries_reached', 'contributes_env_social', 
+            'has_governance_monitoring', 'location_search_text',
+            'location_address', 'location_place_id', 'location_provider',
+            'latitude', 'longitude', 'leadership_women_pct',
+            'team_women_pct', 'leadership_pod_pct', 'team_pod_pct',
+            'team_youth_pct', 'engages_youth', 'involves_influencers',
+            'submission_status', 'profile_completed', 'details_completed',
+            'evidence_completed', 'pinpoint_completed', 'demographics_completed'
+        ];
+
+        $update_data = [];
+        foreach ( $main_fields as $field ) {
+            if ( isset( $data[$field] ) ) {
+                $update_data[$field] = $data[$field];
+            }
+        }
+
+        if ( !empty($update_data) ) {
+            $this->wpdb->update( self::TBL_PROJECTS, $update_data, ['project_id' => $project_id] );
+        }
+
+        // Handle Relations
+        if ( isset($data['impact_areas']) ) {
+            $this->set_project_relations($project_id, self::TBL_PROJECT_IMPACT_AREAS, 'impact_area_id', $data['impact_areas']);
+        }
+        if ( isset($data['sdgs']) ) {
+            $this->set_project_relations($project_id, self::TBL_PROJECT_SDGS, 'sdg_id', $data['sdgs']);
+        }
+        if ( isset($data['beneficiaries']) ) {
+            $this->set_project_relations($project_id, self::TBL_PROJECT_BENEFICIARIES, 'beneficiary_type_id', $data['beneficiaries']);
+        }
+
+        return true;
+    }
+
+    /**
+     * Set Project Relations (M:N)
+     */
+    private function set_project_relations( $project_id, $table, $col_name, $ids ) {
+        // Clear existing
+        $this->wpdb->delete( $table, ['project_id' => $project_id] );
+        
+        if ( empty($ids) || !is_array($ids) ) return;
+
+        foreach ( $ids as $id ) {
+            $this->wpdb->insert( 
+                $table, 
+                ['project_id' => $project_id, $col_name => $id],
+                ['%d', '%d']
+            );
+        }
+    }
+
+    /**
+     * Get Project by ID
+     */
+    public function get_project( $project_id ) {
+        $project = $this->wpdb->get_row( $this->wpdb->prepare( 
+            "SELECT * FROM " . self::TBL_PROJECTS . " WHERE project_id = %d", 
+            $project_id 
+        ));
+
+        if ( ! $project ) return null;
+
+        return $project;
+    }
+
+    /**
+     * Link File to Project
+     */
+    public function link_project_file( $project_id, $role, $file_id ) {
+        $this->wpdb->replace( 
+            self::TBL_PROJECT_FILES, 
+            ['project_id' => $project_id, 'file_role' => $role, 'file_id' => $file_id],
+            ['%d', '%s', '%d']
+        );
+    }
 }
 ?>

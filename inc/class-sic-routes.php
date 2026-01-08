@@ -43,8 +43,12 @@ class SIC_Routes {
     /**
      * Get Create Project URL
      */
-    public static function get_create_project_url() {
-        return home_url( '/' . self::SLUG_CREATE_PROJECT . '/' );
+    public static function get_create_project_url( $org_id = null ) {
+        $url = home_url( '/' . self::SLUG_CREATE_PROJECT . '/' );
+        if ( $org_id ) {
+            $url = add_query_arg( 'org_id', $org_id, $url );
+        }
+        return $url;
     }
 
     /**

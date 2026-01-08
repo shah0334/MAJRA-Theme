@@ -79,7 +79,7 @@ get_header('dashboard');
                                     <td class="pe-3 py-3 text-end">
                                         <div class="d-flex align-items-center justify-content-end gap-3">
                                             <button class="btn btn-link p-0 text-secondary" title="View"><i class="bi bi-eye"></i></button>
-                                            <a href="<?php echo SIC_Routes::get_create_project_url(); ?>" class="text-cp-coral-sunset fw-bold text-decoration-none border-bottom border-cp-coral-sunset">Create a Project</a>
+                                            <a href="<?php echo SIC_Routes::get_create_project_url( $org_profile->org_profile_id ); ?>" class="text-cp-coral-sunset fw-bold text-decoration-none border-bottom border-cp-coral-sunset">Create a Project</a>
                                         </div>
                                     </td>
                                 </tr>
