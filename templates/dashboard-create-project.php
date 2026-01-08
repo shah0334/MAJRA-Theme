@@ -95,5 +95,5 @@ $steps = [
 </main>
 
 <?php
-// get_footer('dashboard');
+get_footer('dashboard');
 ?>

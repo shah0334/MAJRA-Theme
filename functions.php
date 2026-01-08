@@ -163,6 +163,30 @@ function majra_scripts() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
+    // Enqueue Google Maps
+    $env_file = get_template_directory() . '/env';
+    $maps_api_key = '';
+    
+    if ( file_exists( $env_file ) ) {
+        $lines = file( $env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+        foreach ( $lines as $line ) {
+            // Skip comments
+            if ( strpos( trim($line), '#' ) === 0 ) continue;
+            
+            // Check for valid key-value pair
+            if ( strpos( $line, '=' ) !== false ) {
+                list( $name, $value ) = explode( '=', $line, 2 );
+                if ( trim($name) === 'GOOGLE_MAPS_API_KEY' ) {
+                    $maps_api_key = trim($value);
+                    break;
+                }
+            }
+        }
+    }
+
+    if ( $maps_api_key ) {
+        wp_enqueue_script( 'google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=places&callback=initMap', array(), null, true );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'majra_scripts' );
 
