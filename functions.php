@@ -574,8 +574,3 @@ function rd_duplicate_post_as_draft(){
   add_filter('wp_image_editors', 'use_gd_editor');
   add_filter('http_request_timeout', function() { return 30; });
 
-/**
- * Load SIC Dashboard Module
- * Comment out the line below to disable the entire dashboard
- */
-require_once get_template_directory() . '/dashboard/dashboard_functions.php';
