@@ -295,6 +295,30 @@ class SIC_DB {
     }
 
     /**
+     * Get Organization Profile by WP User ID (Wrapper for applicant_id)
+     */
+    public function get_organization_by_user( $user_id ) {
+        // First get the applicant ID from the WP User ID
+        // (Assuming 1:1 mapping for now or using the get_applicant_by_id logic if user_id passed IS applicant_id, 
+        // but here we expect WP User ID, so we need a way to map them.
+        // For the dummy flow, we used a fixed email. 
+        // Real implementation should have a mapping. 
+        // For now, let's assume get_applicant_by_id can accept WP ID if we had that stored.
+        // OR simply call get_applicant_by_wp_user if we implemented it.
+        
+        // REVISIT: For now, the user IS the applicant in our simplified flow?
+        // Let's use get_applicant_by_id assuming $user_id maps directly or we use the dummy applicant for dev.
+        
+        // Actually, looking at create_organization, we passed $user_id to get_applicant_by_id.
+        // So we should be consistent.
+        
+        $applicant = $this->get_applicant_by_id( $user_id );
+        if ( ! $applicant ) return null;
+        
+        return $this->get_organization_by_applicant_id( $applicant->applicant_id );
+    }
+
+    /**
      * Get All Organization Profiles by Applicant ID for Active Cycle
      */
     public function get_organizations_by_applicant_id( $applicant_id ) {

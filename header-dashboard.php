@@ -101,38 +101,68 @@ global $isRTL;
                     
                     <!-- Left: Logo -->
                     <div class="logo">
-                        <?php if ( has_custom_logo() ) : 
-                            the_custom_logo();
-                        else : ?>
-                            <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>"><img src="<?php bloginfo('template_directory'); ?>/assets/img/logo.svg" alt="<?php bloginfo('name'); ?>" /></a>
-                        <?php endif; ?>
+                        <a href="<?php echo home_url('dashboard/login'); ?>">
+                            <img src="<?php echo content_url('uploads/dashboard-logo.svg'); ?>" alt="Majra Dashboard" />
+                        </a>
                     </div>
 
                     <!-- Center: Navigation -->
                     <div class="d-none d-lg-block">
                         <nav class="dashboard-nav">
-                            <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="nav-link active"><?php pll_e('Home'); ?></a>
-                            <a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>" class="nav-link"><?php pll_e('My Organizations'); ?></a>
-                            <a href="<?php echo SIC_Routes::get_my_projects_url(); ?>" class="nav-link"><?php pll_e('My Projects'); ?></a>
+                            <?php
+                            $current_slug = get_post_field( 'post_name', get_post() );
+                            
+                            $home_active = ( $current_slug === SIC_Routes::SLUG_DASHBOARD_HOME ) ? 'active' : '';
+                            
+                            $org_active = '';
+                            if ( in_array( $current_slug, [SIC_Routes::SLUG_MY_ORGANIZATIONS, SIC_Routes::SLUG_CREATE_ORG] ) ) {
+                                $org_active = 'active';
+                            }
+
+                            $proj_active = '';
+                            if ( in_array( $current_slug, [SIC_Routes::SLUG_MY_PROJECTS, SIC_Routes::SLUG_CREATE_PROJECT] ) ) {
+                                $proj_active = 'active';
+                            }
+                            ?>
+                            <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="nav-link <?php echo $home_active; ?>"><?php pll_e('Home'); ?></a>
+                            <a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>" class="nav-link <?php echo $org_active; ?>"><?php pll_e('My Organizations'); ?></a>
+                            <a href="<?php echo SIC_Routes::get_my_projects_url(); ?>" class="nav-link <?php echo $proj_active; ?>"><?php pll_e('My Projects'); ?></a>
                         </nav>
                     </div>
 
                     <!-- Right: User Area -->
                     <div class="d-flex align-items-center">
                         <?php 
-                        $current_user = wp_get_current_user();
-                        $display_name = $current_user->exists() ? $current_user->display_name : 'Guest User';
+                        // Fetch the current user from SIC DB or session
+                        $sic_user_name = 'Guest';
+                        if ( is_user_logged_in() || isset($_SESSION['sic_user_id']) ) {
+                            $applicant_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
+                            
+                            if ( $applicant_id ) {
+                                // Fetch real name from DB
+                                $db = SIC_DB::get_instance();
+                                $applicant = $db->get_applicant_by_id( $applicant_id );
+                                if ( $applicant ) {
+                                    $sic_user_name = trim( $applicant->first_name . ' ' . $applicant->last_name );
+                                }
+                            } elseif ( is_user_logged_in() ) {
+                                // Fallback to WP User Display Name if no SIC session
+                                $current_user = wp_get_current_user();
+                                $sic_user_name = $current_user->display_name;
+                            }
+                        }
                         ?>
                         <div class="dashboard-user-area">
-                            <span class="user-name d-none d-md-block"><?php printf( esc_html__( 'Hello, %s', 'majra' ), $display_name ); ?></span>
+                            <span class="user-name d-none d-md-block"><?php printf( esc_html__( 'Hello, %s', 'majra' ), $sic_user_name ); ?></span>
                             
                             <div class="dashboard-actions">
-                                <button class="dashboard-action-btn" title="Notifications">
-                                    <i class="bi bi-bell"></i>
+                                <button class="dashboard-action-btn btn-profile" title="Profile">
+                                    <img src="<?php echo content_url('uploads/header-icon-profile.svg'); ?>" alt="Profile" />
                                 </button>
-                                <button class="dashboard-action-btn" title="Profile">
-                                    <i class="bi bi-person"></i>
-                                </button>
+                            <a href="<?php echo add_query_arg( 'sic_logout', '1', home_url() ); ?>" class="dashboard-action-btn btn-notification" title="Logout">
+                                    <img src="<?php echo content_url('uploads/header-icon-logout.svg'); ?>" alt="Logout" />
+                                </a>
+                         
                             </div>
                         </div>
 
