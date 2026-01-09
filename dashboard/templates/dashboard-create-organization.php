@@ -69,7 +69,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
     }
 }
 
-get_header('dashboard');
+get_dashboard_header();
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light py-5">
@@ -302,5 +302,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php
-get_footer('dashboard');
+get_dashboard_footer();
 ?>

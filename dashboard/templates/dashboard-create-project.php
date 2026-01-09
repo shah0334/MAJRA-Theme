@@ -1,7 +1,7 @@
 <?php
 /* Template Name: Dashboard - Create Project */
 
-get_header('dashboard');
+get_dashboard_header();
 
 // Get current step from URL, default to 1
 $current_step = isset($_GET['step']) ? intval($_GET['step']) : 1;
@@ -68,25 +68,25 @@ $steps = [
             <?php 
             switch ($current_step) {
                 case 1:
-                    get_template_part('template-parts/dashboard/create-project/step', '1');
+                    get_template_part('dashboard/template-parts/create-project/step', '1');
                     break;
                 case 2:
-                     get_template_part('template-parts/dashboard/create-project/step', '2');
+                     get_template_part('dashboard/template-parts/create-project/step', '2');
                     break;
                 case 3:
-                     get_template_part('template-parts/dashboard/create-project/step', '3');
+                     get_template_part('dashboard/template-parts/create-project/step', '3');
                     break;
                  case 4:
-                     get_template_part('template-parts/dashboard/create-project/step', '4');
+                     get_template_part('dashboard/template-parts/create-project/step', '4');
                     break;
                 case 5:
-                     get_template_part('template-parts/dashboard/create-project/step', '5');
+                     get_template_part('dashboard/template-parts/create-project/step', '5');
                     break;
                 case 6:
-                     get_template_part('template-parts/dashboard/create-project/step', '6');
+                     get_template_part('dashboard/template-parts/create-project/step', '6');
                     break;
                 default:
-                    get_template_part('template-parts/dashboard/create-project/step', '1');
+                    get_template_part('dashboard/template-parts/create-project/step', '1');
             }
             ?>
         </div>
@@ -95,5 +95,5 @@ $steps = [
 </main>
 
 <?php
-get_footer('dashboard');
+get_dashboard_footer();
 ?>

@@ -1,7 +1,7 @@
 <?php
 /* Template Name: Dashboard - My Projects */
 
-get_header('dashboard');
+get_dashboard_header();
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light py-5">
@@ -108,5 +108,5 @@ get_header('dashboard');
 </main>
 
 <?php
-get_footer('dashboard');
+get_dashboard_footer();
 ?>

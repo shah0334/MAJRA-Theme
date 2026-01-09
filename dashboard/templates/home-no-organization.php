@@ -1,7 +1,7 @@
 <?php
 /* Template Name: Dashboard - Home No Organization */
 
-get_header('dashboard');
+get_dashboard_header();
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light">
@@ -82,7 +82,7 @@ get_header('dashboard');
     // OR simply the user wants the "No Organization" page to ALSO list projects if they exist (e.g. drafts).
 
     if ( $org_profile ) {
-        get_template_part('template-parts/dashboard/home-with-organization');
+        get_template_part('dashboard/template-parts/home-with-organization');
     } elseif ( !empty($projects) ) {
         // Show Projects Table even if "No Organization" (Edge case or user request)
     ?>
@@ -162,6 +162,6 @@ get_header('dashboard');
 </main>
 
 <?php
-get_footer('dashboard');
+get_dashboard_footer();
 ?>
 

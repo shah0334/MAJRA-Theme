@@ -343,25 +343,7 @@ require get_template_directory() . '/inc/projects.php';
 require get_template_directory() . '/inc/events.php';
 require get_template_directory() . '/inc/wp-bakery-custom-widgets.php';
 
-/**
- * SIC Database
- */
-require get_template_directory() . '/inc/class-sic-db.php';
 
-/**
- * SIC Access Control
- */
-require get_template_directory() . '/inc/auth-check.php';
-
-/**
- * SIC Storage
- */
-require get_template_directory() . '/inc/class-sic-storage.php';
-
-/**
- * SIC Routes
- */
-require get_template_directory() . '/inc/class-sic-routes.php';
 
 
 // Add Image Upload Field to "faq-categories" (Edit and Add Screens)
@@ -591,3 +573,9 @@ function rd_duplicate_post_as_draft(){
   }
   add_filter('wp_image_editors', 'use_gd_editor');
   add_filter('http_request_timeout', function() { return 30; });
+
+/**
+ * Load SIC Dashboard Module
+ * Comment out the line below to disable the entire dashboard
+ */
+require_once get_template_directory() . '/dashboard/dashboard_functions.php';
