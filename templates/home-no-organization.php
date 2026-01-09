@@ -11,7 +11,7 @@ get_header('dashboard');
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1>Welcome to the<br><span class="highlight">Sustainability Impact Challenge</span></h1>
+                    <h1>Welcome to the <span class="highlight">Sustainability Impact Challenge</span></h1>
                 </div>
                 <div class="col-lg-6">
                     <p>Transform your project into a story of impact. Showcase leadership, inspire industry-wide change and help shape the UAE's future. Submit your project today and be recognized for the difference you make.</p>
@@ -31,7 +31,6 @@ get_header('dashboard');
                     <div class="step-card">
                         <div class="step-icon">
                             <i class="bi bi-person"></i> <!-- Placeholder for icon -->
-                            <span>1</span>
                         </div>
                         <h3>1. Register as Applicant</h3>
                         <p>Provide us with your contact information to reach you.</p>
@@ -43,7 +42,6 @@ get_header('dashboard');
                     <div class="step-card">
                         <div class="step-icon">
                             <i class="bi bi-building"></i> <!-- Placeholder for icon -->
-                            <span>2</span>
                         </div>
                         <h3>2. Add Your Organization</h3>
                         <p>Provide us with your organization information.</p>
@@ -55,7 +53,6 @@ get_header('dashboard');
                     <div class="step-card">
                         <div class="step-icon">
                             <i class="bi bi-upload"></i> <!-- Placeholder for icon -->
-                            <span>3</span>
                         </div>
                         <h3>3. Submit Your Projects</h3>
                         <p>Submit your CSR or Sustainability projects for cash prizes and recognition.</p>

@@ -161,8 +161,13 @@
 }
 
 /* Welcome Banner */
+/* Welcome Banner */
 .welcome-banner {
   background-color: var(--cp-white);
+  background-image: url("../../uploads/dashboard-welcome-bg.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 60px 0;
   border-bottom: 1px solid #e5e7eb;
   position: relative;
@@ -170,14 +175,21 @@
 }
 
 .welcome-banner h1 {
-  font-family: "Mackay", serif;
-  font-size: 3.5rem;
+  font-family: "Mackay", "Mackay DEMO", serif;
+  font-weight: 700;
+  font-size: 26px; /* "Welcome to the" */
+  line-height: 41px;
+  letter-spacing: -0.44px; /* tracking-[-0.4395px] */
   color: var(--cp-deep-ocean);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .welcome-banner h1 .highlight {
+  display: block;
+  font-size: 45px; /* "Sustainability Impact Challenge" */
   color: var(--cp-aqua-marine);
+  margin-top: 0;
+  line-height: 1.1;
 }
 
 .welcome-banner p {
