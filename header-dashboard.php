@@ -134,47 +134,11 @@ global $isRTL;
                     <!-- Language Toggle -->
                     <div class="d-flex align-items-center me-3">
                         <?php
-                        if (function_exists('pll_the_languages')) {
-                            $langs = pll_the_languages(array(
-                                'show_flags' => 0,
-                                'show_names' => 1,
-                                'hide_current' => 1,
-                                'raw' => 1
-                            ));
-                            foreach ($langs as $lang) {
-                                $translated_url = '';
-                                // Absolute URL Swapping Logic
-                                $protocol = is_ssl() ? 'https://' : 'http://';
-                                $current_url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                                
-                                $current_lang = pll_current_language();
-                                $base_current = pll_home_url($current_lang);
-                                $base_target = pll_home_url($lang['slug']);
-
-                                $translated_url = $base_target; // Default fallback
-
-                                // Try to match and swap the base URL
-                                if (strpos($current_url, $base_current) === 0) {
-                                    $translated_url = substr_replace($current_url, $base_target, 0, strlen($base_current));
-                                } else {
-                                    // Handle case where base might lack trailing slash in match
-                                    $base_current_noslash = rtrim($base_current, '/');
-                                    if (strpos($current_url, $base_current_noslash) === 0) {
-                                        $base_target_noslash = rtrim($base_target, '/'); 
-                                        // If we matched no-slash, replace with no-slash target to preserve URI structure
-                                        $translated_url = substr_replace($current_url, $base_target_noslash, 0, strlen($base_current_noslash));
-                                    }
-                                }
-
-                                if($lang['locale'] == 'ar' || $lang['slug'] == 'ar'){
-                                    echo '<a href="'.$translated_url.'" class="text-secondary fw-bold text-decoration-none font-graphik ' . ($lang['slug'] == $current_lang ? 'text-custom-aqua' : '') . '" style="font-size: 16px;">عربي</a>';
-                                }
-                                if($lang['locale'] == 'en_US' || $lang['slug'] == 'en'){
-                                    echo '<a href="'.$translated_url.'" class="text-secondary fw-bold text-decoration-none font-graphik ' . ($lang['slug'] == $current_lang ? 'text-custom-aqua' : '') . '" style="font-size: 16px;">EN</a>';
-                                }
-                            }
-                        }
+                        $ar_url = add_query_arg('d_lang', 'ar');
+                        $en_url = add_query_arg('d_lang', 'en');
                         ?>
+                        <a href="<?php echo esc_url($ar_url); ?>" class="text-secondary fw-bold text-decoration-none font-graphik <?php echo ($current_language == 'ar') ? 'text-custom-aqua' : ''; ?> me-3" style="font-size: 16px;">عربي</a>
+                        <a href="<?php echo esc_url($en_url); ?>" class="text-secondary fw-bold text-decoration-none font-graphik <?php echo ($current_language == 'en' || $current_language == 'en_US') ? 'text-custom-aqua' : ''; ?>" style="font-size: 16px;">EN</a>
                     </div>
 
                     <!-- Right: User Area -->
@@ -229,9 +193,9 @@ global $isRTL;
             </div>
             <div class="menu">
                 <ul class="navbar-nav">
-                     <li><a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>"><?php pll_e('Home'); ?></a></li>
-                     <li><a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>"><?php pll_e('My Organizations'); ?></a></li>
-                     <li><a href="<?php echo SIC_Routes::get_my_projects_url(); ?>"><?php pll_e('My Projects'); ?></a></li>
+                     <li><a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>"><?php echo $language['DASHBOARD']['NAV']['HOME']; ?></a></li>
+                     <li><a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>"><?php echo $language['DASHBOARD']['NAV']['MY_ORGS']; ?></a></li>
+                     <li><a href="<?php echo SIC_Routes::get_my_projects_url(); ?>"><?php echo $language['DASHBOARD']['NAV']['MY_PROJECTS']; ?></a></li>
                 </ul>
             </div>
         </div>

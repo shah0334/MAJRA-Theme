@@ -195,7 +195,9 @@ global $current_language;
 global $isRTL;
 // $current_language = WPGlobus::Config()->language;
 $current_language = 'en';
-if (function_exists('pll_current_language')) {
+if (isset($_GET['d_lang']) && !empty($_GET['d_lang'])) {
+    $current_language = sanitize_text_field($_GET['d_lang']);
+} elseif (function_exists('pll_current_language')) {
 	$current_language = pll_current_language();
 }
 
