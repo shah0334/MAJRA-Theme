@@ -422,10 +422,13 @@
 /* Form Styles Override */
 .form-control,
 .form-select {
-  padding: 1rem 1.25rem;
+  padding: 0.6rem 1rem;
   font-family: "Graphik Arabic", sans-serif;
   color: var(--cp-deep-ocean);
-  border: 1px solid transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-size: 15px;
 }
 
 .form-control:focus,
@@ -434,6 +437,29 @@
   border-color: var(--cp-coral-sunset);
   box-shadow: 0 0 0 4px rgba(252, 156, 99, 0.1);
   color: var(--cp-deep-ocean);
+}
+
+/* Hide default file input text and button */
+input[type="file"].form-control {
+  color: transparent;
+}
+input[type="file"].form-control::-webkit-file-upload-button {
+  display: none;
+  visibility: hidden;
+}
+input[type="file"].form-control::file-selector-button {
+  display: none;
+  visibility: hidden;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+/* Remove default validation icon for file inputs to avoid overlap */
+input[type="file"].form-control.is-invalid {
+  background-image: none !important;
 }
 
 .form-label {

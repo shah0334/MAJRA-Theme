@@ -105,39 +105,41 @@ global $language;
                             <!-- Row 1 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['ORG_NAME']; ?> <span class="text-danger">*</span></label>
-                                <input type="text" name="org_name" class="form-control form-control-lg bg-light border-0 fs-6" required>
+                                <input type="text" name="org_name" class="form-control" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_NUM']; ?> <span class="text-danger">*</span></label>
-                                <input type="text" name="org_license_number" class="form-control form-control-lg bg-light border-0 fs-6" required>
+                                <input type="text" name="org_license_number" class="form-control" required>
                             </div>
 
                             <!-- Row 2 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['LOGO']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <input type="file" name="org_logo" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" accept="image/png, image/jpeg">
+                                    <input type="file" name="org_logo" id="org_logo" class="form-control ps-3 pe-5" accept="image/png, image/jpeg" required>
                                     <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                                 </div>
+                                <div id="org_logo_preview" class="mt-2"></div>
                                 <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['ORG_FORM']['LOGO_HELP']; ?></div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['WEBSITE']; ?> <span class="text-danger">*</span></label>
-                                <input type="url" name="org_website" class="form-control form-control-lg bg-light border-0 fs-6" required>
+                                <input type="url" name="org_website" class="form-control" required>
                             </div>
 
                             <!-- Row 3 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_FILE']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <input type="file" name="org_license_file" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" accept="application/pdf">
+                                    <input type="file" name="org_license_file" id="org_license_file" class="form-control ps-3 pe-5" accept="application/pdf" required>
                                     <i class="bi bi-file-earmark-text position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                                 </div>
+                                <div id="org_license_preview" class="mt-2"></div>
                                 <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_HELP']; ?></div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['EMIRATE']; ?> <span class="text-danger">*</span></label>
-                                <select name="org_emirate" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                <select name="org_emirate" class="form-select" required>
                                     <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_EMIRATE']; ?></option>
                                     <option value="Dubai">Dubai</option>
                                     <option value="Abu Dhabi">Abu Dhabi</option>
@@ -152,7 +154,7 @@ global $language;
                             <!-- Row 4 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['ENTITY_TYPE']; ?> <span class="text-danger">*</span></label>
-                                <select name="org_entity_type" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                <select name="org_entity_type" class="form-select" required>
                                     <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_ENTITY']; ?></option>
                                     <option value="Limited Liability Company">Limited Liability Company</option>
                                     <option value="Sole Proprietorship">Sole Proprietorship</option>
@@ -165,7 +167,7 @@ global $language;
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['INDUSTRY']; ?> <span class="text-danger">*</span></label>
-                                <select name="org_industry" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                <select name="org_industry" class="form-select" required>
                                     <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_INDUSTRY']; ?></option>
                                     <option value="Energy">Energy</option>
                                     <option value="Technology">Technology</option>
@@ -182,7 +184,8 @@ global $language;
                             <!-- Row 5 -->
                              <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['IS_FREEZONE']; ?> <span class="text-danger">*</span></label>
-                                <select name="org_is_freezone" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                <select name="org_is_freezone" class="form-select" required>
+                                    <option value="" disabled selected>Select...</option>
                                     <option value="No"><?php echo $language['DASHBOARD']['ORG_FORM']['NO']; ?></option>
                                     <option value="Yes"><?php echo $language['DASHBOARD']['ORG_FORM']['YES']; ?></option>
                                 </select>
@@ -198,7 +201,7 @@ global $language;
                             <!-- Row 1 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['ACTIVITY_TYPE']; ?> <span class="text-danger">*</span></label>
-                                <select name="org_activity_type" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                <select name="org_activity_type" class="form-select" required>
                                     <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_ACTIVITY']; ?></option>
                                     <option value="Industry">Industry</option>
                                     <option value="Service">Service</option>
@@ -207,13 +210,13 @@ global $language;
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['EMPLOYEES']; ?> <span class="text-danger">*</span></label>
-                                 <input type="number" name="org_employees" class="form-control form-control-lg bg-light border-0 fs-6" required>
+                                 <input type="number" name="org_employees" class="form-control" required>
                             </div>
                             
                             <!-- Row 2 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TURNOVER']; ?> <span class="text-danger">*</span></label>
-                                 <select name="org_turnover" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                                 <select name="org_turnover" class="form-select" required>
                                     <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_TURNOVER']; ?></option>
                                     <option value="< AED 50 million">< AED 50 million</option>
                                     <option value="AED 50m - 100m">AED 50m - 100m</option>
@@ -245,11 +248,11 @@ global $language;
                             <div class="row g-4" id="csr-fields">
                                 <div class="col-md-6">
                                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['PROJ_NAME']; ?></label>
-                                    <input type="text" name="csr_name" class="form-control form-control-lg bg-light border-0 fs-6">
+                                    <input type="text" name="csr_name" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['AMOUNT']; ?></label>
-                                    <input type="number" name="csr_amount" class="form-control form-control-lg bg-light border-0 fs-6" step="0.01">
+                                    <input type="number" name="csr_amount" class="form-control" step="0.01">
                                 </div>
                             </div>
                         </div>
@@ -282,6 +285,48 @@ global $language;
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('createOrgForm');
+    
+    // File Preview Logic
+    function handleFilePreview(inputId, previewId, isImage = true) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (!input || !preview) return;
+
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            preview.innerHTML = ''; // Clear previous preview
+
+            if (file) {
+                if (isImage) {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'img-thumbnail';
+                            img.style.maxHeight = '150px';
+                            preview.appendChild(img);
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.innerHTML = '<span class="text-danger">Invalid file type. Please select an image.</span>';
+                    }
+                } else {
+                    // For non-image files (PDFs), show name
+                     const fileInfo = document.createElement('div');
+                     fileInfo.className = 'd-flex align-items-center p-2 border rounded bg-light';
+                     fileInfo.innerHTML = '<i class="bi bi-file-earmark-pdf fs-4 text-danger me-2"></i> <span class="text-truncate">' + file.name + '</span>';
+                     preview.appendChild(fileInfo);
+                }
+            }
+        });
+    }
+
+    handleFilePreview('org_logo', 'org_logo_preview', true);
+    handleFilePreview('org_license_file', 'org_license_preview', false);
+
+
     if (form) {
         form.addEventListener('submit', function(e) {
             // If we get here, validation passed or novalidate is on.
