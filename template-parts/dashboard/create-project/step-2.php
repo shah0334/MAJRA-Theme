@@ -3,6 +3,7 @@
  * Step 2: Project Details
  */
 $db = SIC_DB::get_instance();
+global $language;
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
 if ( ! $project_id ) {
@@ -86,7 +87,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <i class="bi bi-info-circle text-cp-aqua-marine"></i>
          </div>
         <p class="font-graphik text-cp-deep-ocean mb-0 fs-6">
-            <strong>Eligibility Notice:</strong> Only CSR and Sustainability initiatives, programs, events, and projects executed in the United Arab Emirates are eligible.
+            <strong><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['ELIGIBILITY_NOTICE_LABEL']; ?></strong> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['ELIGIBILITY_NOTICE_TEXT']; ?>
         </p>
      </div>
 </div>
@@ -98,8 +99,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Project Details</h2>
-        <p class="font-graphik text-secondary mb-5">Help us understand the scope, impact, and alignment of your project</p>
+        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TITLE']; ?></h2>
+        <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SUBTITLE']; ?></p>
 
         <form method="POST">
             <?php wp_nonce_field( 'sic_save_step_2' ); ?>
@@ -107,43 +108,43 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             
             <!-- Project Impact Areas -->
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
-                <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5">Project Impact Areas</h3>
-                <p class="font-graphik text-secondary small mb-4">Select up to two areas where your project creates impact</p>
+                <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IMPACT_AREAS_TITLE']; ?></h3>
+                <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IMPACT_AREAS_DESC']; ?></p>
                 
                 <div class="row g-3">
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_1" class="form-check-input" type="checkbox" id="ia1" <?php checked(in_array(1, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia1">Art, Culture & Heritage</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_2" class="form-check-input" type="checkbox" id="ia2" <?php checked(in_array(2, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia2">Environment</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_3" class="form-check-input" type="checkbox" id="ia3" <?php checked(in_array(3, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia3">Technology</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_4" class="form-check-input" type="checkbox" id="ia4" <?php checked(in_array(4, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia4">Health</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_5" class="form-check-input" type="checkbox" id="ia5" <?php checked(in_array(5, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia5">Sports</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_6" class="form-check-input" type="checkbox" id="ia6" <?php checked(in_array(6, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia6">Education</label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="impact_area_1" class="form-check-input" type="checkbox" id="ia1" <?php checked(in_array(1, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_ART_CULTURE']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="impact_area_2" class="form-check-input" type="checkbox" id="ia2" <?php checked(in_array(2, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_ENV']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="impact_area_3" class="form-check-input" type="checkbox" id="ia3" <?php checked(in_array(3, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_TECH']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="impact_area_4" class="form-check-input" type="checkbox" id="ia4" <?php checked(in_array(4, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_HEALTH']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="impact_area_5" class="form-check-input" type="checkbox" id="ia5" <?php checked(in_array(5, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_SPORTS']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="impact_area_6" class="form-check-input" type="checkbox" id="ia6" <?php checked(in_array(6, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_EDU']; ?></label></div></div>
                 </div>
             </div>
 
             <!-- Beneficiaries -->
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
-                 <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5">Beneficiaries</h3>
-                <p class="font-graphik text-secondary small mb-4">Select up to two beneficiaries that your project serves</p>
+                 <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BENEFICIARIES_TITLE']; ?></h3>
+                <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BENEFICIARIES_DESC']; ?></p>
                  
                  <div class="row g-3 mb-4">
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_1" class="form-check-input" type="checkbox" id="b1" <?php checked(in_array(1, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b1">Youth & Students</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_2" class="form-check-input" type="checkbox" id="b2" <?php checked(in_array(2, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b2">Women & Girls</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_3" class="form-check-input" type="checkbox" id="b3" <?php checked(in_array(3, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b3">Elderly</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_4" class="form-check-input" type="checkbox" id="b4" <?php checked(in_array(4, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b4">People of Determination</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_5" class="form-check-input" type="checkbox" id="b5" <?php checked(in_array(5, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b5">Families</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_6" class="form-check-input" type="checkbox" id="b6" <?php checked(in_array(6, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b6">Small Businesses & Entrepreneurs</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_7" class="form-check-input" type="checkbox" id="b7" <?php checked(in_array(7, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b7">Creative Professionals & Innovators</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_8" class="form-check-input" type="checkbox" id="b8" <?php checked(in_array(8, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b8">Third Sector Organizations</label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_9" class="form-check-input" type="checkbox" id="b9" <?php checked(in_array(9, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b9">General Public</label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_1" class="form-check-input" type="checkbox" id="b1" <?php checked(in_array(1, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_YOUTH']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_2" class="form-check-input" type="checkbox" id="b2" <?php checked(in_array(2, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_WOMEN']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_3" class="form-check-input" type="checkbox" id="b3" <?php checked(in_array(3, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_ELDERLY']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_4" class="form-check-input" type="checkbox" id="b4" <?php checked(in_array(4, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_POD']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_5" class="form-check-input" type="checkbox" id="b5" <?php checked(in_array(5, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_FAMILIES']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_6" class="form-check-input" type="checkbox" id="b6" <?php checked(in_array(6, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_SMALL_BIZ']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_7" class="form-check-input" type="checkbox" id="b7" <?php checked(in_array(7, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b7"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_CREATIVE']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_8" class="form-check-input" type="checkbox" id="b8" <?php checked(in_array(8, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b8"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_THIRD_SECTOR']; ?></label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_9" class="form-check-input" type="checkbox" id="b9" <?php checked(in_array(9, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b9"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_PUBLIC']; ?></label></div></div>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small">Total Beneficiaries Targeted</label>
+                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_TARGETED']; ?></label>
                          <input type="number" name="total_beneficiaries_targeted" class="form-control bg-light border-0 fs-6" placeholder="e.g., 500" value="<?php echo esc_attr($project->total_beneficiaries_targeted); ?>">
                     </div>
                     <div class="col-md-6">
-                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small">Total Beneficiaries Reached</label>
+                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_REACHED']; ?></label>
                          <input type="number" name="total_beneficiaries_reached" class="form-control bg-light border-0 fs-6" placeholder="e.g., 435" value="<?php echo esc_attr($project->total_beneficiaries_reached); ?>">
                     </div>
                 </div>
@@ -154,21 +155,21 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Sustainability & Governance -->
              <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
-                 <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5">Sustainability & Governance</h3>
-                 <p class="font-graphik text-secondary small mb-4">Tell us about your project's practices</p>
+                 <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SUST_GOV_TITLE']; ?></h3>
+                 <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SUST_GOV_DESC']; ?></p>
 
                  <div class="mb-3">
-                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small">Does your project contribute to environmental or social improvement in the UAE?</label>
+                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['CONTRIBUTES_ENV_LABEL']; ?></label>
                      <select name="contributes_env_social" class="form-select bg-light border-0 fs-6">
-                         <option value="" disabled <?php selected(!$project->contributes_env_social); ?>>Select an option</option>
+                         <option value="" disabled <?php selected(!$project->contributes_env_social); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SELECT_OPTION']; ?></option>
                          <option value="Yes" <?php selected($project->contributes_env_social == 'Yes'); ?>>Yes</option>
                          <option value="No" <?php selected($project->contributes_env_social == 'No'); ?>>No</option>
                      </select>
                  </div>
                  <div>
-                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small">Does the project have governance, monitoring, or reporting processes?</label>
+                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['HAS_GOV_LABEL']; ?></label>
                      <select name="has_governance_monitoring" class="form-select bg-light border-0 fs-6">
-                         <option value="" disabled <?php selected(!$project->has_governance_monitoring); ?>>Select an option</option>
+                         <option value="" disabled <?php selected(!$project->has_governance_monitoring); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SELECT_OPTION']; ?></option>
                           <option value="Yes" <?php selected($project->has_governance_monitoring == 'Yes'); ?>>Yes</option>
                          <option value="No" <?php selected($project->has_governance_monitoring == 'No'); ?>>No</option>
                      </select>
@@ -177,24 +178,17 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
              <!-- SDG Alignment -->
               <div class="bg-white rounded-4 p-4 shadow-sm mb-5">
-                   <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5">SDG Alignment</h3>
+                   <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_TITLE']; ?></h3>
                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <p class="font-graphik text-secondary small mb-0">Select up to 3 Sustainable Development Goals your project supports</p>
-                        <span id="sdg-count" class="text-cp-aqua-marine small font-graphik fw-medium">0/3 selected</span>
+                        <p class="font-graphik text-secondary small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_DESC']; ?></p>
+                        <span id="sdg-count" class="text-cp-aqua-marine small font-graphik fw-medium">0/3 <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_COUNT_SUFFIX']; ?></span>
                    </div>
                    
                    <input type="hidden" name="sdgs" id="sdg-input" value="">
 
                    <div class="row g-2">
                        <?php 
-                       $sdgs = [
-                           1 => 'No Poverty', 2 => 'Zero Hunger', 3 => 'Good Health and Well-being',
-                           4 => 'Quality Education', 5 => 'Gender Equality', 6 => 'Clean Water and Sanitation',
-                           7 => 'Affordable and Clean Energy', 8 => 'Decent Work and Economic Growth', 9 => 'Industry, Innovation and Infrastructure',
-                           10 => 'Reduced Inequalities', 11 => 'Sustainable Cities and Communities', 12 => 'Responsible Consumption and Production',
-                           13 => 'Climate Action', 14 => 'Life Below Water', 15 => 'Life on Land',
-                           16 => 'Peace, Justice and Strong Institutions', 17 => 'Partnerships for the Goals'
-                       ];
+                       $sdgs = $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_NAMES'];
                        foreach($sdgs as $num => $name):
                          $is_selected = in_array($num, $project->sdgs ?? []);
                          $card_class = $is_selected ? 'sdg-card border rounded-3 p-3 h-100 cursor-pointer d-flex align-items-center gap-3 selected' : 'sdg-card border rounded-3 p-3 h-100 cursor-pointer d-flex align-items-center gap-3';
@@ -213,8 +207,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Navigation Buttons -->
             <div class="d-flex justify-content-between pt-4 border-top">
-                <a href="<?php echo add_query_arg(['step' => 1, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
-                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</button>
+                <a href="<?php echo add_query_arg(['step' => 1, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BACK_BTN']; ?></a>
+                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['NEXT_BTN']; ?></button>
             </div>
 
         </form>
@@ -225,12 +219,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
              <!-- Content -->
              <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Let’s get into the details.</h3>
-                <p class="font-graphik fw-medium text-cp-deep-ocean mb-4">Tell us the story behind your project.</p>
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SIDEBAR_TITLE']; ?></h3>
+                <p class="font-graphik fw-medium text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SIDEBAR_SUBTITLE']; ?></p>
                 <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
-                    <p class="mb-3">This is your space to describe what your project is about and the impact it has achieved so far. Please answer the questions as clearly and accurately as possible, as you may be asked to provide supporting evidence if your project is shortlisted for the Sustainable Impact Award.</p>
-                     <p class="mb-3">The information you share will be published on our website after the submission period. We will showcase your work to the wider community and invite the public to explore and vote for their favorite CSR and sustainability initiatives.</p>
-                    <p>Make sure your responses reflect both your project and your organization in the best possible light.</p>
+                    <p class="mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SIDEBAR_TEXT_1']; ?></p>
+                     <p class="mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SIDEBAR_TEXT_2']; ?></p>
+                    <p><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SIDEBAR_TEXT_3']; ?></p>
                 </div>
              </div>
              
@@ -258,7 +252,7 @@ function toggleSDG(element) {
     } else {
         // Select (limit 3)
         if (selectedSDGs.length >= 3) {
-            alert('You can only select up to 3 SDGs.');
+            alert('<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_LIMIT_ALERT']); ?>');
             return;
         }
         selectedSDGs.push(id);
@@ -270,7 +264,7 @@ function toggleSDG(element) {
 
 function updateSDGInput() {
     document.getElementById('sdg-input').value = selectedSDGs.join(',');
-    document.getElementById('sdg-count').innerText = selectedSDGs.length + '/3 selected';
+    document.getElementById('sdg-count').innerText = selectedSDGs.length + '/3 <?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_COUNT_SUFFIX']); ?>';
 }
 </script>
 

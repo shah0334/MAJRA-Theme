@@ -2,6 +2,7 @@
 /* Template Name: Dashboard - Create Project */
 
 get_header('dashboard');
+global $language;
 
 // Get current step from URL, default to 1
 $current_step = isset($_GET['step']) ? intval($_GET['step']) : 1;
@@ -9,14 +10,7 @@ if ($current_step < 1) $current_step = 1;
 if ($current_step > 6) $current_step = 6; // 6 steps total including completion
 
 // Steps configuration
-$steps = [
-    1 => 'Project Profile',
-    2 => 'Project Details',
-    3 => 'Supporting Evidence',
-    4 => 'Pinpoint',
-    5 => 'Demographic Information',
-    6 => 'Review & Submit'
-];
+$steps = $language['DASHBOARD']['PROJ_WIZARD']['STEPS'];
 
 ?>
 

@@ -2,6 +2,7 @@
 /* Template Name: Dashboard - My Projects */
 
 get_header('dashboard');
+global $language;
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light py-5">
@@ -9,25 +10,25 @@ get_header('dashboard');
         <!-- Page Header -->
         <div class="row mb-5">
             <div class="col-lg-8">
-                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-3">My Projects</h1>
+                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['PAGE_TITLE']; ?></h1>
                 <p class="font-graphik text-cp-deep-ocean fs-5">
-                    Track the status of your submitted projects and manage your entries for the Sustainability Impact Challenge.
+                    <?php echo $language['DASHBOARD']['HOME_WITH_ORG']['PAGE_SUBTITLE']; ?>
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a href="#" class="btn-custom-primary">Submit New Project</a>
+                <a href="<?php echo SIC_Routes::get_create_project_url(); ?>" class="btn-custom-primary"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SUBMIT_NEW_PROJECT_BTN']; ?></a>
             </div>
         </div>
 
         <!-- Projects List Card -->
         <div class="bg-white rounded-lg p-4 p-lg-5 shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="font-graphik fw-medium text-cp-deep-ocean m-0">Project Listings</h2>
+                <h2 class="font-graphik fw-medium text-cp-deep-ocean m-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['LISTINGS_TITLE']; ?></h2>
                 
                 <!-- Filter/Search (Optional placeholder) -->
                 <div class="d-none d-md-block">
                     <div class="input-group">
-                        <input type="text" class="form-control border-end-0 rounded-start-pill ps-4" placeholder="Search projects...">
+                        <input type="text" class="form-control border-end-0 rounded-start-pill ps-4" placeholder="<?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SEARCH_PLACEHOLDER']; ?>">
                         <span class="input-group-text bg-white border-start-0 rounded-end-pill pe-4">
                             <i class="bi bi-search text-secondary"></i>
                         </span>
@@ -40,12 +41,12 @@ get_header('dashboard');
                 <table class="table table-hover custom-dashboard-table align-middle">
                     <thead>
                         <tr>
-                            <th scope="col">Project Name</th>
-                            <th scope="col">Organization Name</th>
-                            <th scope="col">Stage</th>
-                            <th scope="col">Submission Date</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-end">Action</th>
+                            <th scope="col"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['PROJECT_NAME']; ?></th>
+                            <th scope="col"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['ORGANIZATION']; ?></th>
+                            <th scope="col"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['STAGE']; ?></th>
+                            <th scope="col"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SUBMISSION_DATE']; ?></th>
+                            <th scope="col"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['STATUS']; ?></th>
+                            <th scope="col" class="text-end"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['ACTION']; ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,16 +61,16 @@ get_header('dashboard');
                         ?>
                             <tr>
                                 <td colspan="6" class="text-center py-5">
-                                    <p class="text-secondary mb-0">No projects found. <a href="<?php echo SIC_Routes::get_create_project_url(); ?>">Create your first project</a>.</p>
+                                    <p class="text-secondary mb-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_TEXT']; ?> <a href="<?php echo SIC_Routes::get_create_project_url(); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_LINK']; ?></a>.</p>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ( $projects as $project ): 
                                 $status_class = 'status-draft';
-                                $status_label = 'Draft';
+                                $status_label = $language['DASHBOARD']['HOME_WITH_ORG']['DRAFT'];
                                 if ( $project->submission_status === 'submitted' ) {
                                     $status_class = 'status-review'; // or approved
-                                    $status_label = 'Submitted';
+                                    $status_label = $language['DASHBOARD']['HOME_WITH_ORG']['SUBMITTED'];
                                 }
                                 $edit_url = add_query_arg( ['step' => 1, 'project_id' => $project->project_id], SIC_Routes::get_create_project_url() );
                             ?>
@@ -85,7 +86,7 @@ get_header('dashboard');
                                             <i class="bi bi-three-dots-vertical fs-5"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>">Edit</a></li>
+                                            <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EDIT']; ?></a></li>
                                             <!-- <li><a class="dropdown-item text-danger" href="#">Delete</a></li> -->
                                         </ul>
                                     </div>

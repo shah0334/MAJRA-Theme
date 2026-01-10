@@ -11,7 +11,7 @@
             <i class="bi bi-info-circle text-cp-aqua-marine"></i>
          </div>
         <p class="font-graphik text-cp-deep-ocean mb-0 fs-6">
-            <strong>Eligibility Notice:</strong> Only CSR and Sustainability initiatives, programs, events, and projects executed in the United Arab Emirates are eligible.
+            <strong><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['ELIGIBILITY_TITLE_LABEL']; ?></strong> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['ELIGIBILITY_TEXT']; ?>
         </p>
      </div>
 </div>
@@ -19,10 +19,11 @@
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4">Demographic Information</h2>
+        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TITLE']; ?></h2>
 
          <?php
         $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+        global $language;
         $project = null;
 
         if ($project_id) {
@@ -83,11 +84,11 @@
                 
                 <!-- Gender Balance -->
                 <div class="mb-4">
-                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6">Gender Balance</h3>
+                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['GENDER_TITLE']; ?></h3>
                      <div class="row g-3">
                          <div class="col-md-6">
                              <label class="form-label font-graphik text-cp-deep-ocean small">
-                                 <span class="text-danger">*</span> % of leadership team who are women
+                                 <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['LEADERSHIP_WOMEN_LABEL']; ?>
                              </label>
                              <div class="input-group">
                                  <input type="number" step="0.01" min="0" max="100" name="leadership_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 50" value="<?php echo esc_attr($leadership_women); ?>" required>
@@ -96,7 +97,7 @@
                          </div>
                          <div class="col-md-6">
                              <label class="form-label font-graphik text-cp-deep-ocean small">
-                                 <span class="text-danger">*</span> % of project team who are women
+                                 <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TEAM_WOMEN_LABEL']; ?>
                              </label>
                              <div class="input-group">
                                  <input type="number" step="0.01" min="0" max="100" name="team_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 65" value="<?php echo esc_attr($team_women); ?>" required>
@@ -108,11 +109,11 @@
 
                 <!-- People of Determination -->
                 <div class="mb-4">
-                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6">People of Determination</h3>
+                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['POD_TITLE']; ?></h3>
                      <div class="row g-3">
                          <div class="col-md-6">
                              <label class="form-label font-graphik text-cp-deep-ocean small">
-                                 <span class="text-danger">*</span> % of leadership team who are People of Determination
+                                 <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['LEADERSHIP_POD_LABEL']; ?>
                              </label>
                              <div class="input-group">
                                  <input type="number" step="0.01" min="0" max="100" name="leadership_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 10" value="<?php echo esc_attr($leadership_pod); ?>">
@@ -121,7 +122,7 @@
                          </div>
                          <div class="col-md-6">
                              <label class="form-label font-graphik text-cp-deep-ocean small">
-                                 <span class="text-danger">*</span> % of project team who are People of Determination
+                                 <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TEAM_POD_LABEL']; ?>
                              </label>
                              <div class="input-group">
                                  <input type="number" step="0.01" min="0" max="100" name="team_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 15" value="<?php echo esc_attr($team_pod); ?>">
@@ -133,10 +134,10 @@
 
                 <!-- Youth -->
                 <div class="mb-4">
-                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6">Youth</h3>
+                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['YOUTH_TITLE']; ?></h3>
                      <div class="mb-3">
                          <label class="form-label font-graphik text-cp-deep-ocean small">
-                             <span class="text-danger">*</span> What percentage of the project team is youth?
+                             <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TEAM_YOUTH_LABEL']; ?>
                          </label>
                          <div class="input-group">
                                  <input type="number" step="0.01" min="0" max="100" name="team_youth_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 25" value="<?php echo esc_attr($team_youth); ?>">
@@ -145,27 +146,27 @@
                      </div>
                      <div class="mb-3">
                          <label class="form-label font-graphik text-cp-deep-ocean small">
-                             <span class="text-danger">*</span> Does the project actively engage youth?
+                             <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['ENGAGES_YOUTH_LABEL']; ?>
                          </label>
                          <select name="engages_youth" class="form-select bg-light border-0 fs-6">
-                             <option disabled <?php selected($engages_youth_val, 0); ?>>Select</option>
-                             <option value="Yes" <?php selected($engages_youth_val, 1); ?>>Yes</option>
-                             <option value="No" <?php if($project && $engages_youth_val == 0) echo 'selected'; ?>>No</option>
+                             <option disabled <?php selected($engages_youth_val, 0); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SELECT_PLACEHOLDER']; ?></option>
+                             <option value="Yes" <?php selected($engages_youth_val, 1); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['YES']; ?></option>
+                             <option value="No" <?php if($project && $engages_youth_val == 0) echo 'selected'; ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['NO']; ?></option>
                          </select>
                      </div>
                 </div>
 
                 <!-- Influencers -->
                 <div class="mb-5">
-                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6">Influencers</h3>
+                     <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['INFLUENCERS_TITLE']; ?></h3>
                      <div>
                          <label class="form-label font-graphik text-cp-deep-ocean small">
-                             <span class="text-danger">*</span> Does the project involve influencers?
+                             <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['INVOLVES_INFLUENCERS_LABEL']; ?>
                          </label>
                          <select name="involves_influencers" class="form-select bg-light border-0 fs-6">
-                             <option disabled <?php selected($influencers_val, 0); ?>>Select</option>
-                             <option value="Yes" <?php selected($influencers_val, 1); ?>>Yes</option>
-                             <option value="No" <?php if($project && $influencers_val == 0) echo 'selected'; ?>>No</option>
+                             <option disabled <?php selected($influencers_val, 0); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SELECT_PLACEHOLDER']; ?></option>
+                             <option value="Yes" <?php selected($influencers_val, 1); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['YES']; ?></option>
+                             <option value="No" <?php if($project && $influencers_val == 0) echo 'selected'; ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['NO']; ?></option>
                          </select>
                      </div>
                 </div>
@@ -173,7 +174,7 @@
                 <!-- Mandatory Notice -->
                 <div class="p-3 rounded-3" style="background-color: #FAEBDA; border: 1px solid #FC9C63;">
                     <p class="font-graphik text-cp-deep-ocean x-small mb-0">
-                        This section is mandatory and will be completed before the Declaration step. Responses provided here are used for statistical and reporting purposes only.
+                        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['MANDATORY_NOTICE']; ?>
                     </p>
                 </div>
 
@@ -181,8 +182,8 @@
 
              <!-- Navigation Buttons -->
             <div class="d-flex justify-content-between pt-4 border-top">
-                <a href="<?php echo add_query_arg(['step' => 4, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
-                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</button>
+                <a href="<?php echo add_query_arg(['step' => 4, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['BACK_BTN']; ?></a>
+                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['NEXT_BTN']; ?></button>
             </div>
 
         </form>
@@ -193,10 +194,10 @@
         <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
              <!-- Content -->
              <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Help us understand your project’s reach.</h3>
-                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3">This information is required for reporting and statistical insights only.</p>
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SIDEBAR_TITLE']; ?></h3>
+                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SIDEBAR_SUBTITLE']; ?></p>
                 <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
-                    <p>Completing this section is mandatory, however your responses will not influence public voting results or project assessment.</p>
+                    <p><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SIDEBAR_TEXT']; ?></p>
                 </div>
              </div>
              

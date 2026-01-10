@@ -3,6 +3,7 @@
  * Step 4: Verification (Pinpoint)
  */
 $db = SIC_DB::get_instance();
+global $language;
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
 if ( ! $project_id ) {
@@ -44,16 +45,15 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 <!-- Eligibility Banner -->
 <div class="eligibility-banner p-4 mb-5" style="border-color: #FC9C63; background: linear-gradient(to bottom, #FFF5EC, #FFFFFF);">
      <p class="font-graphik text-cp-deep-ocean mb-0 fs-6">
-        <strong>This section is optional for now, but will be required if your project is shortlisted.</strong><br>
-        In addition to the challenge, Majra will review eligible projects for the Qualification Certificate or Verification Stamp. By submitting this evidence now, you help expedite the review of your project for these elite recognitions.
+        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['ELIGIBILITY_OPTIONAL_TEXT']; ?>
     </p>
 </div>
 
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Pin Project</h2>
-        <p class="font-graphik text-secondary mb-5">Select the primary location of this project.</p>
+        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['TITLE']; ?></h2>
+        <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SUBTITLE']; ?></p>
 
         <form method="POST">
             <?php wp_nonce_field( 'sic_save_step_4' ); ?>
@@ -63,25 +63,25 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 
                 <!-- Search Bar -->
                 <div class="mb-3">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1">Search Location</label>
+                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_LABEL']; ?></label>
                     <div class="input-group mb-3 border rounded-3 overflow-hidden" style="border-color: #D1D5DC;">
                          <span class="input-group-text bg-white border-0 ps-3">
                              <i class="bi bi-search text-secondary"></i>
                          </span>
-                        <input type="text" id="location-search" name="location_search_text" class="form-control border-0 shadow-none ps-2" placeholder="Search for location" style="height: 50px;" value="<?php echo esc_attr($project->location_search_text); ?>">
+                        <input type="text" id="location-search" name="location_search_text" class="form-control border-0 shadow-none ps-2" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_PLACEHOLDER']; ?>" style="height: 50px;" value="<?php echo esc_attr($project->location_search_text); ?>">
                     </div>
                 </div>
 
                 <!-- Manual Address Input -->
                 <div class="mb-3">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1">Address Details</label>
-                    <input type="text" id="location-address" name="location_address" class="form-control bg-light border-0 fs-6" placeholder="e.g. Building Name, Street" value="<?php echo esc_attr($project->location_address); ?>">
+                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['ADDRESS_LABEL']; ?></label>
+                    <input type="text" id="location-address" name="location_address" class="form-control bg-light border-0 fs-6" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['ADDRESS_PLACEHOLDER']; ?>" value="<?php echo esc_attr($project->location_address); ?>">
                 </div>
 
                 <!-- Map Container -->
                 <div id="project-map" class="rounded-3 w-100 mb-3" style="height: 400px; background-color: #F3F4F6;"></div>
                 
-                <p class="font-graphik small text-secondary"><i class="bi bi-info-circle me-1"></i> You can drag the marker to pinpoint the exact location.</p>
+                <p class="font-graphik small text-secondary"><i class="bi bi-info-circle me-1"></i> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['MAP_INFO']; ?></p>
 
                 <!-- Hidden inputs -->
                 <input type="hidden" id="latitude" name="latitude" value="<?php echo esc_attr($project->latitude); ?>">
@@ -92,8 +92,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Navigation Buttons -->
             <div class="d-flex justify-content-between pt-4 border-top">
-                <a href="<?php echo add_query_arg(['step' => 3, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
-                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</button>
+                <a href="<?php echo add_query_arg(['step' => 3, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['BACK_BTN']; ?></a>
+                <button type="submit" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['NEXT_BTN']; ?></button>
             </div>
 
         </form>
@@ -104,10 +104,10 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
              <!-- Content -->
              <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Pin your project on the Sustainable Impact Map.</h3>
-                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3">Fill in your project information.</p>
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SIDEBAR_TITLE']; ?></h3>
+                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SIDEBAR_SUBTITLE']; ?></p>
                 <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
-                    <p class="mb-3">Great, you’ve successfully submitted your project. Now, simply search for your project’s primary location in the search bar and select the preferred location.</p>
+                    <p class="mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SIDEBAR_TEXT']; ?></p>
                 </div>
              </div>
              
@@ -125,7 +125,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 function initMap() {
     if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
         console.error("Google Maps API is not loaded.");
-        document.getElementById("project-map").innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-danger">Google Maps API failed to load. Please check your API Key configuration.</div>';
+        document.getElementById("project-map").innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-danger"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['MAP_ERROR']; ?></div>';
         return;
     }
 

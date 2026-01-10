@@ -3,6 +3,7 @@
  * Step 1: Project Profile
  */
 $db = SIC_DB::get_instance();
+global $language;
 $user_id = get_current_user_id();
 $applicant = $db->get_applicant_by_wp_user($user_id); 
 // Note: get_applicant_by_wp_user might return boolean false if not implemented, using get_applicant_by_id logic or session
@@ -82,8 +83,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 <!-- Eligibility Banner -->
 <div class="eligibility-banner p-4 mb-5">
     <p class="font-graphik text-cp-deep-ocean mb-0 fs-6">
-        <strong>Only CSR and Sustainability initiatives, programs, events, and projects executed in the United Arab Emirates are eligible.</strong><br>
-        All projects submitted to the Sustainable Impact Challenge will be reviewed by Majra for the Qualification Certificate or Verification Stamp, if eligible, which adds to your project’s credibility and opens new opportunities.
+        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['ELIGIBILITY_TEXT']; ?>
     </p>
 </div>
 
@@ -94,7 +94,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4">Project Profile</h2>
+        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['TITLE']; ?></h2>
 
         <form method="POST" enctype="multipart/form-data">
             <?php wp_nonce_field( 'sic_create_project' ); ?>
@@ -102,10 +102,10 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Select Organization -->
             <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Select Organization <span class="text-danger">*</span></label>
+                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG']; ?> <span class="text-danger">*</span></label>
                 <div class="d-flex gap-3">
                     <select name="org_profile_id" class="form-select form-select-lg bg-light border-0 fs-6 flex-grow-1" required <?php echo $project_id ? 'disabled' : ''; ?>>
-                        <option value="" disabled <?php selected(!$selected_org_id); ?>>Select the Organization for your project</option>
+                        <option value="" disabled <?php selected(!$selected_org_id); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG_DEFAULT']; ?></option>
                         <?php if ($orgs): foreach ($orgs as $org): ?>
                             <option value="<?php echo esc_attr($org->org_profile_id); ?>" <?php selected($selected_org_id, $org->org_profile_id); ?>><?php echo esc_html($org->organization_name); ?></option>
                         <?php endforeach; endif; ?>
@@ -115,44 +115,44 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                     <?php endif; ?>
                     
                     <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-outline-info text-nowrap px-4" style="border-color: #3bc4bd; color: #3bc4bd;">
-                        Add Organization / إضافة مؤسسة
+                        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['ADD_ORG_BTN']; ?>
                     </a>
                 </div>
             </div>
 
             <!-- Project Name -->
             <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project Name <span class="text-danger">*</span></label>
-                <input type="text" name="project_name" class="form-control form-control-lg bg-light border-0 fs-6" placeholder="Enter the official name of your project" value="<?php echo $project ? esc_attr($project->project_name) : ''; ?>" required>
+                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_LABEL']; ?> <span class="text-danger">*</span></label>
+                <input type="text" name="project_name" class="form-control form-control-lg bg-light border-0 fs-6" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_PLACEHOLDER']; ?>" value="<?php echo $project ? esc_attr($project->project_name) : ''; ?>" required>
             </div>
 
             <!-- Project Status -->
             <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project Status <span class="text-danger">*</span></label>
+                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_LABEL']; ?> <span class="text-danger">*</span></label>
                 <select name="project_stage" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                    <option value="" disabled <?php selected(empty($project)); ?>>Select the current implementation stage of your project</option>
-                    <option value="Planned" <?php selected($project && $project->project_stage == 'Planned'); ?>>Planned</option>
-                    <option value="In Progress" <?php selected($project && $project->project_stage == 'In Progress'); ?>>In Progress</option>
-                    <option value="Completed" <?php selected($project && $project->project_stage == 'Completed'); ?>>Completed</option>
+                    <option value="" disabled <?php selected(empty($project)); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_DEFAULT']; ?></option>
+                    <option value="Planned" <?php selected($project && $project->project_stage == 'Planned'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_PLANNED']; ?></option>
+                    <option value="In Progress" <?php selected($project && $project->project_stage == 'In Progress'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_IN_PROGRESS']; ?></option>
+                    <option value="Completed" <?php selected($project && $project->project_stage == 'Completed'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_COMPLETED']; ?></option>
                 </select>
             </div>
 
             <!-- Project Description -->
             <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project Description <span class="text-danger">*</span></label>
-                <textarea name="project_description" class="form-control form-control-lg bg-light border-0 fs-6" rows="5" placeholder="Provide a brief overview of what your project aims to achieve and describe the positive impact it can give (maximum 5000 characters)" required><?php echo $project ? esc_textarea($project->project_description) : ''; ?></textarea>
+                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_LABEL']; ?> <span class="text-danger">*</span></label>
+                <textarea name="project_description" class="form-control form-control-lg bg-light border-0 fs-6" rows="5" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_PLACEHOLDER']; ?>" required><?php echo $project ? esc_textarea($project->project_description) : ''; ?></textarea>
             </div>
 
             <!-- Start/End Date -->
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project Start Date <span class="text-danger">*</span></label>
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['START_DATE']; ?> <span class="text-danger">*</span></label>
                     <div class="position-relative">
                         <input type="date" name="start_date" class="form-control form-control-lg bg-light border-0 fs-6" value="<?php echo $project ? esc_attr($project->start_date) : ''; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project End Date <span class="text-danger">*</span></label>
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['END_DATE']; ?> <span class="text-danger">*</span></label>
                     <div class="position-relative">
                         <input type="date" name="end_date" class="form-control form-control-lg bg-light border-0 fs-6" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>">
                     </div>
@@ -161,18 +161,18 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Project Profile Image -->
             <div class="mb-5">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project Profile Image (Public) <span class="text-danger">*</span></label>
+                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_LABEL']; ?> <span class="text-danger">*</span></label>
                 <div class="position-relative">
                     <input type="file" name="project_image" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" style="padding-top: 1rem; padding-bottom: 1rem;">
                     <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary" style="pointer-events: none;">
-                        Upload an image for the project's public listing.
+                        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_HELP']; ?>
                     </span>
                     <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                 </div>
             </div>
             
             <div class="text-end mb-5">
-                 <button type="submit" class="btn btn-custom-aqua w-auto px-5 py-3 rounded-pill fw-bold text-white fs-6">Save & Continue</button>
+                 <button type="submit" class="btn btn-custom-aqua w-auto px-5 py-3 rounded-pill fw-bold text-white fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SAVE_BTN']; ?></button>
             </div>
 
         </form>
@@ -189,11 +189,11 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
              <!-- Content -->
              <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Let’s get into the details.</h3>
-                <p class="font-graphik fw-medium text-cp-deep-ocean mb-4">Tell us about your project and its impact to date.</p>
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_TITLE']; ?></h3>
+                <p class="font-graphik fw-medium text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_SUBTITLE']; ?></p>
                 <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
-                    <p class="mb-3">This section is your opportunity to describe your project, its objectives, and the results achieved so far. Please ensure all responses are accurate and verifiable, as shortlisted projects will be required to submit supporting evidence for the Sustainable Impact Award.</p>
-                    <p>Shortlisted projects will also be shared nationally for public review and voting across the CSR and sustainability categories. Ensure that all information and materials submitted reflect your organization and project in the most credible professional manner.</p>
+                    <p class="mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_TEXT_1']; ?></p>
+                    <p><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_TEXT_2']; ?></p>
                 </div>
              </div>
              

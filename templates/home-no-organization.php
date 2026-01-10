@@ -2,6 +2,7 @@
 /* Template Name: Dashboard - Home No Organization */
 
 get_header('dashboard');
+global $language;
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light">
@@ -11,10 +12,10 @@ get_header('dashboard');
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1>Welcome to the <span class="highlight">Sustainability Impact Challenge</span></h1>
+                    <h1><?php echo $language['DASHBOARD']['HOME_NO_ORG']['WELCOME']['TITLE_PREFIX']; ?> <span class="highlight"><?php echo $language['DASHBOARD']['HOME_NO_ORG']['WELCOME']['TITLE_HIGHLIGHT']; ?></span></h1>
                 </div>
                 <div class="col-lg-6">
-                    <p>Transform your project into a story of impact. Showcase leadership, inspire industry-wide change and help shape the UAE's future. Submit your project today and be recognized for the difference you make.</p>
+                    <p><?php echo $language['DASHBOARD']['HOME_NO_ORG']['WELCOME']['TEXT']; ?></p>
                 </div>
             </div>
         </div>
@@ -23,7 +24,7 @@ get_header('dashboard');
     <!-- Steps Section -->
     <section class="steps-section">
         <div class="container">
-            <h2>3 Steps to<br><span class="highlight">mark your Impact</span></h2>
+            <h2><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['TITLE_PREFIX']; ?><br><span class="highlight"><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['TITLE_HIGHLIGHT']; ?></span></h2>
             
             <div class="row g-4">
                 <!-- Step 1 -->
@@ -32,8 +33,8 @@ get_header('dashboard');
                         <div class="step-icon">
                             <i class="bi bi-person"></i> <!-- Placeholder for icon -->
                         </div>
-                        <h3>1. Register as Applicant</h3>
-                        <p>Provide us with your contact information to reach you.</p>
+                        <h3><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['STEP_1']['TITLE']; ?></h3>
+                        <p><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['STEP_1']['TEXT']; ?></p>
                     </div>
                 </div>
 
@@ -43,8 +44,8 @@ get_header('dashboard');
                         <div class="step-icon">
                             <i class="bi bi-building"></i> <!-- Placeholder for icon -->
                         </div>
-                        <h3>2. Add Your Organization</h3>
-                        <p>Provide us with your organization information.</p>
+                        <h3><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['STEP_2']['TITLE']; ?></h3>
+                        <p><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['STEP_2']['TEXT']; ?></p>
                     </div>
                 </div>
 
@@ -54,8 +55,8 @@ get_header('dashboard');
                         <div class="step-icon">
                             <i class="bi bi-upload"></i> <!-- Placeholder for icon -->
                         </div>
-                        <h3>3. Submit Your Projects</h3>
-                        <p>Submit your CSR or Sustainability projects for cash prizes and recognition.</p>
+                        <h3><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['STEP_3']['TITLE']; ?></h3>
+                        <p><?php echo $language['DASHBOARD']['HOME_NO_ORG']['STEPS']['STEP_3']['TEXT']; ?></p>
                     </div>
                 </div>
             </div>

@@ -70,6 +70,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
 }
 
 get_header('dashboard');
+global $language;
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light py-5">
@@ -77,7 +78,7 @@ get_header('dashboard');
         <!-- Eligibility Banner -->
         <div class="eligibility-banner p-4 mb-5">
             <p class="font-graphik text-cp-deep-ocean mb-0 fs-6">
-                Please ensure you have authorization from the organization being registered to share project details. Organization classification will remain confidential and will not appear in your project’s public listing within the Sustainable Impact Challenge. This information is used solely to help classify your organization in line with the criteria set by the UAE Ministry of Economy.
+                <?php echo $language['DASHBOARD']['ORG_FORM']['BANNER_TEXT']; ?>
             </p>
         </div>
 
@@ -88,7 +89,7 @@ get_header('dashboard');
         <!-- Page Header -->
         <div class="row mb-5">
             <div class="col-12">
-                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-0">Create Organization Profile</h1>
+                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-0"><?php echo $language['DASHBOARD']['ORG_FORM']['PAGE_TITLE']; ?></h1>
             </div>
         </div>
 
@@ -103,41 +104,41 @@ get_header('dashboard');
                         <div class="row g-4">
                             <!-- Row 1 -->
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Organization name <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['ORG_NAME']; ?> <span class="text-danger">*</span></label>
                                 <input type="text" name="org_name" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Trade License / Certificate Number <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_NUM']; ?> <span class="text-danger">*</span></label>
                                 <input type="text" name="org_license_number" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
 
                             <!-- Row 2 -->
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Logo <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['LOGO']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="file" name="org_logo" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" accept="image/png, image/jpeg">
                                     <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                                 </div>
-                                <div class="form-text text-secondary mt-2">Upload your organization's logo in PNG or JPG (Max 2MB)</div>
+                                <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['ORG_FORM']['LOGO_HELP']; ?></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Organization Website <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['WEBSITE']; ?> <span class="text-danger">*</span></label>
                                 <input type="url" name="org_website" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
 
                             <!-- Row 3 -->
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Trade License / Certificate <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_FILE']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="file" name="org_license_file" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" accept="application/pdf">
                                     <i class="bi bi-file-earmark-text position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                                 </div>
-                                <div class="form-text text-secondary mt-2">Upload a clear, valid trade license (PDF only, max 5MB)</div>
+                                <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_HELP']; ?></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Emirate of Registration <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['EMIRATE']; ?> <span class="text-danger">*</span></label>
                                 <select name="org_emirate" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                                    <option value="" disabled selected>Select Emirate</option>
+                                    <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_EMIRATE']; ?></option>
                                     <option value="Dubai">Dubai</option>
                                     <option value="Abu Dhabi">Abu Dhabi</option>
                                     <option value="Sharjah">Sharjah</option>
@@ -150,9 +151,9 @@ get_header('dashboard');
 
                             <!-- Row 4 -->
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Type of Legal Entity <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['ENTITY_TYPE']; ?> <span class="text-danger">*</span></label>
                                 <select name="org_entity_type" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                                    <option value="" disabled selected>Select Entity Type</option>
+                                    <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_ENTITY']; ?></option>
                                     <option value="Limited Liability Company">Limited Liability Company</option>
                                     <option value="Sole Proprietorship">Sole Proprietorship</option>
                                     <option value="Partnership">Partnership</option>
@@ -163,9 +164,9 @@ get_header('dashboard');
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Industry <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['INDUSTRY']; ?> <span class="text-danger">*</span></label>
                                 <select name="org_industry" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                                    <option value="" disabled selected>Select the primary industry sector</option>
+                                    <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_INDUSTRY']; ?></option>
                                     <option value="Energy">Energy</option>
                                     <option value="Technology">Technology</option>
                                     <option value="Manufacturing">Manufacturing</option>
@@ -180,10 +181,10 @@ get_header('dashboard');
 
                             <!-- Row 5 -->
                              <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Is your organization registered in a Freezone? <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['IS_FREEZONE']; ?> <span class="text-danger">*</span></label>
                                 <select name="org_is_freezone" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                                    <option value="No">No</option>
-                                    <option value="Yes">Yes</option>
+                                    <option value="No"><?php echo $language['DASHBOARD']['ORG_FORM']['NO']; ?></option>
+                                    <option value="Yes"><?php echo $language['DASHBOARD']['ORG_FORM']['YES']; ?></option>
                                 </select>
                             </div>
                         </div>
@@ -191,29 +192,29 @@ get_header('dashboard');
 
                     <!-- Classification Profile & CSR Declaration -->
                     <div class="bg-white rounded-lg p-5 shadow-sm mb-4">
-                        <h2 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-4">Classification Profile <span class="fw-light text-secondary fs-6">(For Reporting Purposes Only)</span></h2>
+                        <h2 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-4"><?php echo $language['DASHBOARD']['ORG_FORM']['CLASSIFICATION_PROFILE']; ?> <span class="fw-light text-secondary fs-6"><?php echo $language['DASHBOARD']['ORG_FORM']['FOR_REPORTING_ONLY']; ?></span></h2>
                         
                         <div class="row g-4 mt-2">
                             <!-- Row 1 -->
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Type of business activity <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['ACTIVITY_TYPE']; ?> <span class="text-danger">*</span></label>
                                 <select name="org_activity_type" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                                    <option value="" disabled selected>Select Activity Type</option>
+                                    <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_ACTIVITY']; ?></option>
                                     <option value="Industry">Industry</option>
                                     <option value="Service">Service</option>
                                     <option value="Trading">Trading</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Number of employees <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['EMPLOYEES']; ?> <span class="text-danger">*</span></label>
                                  <input type="number" name="org_employees" class="form-control form-control-lg bg-light border-0 fs-6" required>
                             </div>
                             
                             <!-- Row 2 -->
                             <div class="col-md-6">
-                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Annual turnover <span class="text-danger">*</span></label>
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TURNOVER']; ?> <span class="text-danger">*</span></label>
                                  <select name="org_turnover" class="form-select form-select-lg bg-light border-0 fs-6" required>
-                                    <option value="" disabled selected>Select Turnover</option>
+                                    <option value="" disabled selected><?php echo $language['DASHBOARD']['ORG_FORM']['SELECT_TURNOVER']; ?></option>
                                     <option value="< AED 50 million">< AED 50 million</option>
                                     <option value="AED 50m - 100m">AED 50m - 100m</option>
                                     <option value="> AED 100m">> AED 100m</option>
@@ -222,32 +223,32 @@ get_header('dashboard');
                         </div>
 
                         <div class="mt-5">
-                            <h2 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-4">CSR Declaration</h2>
+                            <h2 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-4"><?php echo $language['DASHBOARD']['ORG_FORM']['CSR_DECLARATION']; ?></h2>
                             <p class="font-graphik text-secondary small mb-4">
-                                This information is collected for classification and reporting purposes only and will not appear publicly.
+                                <?php echo $language['DASHBOARD']['ORG_FORM']['CSR_DECLARATION_TEXT']; ?>
                             </p>
 
                             <div class="mb-4">
-                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean d-block mb-3">Has your organization implemented any CSR activities or programs in the UAE? <span class="text-danger">*</span></label>
+                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean d-block mb-3"><?php echo $language['DASHBOARD']['ORG_FORM']['CSR_QUESTION']; ?> <span class="text-danger">*</span></label>
                                  <div class="d-flex gap-4">
                                      <div class="form-check">
                                         <input class="form-check-input" type="radio" name="csr_activity" id="csrYes" value="yes" checked>
-                                        <label class="form-check-label font-graphik" for="csrYes">Yes</label>
+                                        <label class="form-check-label font-graphik" for="csrYes"><?php echo $language['DASHBOARD']['ORG_FORM']['YES']; ?></label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="csr_activity" id="csrNo" value="no">
-                                        <label class="form-check-label font-graphik" for="csrNo">No</label>
+                                        <label class="form-check-label font-graphik" for="csrNo"><?php echo $language['DASHBOARD']['ORG_FORM']['NO']; ?></label>
                                     </div>
                                  </div>
                             </div>
 
                             <div class="row g-4" id="csr-fields">
                                 <div class="col-md-6">
-                                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Project / Program name</label>
+                                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['PROJ_NAME']; ?></label>
                                     <input type="text" name="csr_name" class="form-control form-control-lg bg-light border-0 fs-6">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean">Allocated monetary amount (AED)</label>
+                                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['AMOUNT']; ?></label>
                                     <input type="number" name="csr_amount" class="form-control form-control-lg bg-light border-0 fs-6" step="0.01">
                                 </div>
                             </div>
@@ -256,7 +257,7 @@ get_header('dashboard');
 
                     <!-- Action Button -->
                     <div class="mb-5">
-                         <button type="submit" class="btn btn-custom-aqua w-auto px-5 py-3 rounded-pill fw-bold text-white fs-6">Create</button>
+                         <button type="submit" class="btn btn-custom-aqua w-auto px-5 py-3 rounded-pill fw-bold text-white fs-6"><?php echo $language['DASHBOARD']['ORG_FORM']['CREATE_BTN']; ?></button>
                     </div>
                 </form>
             </div>
@@ -269,7 +270,7 @@ get_header('dashboard');
                     </div>
                     <div class="guidance-content pt-2 ps-4 ms-2">
                         <p class="font-graphik text-cp-deep-ocean mb-0 small lh-base">
-                            Your organization represents the foundation for meaningful change; therefore, it is essential to ensure accuracy from the outset. Please carefully review all details before submitting, as submissions cannot be edited once finalized.
+                            <?php echo $language['DASHBOARD']['ORG_FORM']['GUIDANCE_TEXT']; ?>
                         </p>
                     </div>
                 </div>

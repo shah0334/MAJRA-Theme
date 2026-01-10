@@ -10,6 +10,7 @@
         
         <?php
         $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+        global $language;
         
         // Handle Submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) && $_POST['sic_project_action'] === 'submit_project') {
@@ -50,7 +51,7 @@
             
             <div class="bg-white rounded-4 p-5 shadow-sm mb-5 text-center">
                 
-                <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-5">Accept Disclaimer</h2>
+                <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TITLE']; ?></h2>
 
                  <!-- Disclaimer Checkbox -->
                  <div class="d-flex align-items-start justify-content-center mb-4 text-start" style="max-width: 800px; margin: 0 auto;">
@@ -59,27 +60,27 @@
                      </div>
                      <div>
                          <label class="form-check-label font-graphik fw-bold text-cp-deep-ocean fs-6 mb-2" for="disclaimerParams" style="line-height:1.5;">
-                             I solemnly declare that all information submitted is true and accurate and fully complies with the laws and regulations of the United Arab Emirates. I acknowledge that providing false information may lead to immediate disqualification.
+                             <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['DISCLAIMER_TEXT']; ?>
                          </label>
-                         <p class="text-secondary small mb-0">* This declaration is mandatory</p>
+                         <p class="text-secondary small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MANDATORY_NOTE']; ?></p>
                      </div>
                  </div>
 
                  <!-- Terms & Conditions Box -->
                  <div class="bg-light p-4 rounded-3 text-start mb-5" style="max-width: 800px; margin: 0 auto; background-color: #F9FAFB;">
                      <p class="font-graphik text-secondary small mb-0">
-                         By submitting this form you acknowledge that you have read, understood, and agree to abide by our 
-                         <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold">Terms & Conditions <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a> 
-                         and 
-                         <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold">Privacy Policy <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a>.
+                         <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TERMS_TEXT_START']; ?> 
+                         <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TERMS_LINK']; ?> <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a> 
+                         <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['AND']; ?> 
+                         <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['PRIVACY_LINK']; ?> <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a>.
                      </p>
                  </div>
 
                 <!-- Navigation Buttons -->
                 <div class="d-flex justify-content-center gap-3">
-                    <a href="<?php echo add_query_arg(['step' => 5, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-5 py-2 rounded-3 text-cp-deep-ocean fw-medium" style="min-width: 140px;">Back</a>
+                    <a href="<?php echo add_query_arg(['step' => 5, 'project_id' => $project_id], SIC_Routes::get_create_project_url()); ?>" class="btn btn-white border px-5 py-2 rounded-3 text-cp-deep-ocean fw-medium" style="min-width: 140px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['BACK_BTN']; ?></a>
                     <!-- Changed type to submit to trigger PHP processing -->
-                    <button type="submit" class="btn btn-custom-aqua px-5 py-2 rounded-3 text-white fw-medium" style="min-width: 140px;">Done</button>
+                    <button type="submit" class="btn btn-custom-aqua px-5 py-2 rounded-3 text-white fw-medium" style="min-width: 140px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['DONE_BTN']; ?></button>
                 </div>
 
             </div>
@@ -101,11 +102,11 @@
       </div>
 
       <div class="modal-body pt-5 mt-4">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3" style="font-size: 28px;">Thank You for Your Submission!</h2>
-        <p class="font-graphik text-secondary mb-3">Your project has been successfully submitted and is now under review.</p>
-        <p class="font-graphik text-secondary mb-4">We'll keep you informed via email with confirmation and updates on progress.</p>
+        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3" style="font-size: 28px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TITLE']; ?></h2>
+        <p class="font-graphik text-secondary mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_1']; ?></p>
+        <p class="font-graphik text-secondary mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_2']; ?></p>
         
-        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border border-custom-aqua text-cp-deep-ocean px-4 py-2 rounded-3 fw-medium" style="border-color: #3BC4BD !important;">Close</a>
+        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border border-custom-aqua text-cp-deep-ocean px-4 py-2 rounded-3 fw-medium" style="border-color: #3BC4BD !important;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['CLOSE_BTN']; ?></a>
       </div>
     </div>
   </div>

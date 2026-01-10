@@ -2,6 +2,7 @@
 /* Template Name: Dashboard - My Organizations */
 
 get_header('dashboard');
+global $language;
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light py-5">
@@ -9,9 +10,9 @@ get_header('dashboard');
         <!-- Page Header -->
         <div class="row mb-5">
             <div class="col-lg-8">
-                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Your Organization, Your Impact.</h1>
+                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['PAGE_TITLE']; ?></h1>
                 <p class="font-graphik text-cp-deep-ocean fs-5">
-                    Register your organization and submit its CSR & Sustainability projects to showcase its role in shaping the future of the UAE. This is where your Sustainable Impact takes center stage.
+                    <?php echo $language['DASHBOARD']['DASHBOARD_ORG']['PAGE_SUBTITLE']; ?>
                 </p>
             </div>
         </div>
@@ -32,18 +33,18 @@ get_header('dashboard');
                 <!-- Header & Create Button -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="d-flex align-items-center gap-2">
-                        <h2 class="font-graphik fw-bold text-cp-deep-ocean m-0 fs-5">Registered Organization</h2>
-                        <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip" title="List of your registered organizations"></i>
+                        <h2 class="font-graphik fw-bold text-cp-deep-ocean m-0 fs-5"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['REGISTERED_ORG_TITLE']; ?></h2>
+                        <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip" title="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['TOOLTIP']; ?>"></i>
                     </div>
                     <!-- Create Button -->
-                    <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-custom-aqua text-white rounded-pill px-4 fw-bold">Create</a>
+                    <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-custom-aqua text-white rounded-pill px-4 fw-bold"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['CREATE_BTN']; ?></a>
                 </div>
 
                 <!-- Search Bar -->
                 <div class="mb-4">
                     <div class="position-relative">
                         <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                        <input type="text" class="form-control form-control-lg bg-light border-0 ps-5 fs-6" placeholder="Search Your Organizations">
+                        <input type="text" class="form-control form-control-lg bg-light border-0 ps-5 fs-6" placeholder="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['SEARCH_PLACEHOLDER']; ?>">
                     </div>
                 </div>
 
@@ -52,11 +53,11 @@ get_header('dashboard');
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-light">
                             <tr>
-                                <th class="py-3 ps-3 border-0 font-graphik text-secondary fw-bold small">Organization Name</th>
-                                <th class="py-3 border-0 font-graphik text-secondary fw-bold small">Civil Society Number<br>Net Line</th>
-                                <th class="py-3 border-0 font-graphik text-secondary fw-bold small">Emirate of<br>Registration</th>
-                                <th class="py-3 border-0 font-graphik text-secondary fw-bold small">Date Registered</th>
-                                <th class="py-3 pe-3 border-0 font-graphik text-secondary fw-bold small text-end">Action</th>
+                                <th class="py-3 ps-3 border-0 font-graphik text-secondary fw-bold small"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['ORG_NAME']; ?></th>
+                                <th class="py-3 border-0 font-graphik text-secondary fw-bold small"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['CIVIL_NUM']; ?></th>
+                                <th class="py-3 border-0 font-graphik text-secondary fw-bold small"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['EMIRATE']; ?></th>
+                                <th class="py-3 border-0 font-graphik text-secondary fw-bold small"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['DATE']; ?></th>
+                                <th class="py-3 pe-3 border-0 font-graphik text-secondary fw-bold small text-end"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['ACTION']; ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -78,15 +79,15 @@ get_header('dashboard');
                                     </td>
                                     <td class="pe-3 py-3 text-end">
                                         <div class="d-flex align-items-center justify-content-end gap-3">
-                                            <button class="btn btn-link p-0 text-secondary" title="View"><i class="bi bi-eye"></i></button>
-                                            <a href="<?php echo SIC_Routes::get_create_project_url( $org_profile->org_profile_id ); ?>" class="text-cp-coral-sunset fw-bold text-decoration-none border-bottom border-cp-coral-sunset">Create a Project</a>
+                                            <button class="btn btn-link p-0 text-secondary" title="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['VIEW']; ?>"><i class="bi bi-eye"></i></button>
+                                            <a href="<?php echo SIC_Routes::get_create_project_url( $org_profile->org_profile_id ); ?>" class="text-cp-coral-sunset fw-bold text-decoration-none border-bottom border-cp-coral-sunset"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['CREATE_PROJECT']; ?></a>
                                         </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-secondary">No organizations found. Click "Create" to add one.</td>
+                                    <td colspan="5" class="text-center py-4 text-secondary"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['EMPTY_STATE']; ?></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
