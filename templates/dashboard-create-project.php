@@ -41,9 +41,14 @@ $steps = $language['DASHBOARD']['PROJ_WIZARD']['STEPS'];
                          $line_color = ($step_num < $current_step) ? '#3bc4bd' : '#E5E7EB';
                     ?>
                     
+                    <?php 
+                        // Use add_query_arg to preserve ALL query vars (d_lang, project_id, etc.)
+                        // and just update the step.
+                        $step_link = add_query_arg('step', $step_num);
+                    ?>
                     <div class="step-item d-flex align-items-top <?php echo $is_last ? '' : 'flex-fill'; ?>">
                         <div class="d-flex flex-column align-items-center" style="width: 180px;"> <!-- Width to contain label text -->
-                             <a href="?step=<?php echo $step_num; ?>" class="text-decoration-none d-flex flex-column align-items-center">
+                             <a href="<?php echo esc_url($step_link); ?>" class="text-decoration-none d-flex flex-column align-items-center">
                                  <div class="step-circle rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 mb-3 <?php echo $circle_cls; ?>" style="<?php echo $circle_style; ?>">
                                     <?php if ($is_completed): ?>
                                        <i class="bi bi-check-lg"></i>

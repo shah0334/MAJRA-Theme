@@ -20,31 +20,42 @@ class SIC_Routes {
     const SLUG_MY_ORGANIZATIONS   = 'sic-organizations';
 
     /**
+     * Helper to append current language param
+     */
+    private static function get_url_with_lang($slug) {
+        $url = home_url('/' . $slug . '/');
+        if ( isset($_GET['d_lang']) && !empty($_GET['d_lang']) ) {
+            $url = add_query_arg('d_lang', sanitize_text_field($_GET['d_lang']), $url);
+        }
+        return $url;
+    }
+
+    /**
      * Get Login URL
      */
     public static function get_login_url() {
-        return home_url( '/' . self::SLUG_LOGIN . '/' );
+        return self::get_url_with_lang(self::SLUG_LOGIN);
     }
 
     /**
      * Get Dashboard Home URL
      */
     public static function get_dashboard_home_url() {
-        return home_url( '/' . self::SLUG_DASHBOARD_HOME . '/' );
+        return self::get_url_with_lang(self::SLUG_DASHBOARD_HOME);
     }
 
     /**
      * Get Create Organization URL
      */
     public static function get_create_org_url() {
-        return home_url( '/' . self::SLUG_CREATE_ORG . '/' );
+        return self::get_url_with_lang(self::SLUG_CREATE_ORG);
     }
 
     /**
      * Get Create Project URL
      */
     public static function get_create_project_url( $org_id = null ) {
-        $url = home_url( '/' . self::SLUG_CREATE_PROJECT . '/' );
+        $url = self::get_url_with_lang(self::SLUG_CREATE_PROJECT);
         if ( $org_id ) {
             $url = add_query_arg( 'org_id', $org_id, $url );
         }
@@ -55,13 +66,13 @@ class SIC_Routes {
      * Get My Projects URL
      */
     public static function get_my_projects_url() {
-        return home_url( '/' . self::SLUG_MY_PROJECTS . '/' );
+        return self::get_url_with_lang(self::SLUG_MY_PROJECTS);
     }
 
     /**
      * Get My Organizations URL
      */
     public static function get_my_organizations_url() {
-        return home_url( '/' . self::SLUG_MY_ORGANIZATIONS . '/' );
+        return self::get_url_with_lang(self::SLUG_MY_ORGANIZATIONS);
     }
 }

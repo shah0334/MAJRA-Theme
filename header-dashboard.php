@@ -134,11 +134,18 @@ global $isRTL;
                     <!-- Language Toggle -->
                     <div class="d-flex align-items-center me-3">
                         <?php
-                        $ar_url = add_query_arg('d_lang', 'ar');
-                        $en_url = add_query_arg('d_lang', 'en');
+                        // Get current URL
+                        $current_url_with_query = add_query_arg(NULL, NULL);
+                        
+                        // Create switcher links preserving other params
+                        $ar_url = add_query_arg('d_lang', 'ar', $current_url_with_query);
+                        $en_url = add_query_arg('d_lang', 'en', $current_url_with_query);
                         ?>
-                        <a href="<?php echo esc_url($ar_url); ?>" class="text-secondary fw-bold text-decoration-none font-graphik <?php echo ($current_language == 'ar') ? 'text-custom-aqua' : ''; ?> me-3" style="font-size: 16px;">عربي</a>
-                        <a href="<?php echo esc_url($en_url); ?>" class="text-secondary fw-bold text-decoration-none font-graphik <?php echo ($current_language == 'en' || $current_language == 'en_US') ? 'text-custom-aqua' : ''; ?>" style="font-size: 16px;">EN</a>
+                        <?php if ( $current_language == 'ar' ): ?>
+                            <a href="<?php echo esc_url($en_url); ?>" class="text-secondary fw-bold text-decoration-none font-graphik me-3" style="font-size: 16px;">EN</a>
+                        <?php else: ?>
+                            <a href="<?php echo esc_url($ar_url); ?>" class="text-secondary fw-bold text-decoration-none font-graphik me-3" style="font-size: 16px;">عربي</a>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Right: User Area -->

@@ -186,7 +186,13 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <!-- Navigation Buttons -->
         <!-- <div class="d-flex justify-content-between pt-4 border-top">
             <a href="#" class="btn btn-white border px-4 py-2 rounded-3 text-cp-deep-ocean fw-medium">Back</a>
-            <a href="?step=2" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</a>
+            <?php 
+                $next_url = '?step=2';
+                if ($project_id) {
+                    $next_url = add_query_arg(['step' => 2, 'project_id' => $project_id], SIC_Routes::get_create_project_url());
+                }
+            ?>
+            <a href="<?php echo esc_url($next_url); ?>" class="btn btn-custom-aqua px-4 py-2 rounded-3 text-white fw-medium">Next</a>
         </div> -->
     </div>
 
