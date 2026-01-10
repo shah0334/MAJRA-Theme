@@ -51,23 +51,23 @@
             
             <div class="bg-white rounded-4 p-5 shadow-sm mb-5 text-center">
                 
-                <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TITLE']; ?></h2>
+                <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-5" style="font-size: 32px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TITLE']; ?></h2>
 
                  <!-- Disclaimer Checkbox -->
-                 <div class="d-flex align-items-start justify-content-center mb-4 text-start" style="max-width: 800px; margin: 0 auto;">
+                 <div class="d-flex align-items-start justify-content-center mb-4 text-start" style="max-width: 750px; margin: 0 auto;">
                      <div class="me-3 mt-1">
-                         <input class="form-check-input border-2" type="checkbox" name="disclaimer_accepted" id="disclaimerParams" style="width: 20px; height: 20px;" required>
+                         <input class="form-check-input border-2" type="checkbox" name="disclaimer_accepted" id="disclaimerParams" style="width: 24px; height: 24px; cursor: pointer;" required>
                      </div>
                      <div>
-                         <label class="form-check-label font-graphik fw-bold text-cp-deep-ocean fs-6 mb-2" for="disclaimerParams" style="line-height:1.5;">
+                         <label class="form-check-label font-mackay fw-bold text-cp-deep-ocean fs-5 mb-2" for="disclaimerParams" style="line-height:1.4; cursor: pointer;">
                              <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['DISCLAIMER_TEXT']; ?>
                          </label>
-                         <p class="text-secondary small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MANDATORY_NOTE']; ?></p>
+                         <p class="text-secondary small mb-0 mt-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MANDATORY_NOTE']; ?></p>
                      </div>
                  </div>
 
                  <!-- Terms & Conditions Box -->
-                 <div class="bg-light p-4 rounded-3 text-start mb-5" style="max-width: 800px; margin: 0 auto; background-color: #F9FAFB;">
+                 <div class="p-4 rounded-3 text-start mb-5" style="max-width: 750px; margin: 0 auto; background-color: #F9FAFB; border: 1px solid #E5E7EB;">
                      <p class="font-graphik text-secondary small mb-0">
                          <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TERMS_TEXT_START']; ?> 
                          <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TERMS_LINK']; ?> <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a> 
@@ -92,21 +92,27 @@
 <!-- Completion Modal -->
 <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 p-4 text-center position-relative overflow-visible" style="margin-top: 50px;">
+    <div class="modal-content rounded-4 border-0 p-0 text-center position-relative overflow-visible shadow-lg" style="width: 520px; border-radius: 16px;">
       
       <!-- Overlapping Checkmark Icon -->
-      <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-white d-flex align-items-center justify-content-center" style="width: 108px; height: 108px; margin-top: -20px; box-shadow: 0px 4px 20px rgba(0,0,0,0.05);">
-          <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 66px; height: 66px; background-color: #3BC4BD; box-shadow: 0px 10px 15px -3px rgba(59, 196, 189, 0.3);">
+      <div class="position-absolute top-0 start-50 translate-middle d-flex align-items-center justify-content-center" style="margin-top: -30px;">
+          <!-- Outer Ring -->
+          <div class="rounded-circle position-absolute" style="width: 108px; height: 108px; border: 4px solid rgba(59, 196, 189, 0.2); opacity: 0.34;"></div>
+          <!-- Inner Circle -->
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white position-relative" style="width: 66px; height: 66px; background-color: #3BC4BD; box-shadow: 0px 10px 15px -3px rgba(59, 196, 189, 0.3), 0px 4px 6px -4px rgba(59, 196, 189, 0.3);">
               <i class="bi bi-check-lg fs-2"></i>
           </div>
       </div>
 
-      <div class="modal-body pt-5 mt-4">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3" style="font-size: 28px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TITLE']; ?></h2>
-        <p class="font-graphik text-secondary mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_1']; ?></p>
-        <p class="font-graphik text-secondary mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_2']; ?></p>
+      <div class="modal-body pt-5 px-5 pb-5 mt-4">
+        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3 mt-3" style="font-size: 28px; line-height: 32px; color: #101828;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TITLE']; ?></h2>
         
-        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border border-custom-aqua text-cp-deep-ocean px-4 py-2 rounded-3 fw-medium" style="border-color: #3BC4BD !important;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['CLOSE_BTN']; ?></a>
+        <div class="font-graphik text-secondary mb-4" style="font-size: 16px; line-height: 24px; color: #475467;">
+            <p class="mb-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_1']; ?></p>
+            <p class="mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_2']; ?></p>
+        </div>
+        
+        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border w-100 rounded-3 fw-medium" style="border-color: #3BC4BD !important; color: #0a0a0a; padding-top: 10px; padding-bottom: 10px; font-size: 14px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['CLOSE_BTN']; ?></a>
       </div>
     </div>
   </div>

@@ -99,6 +99,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
+      
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TITLE']; ?></h2>
         <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SUBTITLE']; ?></p>
 
@@ -141,11 +142,11 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 <div class="row g-3">
                     <div class="col-md-6">
                          <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_TARGETED']; ?></label>
-                         <input type="number" name="total_beneficiaries_targeted" class="form-control bg-light border-0 fs-6" placeholder="e.g., 500" value="<?php echo esc_attr($project->total_beneficiaries_targeted); ?>">
+                         <input type="number" name="total_beneficiaries_targeted" class="form-control" placeholder="e.g., 500" value="<?php echo esc_attr($project->total_beneficiaries_targeted); ?>">
                     </div>
                     <div class="col-md-6">
                          <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_REACHED']; ?></label>
-                         <input type="number" name="total_beneficiaries_reached" class="form-control bg-light border-0 fs-6" placeholder="e.g., 435" value="<?php echo esc_attr($project->total_beneficiaries_reached); ?>">
+                         <input type="number" name="total_beneficiaries_reached" class="form-control" placeholder="e.g., 435" value="<?php echo esc_attr($project->total_beneficiaries_reached); ?>">
                     </div>
                 </div>
                 <div class="mt-2">
@@ -160,7 +161,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
                  <div class="mb-3">
                      <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['CONTRIBUTES_ENV_LABEL']; ?></label>
-                     <select name="contributes_env_social" class="form-select bg-light border-0 fs-6">
+                     <select name="contributes_env_social" class="form-select">
                          <option value="" disabled <?php selected(!$project->contributes_env_social); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SELECT_OPTION']; ?></option>
                          <option value="Yes" <?php selected($project->contributes_env_social == 'Yes'); ?>>Yes</option>
                          <option value="No" <?php selected($project->contributes_env_social == 'No'); ?>>No</option>
@@ -168,7 +169,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                  </div>
                  <div>
                      <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['HAS_GOV_LABEL']; ?></label>
-                     <select name="has_governance_monitoring" class="form-select bg-light border-0 fs-6">
+                     <select name="has_governance_monitoring" class="form-select">
                          <option value="" disabled <?php selected(!$project->has_governance_monitoring); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SELECT_OPTION']; ?></option>
                           <option value="Yes" <?php selected($project->has_governance_monitoring == 'Yes'); ?>>Yes</option>
                          <option value="No" <?php selected($project->has_governance_monitoring == 'No'); ?>>No</option>
@@ -216,7 +217,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
     <!-- Sidebar Column -->
     <div class="col-lg-4">
-        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
+        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-50" style="background-color: #f7fafb;">
              <!-- Content -->
              <div class="position-relative z-1">
                 <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SIDEBAR_TITLE']; ?></h3>
@@ -228,8 +229,9 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 </div>
              </div>
              
-             <!-- Background Image Overlay (Placeholder/Gradient for now) -->
-             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, rgba(59, 196, 189, 0.2), transparent); pointer-events: none;"></div>
+             <!-- Background Image Overlay -->
+             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, #f7fafb 10, transparent 100%); z-index: 1; pointer-events: none;"></div>
+             <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-2-sidebar-bg.png" alt="" class="position-absolute bottom-0 start-0 w-100" style="height: 60%; object-fit: cover; z-index: 0; opacity: 1;">
         </div>
     </div>
 </div>

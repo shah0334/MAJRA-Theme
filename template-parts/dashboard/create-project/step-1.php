@@ -104,7 +104,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <div class="mb-4">
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG']; ?> <span class="text-danger">*</span></label>
                 <div class="d-flex gap-3">
-                    <select name="org_profile_id" class="form-select form-select-lg bg-light border-0 fs-6 flex-grow-1" required <?php echo $project_id ? 'disabled' : ''; ?>>
+                    <select name="org_profile_id" class="form-select flex-grow-1" required <?php echo $project_id ? 'disabled' : ''; ?>>
                         <option value="" disabled <?php selected(!$selected_org_id); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG_DEFAULT']; ?></option>
                         <?php if ($orgs): foreach ($orgs as $org): ?>
                             <option value="<?php echo esc_attr($org->org_profile_id); ?>" <?php selected($selected_org_id, $org->org_profile_id); ?>><?php echo esc_html($org->organization_name); ?></option>
@@ -123,13 +123,13 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <!-- Project Name -->
             <div class="mb-4">
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_LABEL']; ?> <span class="text-danger">*</span></label>
-                <input type="text" name="project_name" class="form-control form-control-lg bg-light border-0 fs-6" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_PLACEHOLDER']; ?>" value="<?php echo $project ? esc_attr($project->project_name) : ''; ?>" required>
+                <input type="text" name="project_name" class="form-control" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_PLACEHOLDER']; ?>" value="<?php echo $project ? esc_attr($project->project_name) : ''; ?>" required>
             </div>
 
             <!-- Project Status -->
             <div class="mb-4">
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_LABEL']; ?> <span class="text-danger">*</span></label>
-                <select name="project_stage" class="form-select form-select-lg bg-light border-0 fs-6" required>
+                <select name="project_stage" class="form-select" required>
                     <option value="" disabled <?php selected(empty($project)); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_DEFAULT']; ?></option>
                     <option value="Planned" <?php selected($project && $project->project_stage == 'Planned'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_PLANNED']; ?></option>
                     <option value="In Progress" <?php selected($project && $project->project_stage == 'In Progress'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_IN_PROGRESS']; ?></option>
@@ -140,7 +140,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <!-- Project Description -->
             <div class="mb-4">
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_LABEL']; ?> <span class="text-danger">*</span></label>
-                <textarea name="project_description" class="form-control form-control-lg bg-light border-0 fs-6" rows="5" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_PLACEHOLDER']; ?>" required><?php echo $project ? esc_textarea($project->project_description) : ''; ?></textarea>
+                <textarea name="project_description" class="form-control" rows="5" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_PLACEHOLDER']; ?>" required><?php echo $project ? esc_textarea($project->project_description) : ''; ?></textarea>
             </div>
 
             <!-- Start/End Date -->
@@ -148,13 +148,13 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 <div class="col-md-6">
                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['START_DATE']; ?> <span class="text-danger">*</span></label>
                     <div class="position-relative">
-                        <input type="date" name="start_date" class="form-control form-control-lg bg-light border-0 fs-6" value="<?php echo $project ? esc_attr($project->start_date) : ''; ?>" required>
+                        <input type="date" name="start_date" class="form-control" value="<?php echo $project ? esc_attr($project->start_date) : ''; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['END_DATE']; ?> <span class="text-danger">*</span></label>
                     <div class="position-relative">
-                        <input type="date" name="end_date" class="form-control form-control-lg bg-light border-0 fs-6" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>">
+                        <input type="date" name="end_date" class="form-control" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>">
                     </div>
                 </div>
             </div>
@@ -163,12 +163,11 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <div class="mb-5">
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_LABEL']; ?> <span class="text-danger">*</span></label>
                 <div class="position-relative">
-                    <input type="file" name="project_image" class="form-control form-control-lg bg-light border-0 fs-6 ps-3 pe-5" style="padding-top: 1rem; padding-bottom: 1rem;">
-                    <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary" style="pointer-events: none;">
-                        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_HELP']; ?>
-                    </span>
+                    <input type="file" name="project_image" id="project_image" class="form-control ps-3 pe-5" required>
                     <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                 </div>
+                <div id="project_image_preview" class="mt-2"></div>
+                <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_HELP']; ?></div>
             </div>
             
             <div class="text-end mb-5">
@@ -202,3 +201,39 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function handleFilePreview(inputId, previewId, isImage = true) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (!input || !preview) return;
+
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            preview.innerHTML = ''; // Clear previous preview
+
+            if (file) {
+                if (isImage) {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'img-thumbnail';
+                            img.style.maxHeight = '150px';
+                            preview.appendChild(img);
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.innerHTML = '<span class="text-danger">Invalid file type. Please select an image.</span>';
+                    }
+                }
+            }
+        });
+    }
+
+    handleFilePreview('project_image', 'project_image_preview', true);
+});
+</script>

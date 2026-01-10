@@ -62,24 +62,25 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
                 
                 <!-- Search Bar -->
-                <div class="mb-3">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_LABEL']; ?></label>
-                    <div class="input-group mb-3 border rounded-3 overflow-hidden" style="border-color: #D1D5DC;">
-                         <span class="input-group-text bg-white border-0 ps-3">
+                <div class="mb-4">
+                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1 d-none"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_LABEL']; ?></label>
+                    <div class="input-group mb-3 border rounded-3 overflow-hidden p-1 bg-white" style="border-color: #D1D5DC;">
+                        <span class="input-group-text bg-white border-0 ps-3 pe-2">
                              <i class="bi bi-search text-secondary"></i>
-                         </span>
-                        <input type="text" id="location-search" name="location_search_text" class="form-control border-0 shadow-none ps-2" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_PLACEHOLDER']; ?>" style="height: 50px;" value="<?php echo esc_attr($project->location_search_text); ?>">
+                        </span>
+                        <input type="text" id="location-search" name="location_search_text" class="form-control border-0 shadow-none ps-2" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_PLACEHOLDER']; ?>" style="height: 48px;" value="<?php echo esc_attr($project->location_search_text); ?>">
+                         <button type="button" class="btn btn-secondary px-4 rounded-3 text-white" style="background-color: #D1D5DB; border: none; margin: 4px;">Search</button>
                     </div>
                 </div>
 
-                <!-- Manual Address Input -->
-                <div class="mb-3">
+                <!-- Manual Address Input (Hidden as per design) -->
+                <div class="mb-3 d-none">
                     <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['ADDRESS_LABEL']; ?></label>
                     <input type="text" id="location-address" name="location_address" class="form-control bg-light border-0 fs-6" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['ADDRESS_PLACEHOLDER']; ?>" value="<?php echo esc_attr($project->location_address); ?>">
                 </div>
 
                 <!-- Map Container -->
-                <div id="project-map" class="rounded-3 w-100 mb-3" style="height: 400px; background-color: #F3F4F6;"></div>
+                <div id="project-map" class="rounded-3 w-100 mb-3" style="height: 442px; background-color: #F3F4F6;"></div>
                 
                 <p class="font-graphik small text-secondary"><i class="bi bi-info-circle me-1"></i> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['MAP_INFO']; ?></p>
 
@@ -111,12 +112,9 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 </div>
              </div>
              
-             <!-- Background Image Overlay (Bottom) -->
-             <div class="position-absolute bottom-0 start-0 w-100" style="height: 40%;">
-                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/map-sidebar-bg.png" alt="" class="w-100 h-100 object-fit-cover" style="opacity: 0.8; mix-blend-mode: overlay;">
-                  <!-- Fallback gradient if image not present -->
-                 <div style="width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.2), transparent); position: absolute; top:0; left:0;"></div>
-             </div>
+             <!-- Background Image Overlay -->
+             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, #f7fafb 10%, transparent 100%); z-index: 1; pointer-events: none;"></div>
+             <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-4-sidebar-bg.png" alt="" class="position-absolute bottom-0 start-0 w-100" style="height: 60%; object-fit: cover; z-index: 0; opacity: 1;">
         </div>
     </div>
 </div>

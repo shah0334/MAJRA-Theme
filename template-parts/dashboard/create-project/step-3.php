@@ -99,96 +99,113 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TITLE']; ?></h2>
         <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUBTITLE']; ?></p>
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" id="step_3_form">
             <?php wp_nonce_field( 'sic_save_step_3' ); ?>
             <input type="hidden" name="sic_project_action" value="save_step_3">
             
-            <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
+            <!-- Photos -->
+            <div class="mb-5">
+                <div class="d-flex justify-content-between">
+                        <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_LABEL']; ?></label>
+                </div>
+                <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_DESC']; ?></p>
                 
-                <!-- Photos -->
-                <div class="mb-5">
-                    <div class="d-flex justify-content-between">
-                         <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_LABEL']; ?></label>
-                         <?php // TODO: Show existing file indicator if previously uploaded ?>
-                    </div>
-                    <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_DESC']; ?></p>
-                    
-                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" name="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
-                        <div class="mb-3">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                <i class="bi bi-upload text-secondary fs-4"></i>
+                <div class="upload-container" id="container_photos">
+                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
+                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*" onchange="handleStep3FilePreview(this, 'container_photos')">
+                        <div class="default-view">
+                            <div class="mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                </div>
                             </div>
+                            <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
+                                <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                         </div>
-                        <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
-                        <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                         <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
+                    </div>
+                    <div class="preview-view d-none mt-3">
+                        <!-- JS injected content -->
                     </div>
                 </div>
+            </div>
 
-                <!-- Impact Report -->
-                <div class="mb-5">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_LABEL']; ?></label>
-                    <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_DESC']; ?></p>
-                    
-                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" name="impact_report_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
-                        <div class="mb-3">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                <i class="bi bi-upload text-secondary fs-4"></i>
+            <!-- Impact Report -->
+            <div class="mb-5">
+                <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_LABEL']; ?></label>
+                <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_DESC']; ?></p>
+                
+                <div class="upload-container" id="container_impact">
+                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
+                        <input type="file" name="impact_report_file" id="impact_report_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_impact')">
+                        <div class="default-view">
+                            <div class="mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                </div>
                             </div>
+                            <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                         </div>
-                        <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
-                        <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                        <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                     </div>
+                    <div class="preview-view d-none mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Testimonials -->
+            <div class="mb-5">
+                <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_LABEL']; ?></label>
+                <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_DESC']; ?></p>
+                
+                <div class="mb-3">
+                    <label class="form-label font-graphik text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['LINK_LABEL']; ?></label>
+                    <input type="url" name="media_link" class="form-control" placeholder="https://example.com" value="<?php echo esc_url($media_link); ?>">
                 </div>
 
-                <!-- Testimonials -->
-                <div class="mb-5">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_LABEL']; ?></label>
-                    <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_DESC']; ?></p>
-                    
-                    <div class="mb-3">
-                        <label class="form-label font-graphik text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['LINK_LABEL']; ?></label>
-                        <input type="url" name="media_link" class="form-control bg-light border-0 fs-6" placeholder="https://example.com" value="<?php echo esc_url($media_link); ?>">
-                    </div>
-
-                    <label class="form-label font-graphik text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FILE_LABEL']; ?></label>
-                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" name="testimonials_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
-                        <div class="mb-3">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                <i class="bi bi-upload text-secondary fs-4"></i>
+                <label class="form-label font-graphik text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FILE_LABEL']; ?></label>
+                    <div class="upload-container" id="container_testimonials">
+                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
+                        <input type="file" name="testimonials_file" id="testimonials_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_testimonials')">
+                        <div class="default-view">
+                            <div class="mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                </div>
                             </div>
+                            <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                         </div>
-                        <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
-                        <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                        <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                     </div>
+                    <div class="preview-view d-none mt-3"></div>
                 </div>
+            </div>
 
-                <!-- Sustainable Impact Plan -->
-                <div class="mb-4">
-                    <div class="d-flex align-items-center mb-1">
-                        <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-0 me-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_LABEL']; ?></label>
-                        <i class="bi bi-info-circle text-secondary" style="font-size: 14px;" data-bs-toggle="tooltip" title="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_TOOLTIP']; ?>"></i>
-                    </div>
-                    <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_DESC']; ?></p>
-                    
-                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative" style="border: 1px dashed #D0D5DD; background-color: #FFFFFF;">
-                        <input type="file" name="sustainable_plan_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer">
-                        <div class="mb-3">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                <i class="bi bi-upload text-secondary fs-4"></i>
+            <!-- Sustainable Impact Plan -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center mb-1">
+                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-0 me-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_LABEL']; ?></label>
+                    <i class="bi bi-info-circle text-secondary" style="font-size: 14px;" data-bs-toggle="tooltip" title="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_TOOLTIP']; ?>"></i>
+                </div>
+                <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_DESC']; ?></p>
+                
+                <div class="upload-container" id="container_plan">
+                    <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
+                        <input type="file" name="sustainable_plan_file" id="sustainable_plan_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_plan')">
+                        <div class="default-view">
+                            <div class="mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                </div>
                             </div>
+                            <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
+                                <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                         </div>
-                        <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
-                         <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                        <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
                     </div>
+                    <div class="preview-view d-none mt-3"></div>
                 </div>
-
             </div>
 
             <!-- Navigation Buttons -->
@@ -220,11 +237,84 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 </div>
              </div>
              
-             <!-- Background Image Overlay (Bottom) -->
-             <div class="position-absolute bottom-0 start-0 w-100" style="height: 30%;">
-                 <!-- Placeholder for the cityscape image shown in design -->
-                 <div style="width: 100%; height: 100%; background: linear-gradient(to top, #00041C, transparent); opacity: 0.8;"></div>
-             </div>
+             <!-- Background Image Overlay -->
+             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, #f7fafb 10%, transparent 100%); z-index: 1; pointer-events: none;"></div>
+             <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-3-sidebar-bg.png" alt="" class="position-absolute bottom-0 start-0 w-100" style="height: 60%; object-fit: cover; z-index: 0; opacity: 1;">
         </div>
     </div>
 </div>
+
+<script>
+function handleStep3FilePreview(input, containerId) {
+    const container = document.getElementById(containerId);
+    const defaultView = container.querySelector('.default-view');
+    const previewView = container.querySelector('.preview-view');
+    const file = input.files[0];
+
+    if (file) {
+        // Hide default view, show preview
+        // But we want to keep the input accessible? 
+        // Actually, usually we replace the whole dropzone look or put the preview BELOW it.
+        // My code structure: input is absolute over the .custom-upload-zone.
+        // If I hide .default-view, the background/border remains.
+        
+        // Let's replace the visual content of the dropzone OR show a "Selected Card" and hide the big dropzone?
+        // Figma shows: When selected, it shows a card with file info.
+        
+        // Implementation: 
+        // Hide the .custom-upload-zone (which contains the input!). 
+        // Wait, if I hide the input, user can't change it easily unless I provide a "Remove" button that resets it.
+        
+        // Better: Hide .custom-upload-zone visually, Show .preview-view.
+        // .preview-view will have the "Remove" button which clears input and toggles visibility back.
+        
+        const zone = container.querySelector('.custom-upload-zone');
+        zone.classList.add('d-none');
+        previewView.classList.remove('d-none');
+        
+        const isImage = file.type.startsWith('image/');
+        let iconHtml = '<i class="bi bi-file-earmark-text fs-3 text-secondary"></i>';
+        if (isImage) {
+            iconHtml = `<img src="${URL.createObjectURL(file)}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">`;
+        } else if (file.type === 'application/pdf') {
+             iconHtml = '<i class="bi bi-file-earmark-pdf fs-3 text-danger"></i>';
+        }
+
+        previewView.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded-3 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        ${iconHtml}
+                    </div>
+                    <div>
+                        <p class="mb-0 fw-bold text-cp-deep-ocean small text-truncate" style="max-width: 200px;">${file.name}</p>
+                        <p class="mb-0 text-secondary x-small">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-link text-danger p-0" onclick="clearFile('${auth_input_id(containerId)}')">
+                    <i class="bi bi-x-circle fs-5"></i>
+                </button>
+            </div>
+        `;
+    }
+}
+
+function auth_input_id(containerId) {
+    // Helper to find input id from container id (reverse engineer or just pass input id)
+    // Actually handleStep3FilePreview should pass both.
+    // I'll fix the onclick above to pass logic.
+    return containerId; // Logic handled in clearFile
+}
+
+function clearFile(containerId) {
+    const container = document.getElementById(containerId);
+    const input = container.querySelector('input[type="file"]');
+    const zone = container.querySelector('.custom-upload-zone');
+    const previewView = container.querySelector('.preview-view');
+    
+    input.value = ''; // Clear file
+    zone.classList.remove('d-none');
+    previewView.classList.add('d-none');
+    previewView.innerHTML = '';
+}
+</script>

@@ -2,6 +2,7 @@
 /**
  * Step 5: Demographic Information
  */
+global $language;
 ?>
 
 <!-- Eligibility Banner -->
@@ -23,7 +24,6 @@
 
          <?php
         $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
-        global $language;
         $project = null;
 
         if ($project_id) {
@@ -201,11 +201,9 @@
                 </div>
              </div>
              
-             <!-- Background Image Overlay (Bottom) -->
-             <div class="position-absolute bottom-0 start-0 w-100" style="height: 45%;">
-                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/demographic-sidebar-bg.png" alt="" class="w-100 h-100 object-fit-cover">
-                 <div style="width: 100%; height: 100%; background: linear-gradient(to top, rgba(255,255,255,0.1), transparent); position: absolute; top:0; left:0;"></div>
-             </div>
+             <!-- Background Image Overlay -->
+             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, #f7fafb 10%, transparent 100%); z-index: 1; pointer-events: none;"></div>
+             <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-5-sidebar-bg.png" alt="" class="position-absolute bottom-0 start-0 w-100" style="height: 60%; object-fit: cover; z-index: 0; opacity: 1;">
         </div>
     </div>
 </div>
