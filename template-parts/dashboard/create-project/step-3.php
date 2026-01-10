@@ -244,6 +244,77 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
     </div>
 </div>
 
+<?php
+// Fetch all files for this project
+$project_files = [];
+if ($project_id) {
+    $files = $db->get_project_files($project_id);
+    foreach ($files as $f) {
+        $project_files[$f->file_role] = [
+            'url' => $f->file_url,
+            'name' => $f->file_name
+        ];
+    }
+}
+?>
+
+<script>
+const existingFiles = <?php echo json_encode($project_files); ?>;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Pre-fill files
+    if (existingFiles.photos) {
+        showExistingFile('container_photos', existingFiles.photos, true);
+    }
+    if (existingFiles.impact_report) {
+         showExistingFile('container_impact', existingFiles.impact_report, false);
+    }
+    if (existingFiles.testimonials_file) { // Note: role is 'testimonials_file' in save logic
+         showExistingFile('container_testimonials', existingFiles.testimonials_file, false);
+    }
+    if (existingFiles.sustainable_impact_plan) {
+         showExistingFile('container_plan', existingFiles.sustainable_impact_plan, false);
+    }
+});
+
+function showExistingFile(containerId, fileData, isImage) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const zone = container.querySelector('.custom-upload-zone');
+    const previewView = container.querySelector('.preview-view');
+    
+    zone.classList.add('d-none');
+    previewView.classList.remove('d-none');
+
+    let iconHtml = '<i class="bi bi-file-earmark-text fs-3 text-secondary"></i>';
+    if (isImage) {
+        iconHtml = `<img src="${fileData.url}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">`;
+    } else if (fileData.name.toLowerCase().endsWith('.pdf')) {
+         iconHtml = '<i class="bi bi-file-earmark-pdf fs-3 text-danger"></i>';
+    }
+
+    previewView.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded-3 shadow-sm">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    ${iconHtml}
+                </div>
+                <div>
+                    <p class="mb-0 fw-bold text-cp-deep-ocean small text-truncate" style="max-width: 200px;">
+                        <a href="${fileData.url}" target="_blank" class="text-decoration-none text-cp-deep-ocean">${fileData.name}</a>
+                    </p>
+                    <p class="mb-0 text-secondary x-small">Existing File</p>
+                </div>
+            </div>
+            <button type="button" class="btn btn-link text-danger p-0" onclick="clearFile('${auth_input_id(containerId)}')">
+                <i class="bi bi-x-circle fs-5"></i>
+            </button>
+        </div>
+    `;
+}
+</script>
+
 <script>
 function handleStep3FilePreview(input, containerId) {
     const container = document.getElementById(containerId);

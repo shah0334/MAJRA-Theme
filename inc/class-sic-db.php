@@ -496,7 +496,7 @@ class SIC_DB {
      */
     public function get_project_files( $project_id ) {
         $sql = "
-            SELECT pf.file_role, f.file_name, f.file_path, f.original_name
+            SELECT pf.file_role, f.storage_url as file_url, f.original_filename as file_name, f.storage_key
             FROM " . self::TBL_PROJECT_FILES . " pf
             JOIN " . self::TBL_FILES . " f ON pf.file_id = f.file_id
             WHERE pf.project_id = %d

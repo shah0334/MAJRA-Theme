@@ -18,9 +18,16 @@ $project = null;
 if ( $project_id ) {
     $project = $db->get_project($project_id);
     if ( $project && $project->org_profile_id ) {
-        // Find org id from profile
-        // For now, simpler to just trust the project data or fetch profile to get org_id
-        // $selected_org_id = ...
+        $selected_org_id = $project->org_profile_id;
+    }
+    
+    // Fetch existing profile image
+    $files = $db->get_project_files($project_id);
+    foreach ($files as $f) {
+        if ($f->file_role === 'profile_image') {
+            $profile_image_url = $f->file_url;
+            break;
+        }
     }
 }
 
@@ -163,7 +170,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <div class="mb-5">
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_LABEL']; ?> <span class="text-danger">*</span></label>
                 <div class="position-relative">
-                    <input type="file" name="project_image" id="project_image" class="form-control ps-3 pe-5" required>
+                    <input type="file" name="project_image" id="project_image" class="form-control ps-3 pe-5" <?php echo !empty($profile_image_url) ? '' : 'required'; ?>>
                     <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
                 </div>
                 <div id="project_image_preview" class="mt-2"></div>
@@ -234,6 +241,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Existing file logic
+    const existingProfileImage = "<?php echo isset($profile_image_url) ? esc_url($profile_image_url) : ''; ?>";
+    
     handleFilePreview('project_image', 'project_image_preview', true);
+
+    if (existingProfileImage) {
+        const preview = document.getElementById('project_image_preview');
+        const img = document.createElement('img');
+        img.src = existingProfileImage;
+        img.className = 'img-thumbnail';
+        img.style.maxHeight = '150px';
+        preview.appendChild(img);
+    }
 });
 </script>
