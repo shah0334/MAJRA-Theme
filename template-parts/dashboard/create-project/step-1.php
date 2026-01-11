@@ -48,6 +48,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         'project_description' => sanitize_textarea_field($_POST['project_description']),
         'start_date'          => sanitize_text_field($_POST['start_date']),
         'end_date'            => sanitize_text_field($_POST['end_date']),
+        'profile_completed'   => 1 // Mark Step 1 as completed
         // Image upload handling to be added here
     ];
 

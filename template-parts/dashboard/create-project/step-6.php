@@ -23,25 +23,32 @@
                 $error_message = "Please accept the declaration to proceed.";
             } else {
                 $db = SIC_DB::get_instance();
-                $update_result = $db->update_project($project_id, [
-                    'submission_status' => 'submitted',
-                    'profile_completed' => 1 // Mark profile/application as complete
-                ]);
                 
-                if ( $update_result ) {
-                    // Redirect to self with success flag to show modal
-                    $current_url = remove_query_arg(['_wpnonce', 'sic_project_action'], $_SERVER['REQUEST_URI']);
-                    $success_url = add_query_arg(['submission_success' => '1'], $current_url);
-                    wp_redirect($success_url);
-                    exit;
+                // Validate Completion of Steps 1-5
+                $validation = $db->validate_project_completion($project_id);
+                if ( is_wp_error($validation) ) {
+                    $error_message = $validation->get_error_message();
                 } else {
-                     $error_message = "An error occurred while submitting your project. Please try again.";
+                    $update_result = $db->update_project($project_id, [
+                        'submission_status' => 'submitted',
+                        'profile_completed' => 1 // Mark profile/application as complete
+                    ]);
+                    
+                    if ( $update_result ) {
+                        // Redirect to self with success flag to show modal
+                        $current_url = remove_query_arg(['_wpnonce', 'sic_project_action'], $_SERVER['REQUEST_URI']);
+                        $success_url = add_query_arg(['submission_success' => '1'], $current_url);
+                        wp_redirect($success_url);
+                        exit;
+                    } else {
+                         $error_message = "An error occurred while submitting your project. Please try again.";
+                    }
                 }
             }
         }
         
         if ( isset($error_message) ) {
-            echo '<div class="alert alert-danger rounded-3 mb-4">' . esc_html($error_message) . '</div>';
+            echo '<div class="alert alert-danger rounded-3 mb-4">' . wp_kses_post($error_message) . '</div>';
         }
         ?>
 

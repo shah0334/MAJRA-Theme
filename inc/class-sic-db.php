@@ -701,5 +701,49 @@ class SIC_DB {
 
         return true;
     }
+
+    /**
+     * Validate Project Completion
+     * Checks if all steps (1-5) are marked as completed.
+     */
+    public function validate_project_completion( $project_id ) {
+        $project = $this->get_project($project_id);
+        if ( ! $project ) {
+            return new WP_Error( 'not_found', 'Project not found.' );
+        }
+
+        $errors = [];
+
+        // Step 1: Profile
+        if ( ! $project->profile_completed ) {
+            $errors[] = 'Step 1: Project Profile is incomplete.';
+        }
+
+        // Step 2: Details
+        if ( ! $project->details_completed ) {
+             $errors[] = 'Step 2: Project Details is incomplete.';
+        }
+
+        // Step 3: Evidence
+        if ( ! $project->evidence_completed ) {
+             $errors[] = 'Step 3: Supporting Evidence is incomplete.';
+        }
+
+        // Step 4: Pinpoint
+        if ( ! $project->pinpoint_completed ) {
+             $errors[] = 'Step 4: Project Location is incomplete.';
+        }
+
+        // Step 5: Demographics
+        if ( ! $project->demographics_completed ) {
+             $errors[] = 'Step 5: Demographics is incomplete.';
+        }
+
+        if ( ! empty($errors) ) {
+            return new WP_Error( 'incomplete_submission', implode('<br>', $errors) );
+        }
+
+        return true;
+    }
 }
 ?>
