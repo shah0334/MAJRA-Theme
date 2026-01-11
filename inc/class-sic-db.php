@@ -13,6 +13,8 @@ class SIC_DB {
 
     private static $instance = null;
     private $wpdb;
+    private $connection_error = '';
+    private $is_external_db = false;
     
     // Table names (without prefix)
     const TBL_PROGRAMS              = 'sic_programs';
@@ -48,30 +50,30 @@ class SIC_DB {
     /**
      * Establish connection to external database using env file credentials.
      */
+    /**
+     * Establish connection to external database using hardcoded credentials.
+     */
     private function connect() {
-        $env_file = get_template_directory() . '/env';
-        if ( ! file_exists( $env_file ) ) {
-            // Fallback to global WPDB if env not found (or handle error)
-            error_log('SIC DB: .env file not found. using global wpdb');
-            global $wpdb;
-            $this->wpdb = $wpdb;
-            return;
-        }
+        // Hardcoded Credentials
+        $db_user = 'cmjqgkmy_majra_sic_admin';
+        $db_pass = '+J~Pj!L277Q^';
+        $db_name = 'cmjqgkmy_majra_sic';
+        $db_host = 'localhost';
 
-        $env = parse_ini_file( $env_file );
-        
-        if ( $env && isset($env['DB_USER'], $env['DB_PASSWORD'], $env['DB_NAME'], $env['DB_HOST']) ) {
-            $this->wpdb = new wpdb(
-                $env['DB_USER'],
-                $env['DB_PASSWORD'],
-                $env['DB_NAME'],
-                $env['DB_HOST']
-            );
-        } else {
-             error_log('SIC DB: Invalid .env configuration. using global wpdb');
-             global $wpdb;
-             $this->wpdb = $wpdb;
-        }
+        $this->wpdb = new wpdb(
+            $db_user,
+            $db_pass,
+            $db_name,
+            $db_host
+        );
+        $this->is_external_db = true; // Always true now
+    }
+
+    /**
+     * Check if using external DB
+     */
+    public function is_using_external_db() {
+        return $this->is_external_db;
     }
 
     /**
@@ -559,6 +561,102 @@ class SIC_DB {
         ";
 
         return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
+    }
+    /**
+     * Check if Database connection is valid and tables exist
+     * @param bool $check_tables Whether to check for specific tables or just connection
+     */
+    public function is_connected($check_tables = true) {
+        if ( ! isset($this->wpdb) ) {
+            $this->connection_error = "Database object not initialized.";
+            return false;
+        }
+
+        // Try simple query to check connection
+        // Note: We use query() because it returns false on error/failure
+        $this->wpdb->suppress_errors(true);
+        if ( $this->wpdb->query('SELECT 1') === false ) {
+             // Capture explicit connection error if available, otherwise last query error
+             $error_msg = !empty($this->wpdb->db_connect_error) ? $this->wpdb->db_connect_error : $this->wpdb->last_error;
+             $this->connection_error = "Connection Failed: " . ($error_msg);
+             
+             $this->wpdb->suppress_errors(false);
+             return false;
+        }
+        $this->wpdb->suppress_errors(false);
+
+        if ( $check_tables ) {
+            $table = self::TBL_APPLICANTS;
+            $result = $this->wpdb->get_var( "SHOW TABLES LIKE '$table'" );
+            if ( $result !== $table ) {
+                $this->connection_error = "Connected to DB but Table '$table' does not exist.";
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Get the last connection error
+     */
+    public function get_last_error() {
+        return $this->connection_error;
+    }
+
+    /**
+     * Get DB Configuration Information (Safe for display)
+     */
+    public function get_config_info() {
+        // Return settings from the wpdb instance if available, otherwise 'Unset'
+        if ( isset($this->wpdb) ) {
+            return [
+                'host' => $this->wpdb->dbhost,
+                'name' => $this->wpdb->dbname
+            ];
+        }
+        return ['host' => 'Unknown', 'name' => 'Unknown'];
+    }
+
+    /**
+     * Install Tables from schema.sql
+     */
+    public function install_tables() {
+        if ( ! isset($this->wpdb) ) {
+            return new WP_Error( 'db_error', 'Database connection not initialized' );
+        }
+
+        $schema_file = get_template_directory() . '/SIC_Submission_Package_2026/schema.sql';
+        if ( ! file_exists($schema_file) ) {
+            return new WP_Error( 'file_error', 'Schema file not found' );
+        }
+
+        $sql = file_get_contents($schema_file);
+        
+        // Remove comments
+        $sql = preg_replace('/--.*$/m', '', $sql);
+        
+        // Split by semicolon
+        $queries = explode(';', $sql);
+        
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if ( empty($query) ) continue;
+            
+            // Skip USE and CREATE DATABASE commands as we are already connected/configured
+            if ( stripos($query, 'USE ') === 0 || stripos($query, 'CREATE DATABASE') === 0 ) {
+                continue;
+            }
+
+            $this->wpdb->query($query);
+            
+            if ( $this->wpdb->last_error ) {
+                 // Log error
+                error_log("SIC DB Install Error: " . $this->wpdb->last_error . " | Query: " . substr($query, 0, 50));
+            }
+        }
+
+        return true;
     }
 }
 ?>

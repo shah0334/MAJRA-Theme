@@ -41,6 +41,63 @@ get_header(); // Use main header but we might hide nav
                 <strong>Note:</strong> This is a mock login for development purposes. You will be signed in as a test user.
             </div>
 
+            <?php
+            // Check DB Connection
+            $db = SIC_DB::get_instance();
+            $is_connected = $db->is_connected();
+            $error_msg = $db->get_last_error();
+            $is_external = $db->is_using_external_db();
+            $db_info = $db->get_config_info();
+            
+            // 1. Show Connection Source Warning if falling back to WP DB
+            if ( ! $is_external ) {
+                ?>
+                <div class="alert alert-warning font-graphik small text-start">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    <strong>Config Warning:</strong> Using Local WordPress Database (External DB config missing or invalid).
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="alert alert-success font-graphik small text-start py-2">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-database-check me-2 fs-5"></i>
+                        <div>
+                            <strong>Connected to External Database</strong><br>
+                            <span class="text-muted" style="font-size: 0.9em;">
+                                Host: <?php echo esc_html($db_info['host']); ?> | DB: <?php echo esc_html($db_info['name']); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
+
+            // 2. Show Error if Connection Failed or Tables Missing
+            if ( ! $is_connected ) {
+                ?>
+                <div class="alert alert-danger font-graphik small text-start">
+                    <div class="mb-2">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Connection Error:</strong> <?php echo esc_html( $error_msg ); ?>
+                    </div>
+                    <div class="mb-2 text-muted" style="font-size: 0.85em;">
+                         Attempted: Host: <?php echo esc_html($db_info['host']); ?> | DB: <?php echo esc_html($db_info['name']); ?>
+                    </div>
+                    
+                    <?php if ( strpos($error_msg, 'does not exist') !== false ): ?>
+                        <div class="mt-2 pt-2 border-top border-danger-subtle">
+                            <p class="mb-2 small">The database is connected but tables are missing.</p>
+                            <a href="<?php echo esc_url( get_template_directory_uri() . '/setup-sic-db.php' ); ?>" class="btn btn-sm btn-danger w-100" target="_blank">
+                                <i class="bi bi-tools me-1"></i> Run Database Setup Script
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php
+            }
+            ?>
+
             <button type="submit" class="btn btn-lg w-100 text-white font-graphik fw-medium" style="background-color: var(--cp-aqua-marine);">
                 Login with Dummy User
             </button>
