@@ -658,5 +658,48 @@ class SIC_DB {
 
         return true;
     }
+
+    /**
+     * Seed Tables with initial data
+     */
+    public function seed_tables() {
+        if ( ! isset($this->wpdb) ) {
+            return new WP_Error( 'db_error', 'Database connection not initialized' );
+        }
+
+        // 1. Seed Program (SIC)
+        $this->wpdb->query("
+            INSERT INTO " . self::TBL_PROGRAMS . " (program_code, program_name)
+            VALUES ('SIC', 'SIC')
+            ON DUPLICATE KEY UPDATE program_name = VALUES(program_name);
+        ");
+
+        // 2. Seed Cycle (2026) and make active
+        // Reset all cycles to inactive first - we need to handle program_id carefully
+        // Ideally we fetch the program ID first
+        $program_id = $this->wpdb->get_var( $this->wpdb->prepare("SELECT program_id FROM " . self::TBL_PROGRAMS . " WHERE program_code = %s", 'SIC') );
+        
+        if ( $program_id ) {
+            $this->wpdb->update(self::TBL_CYCLES, ['is_active' => 0], ['program_id' => $program_id]);
+        }
+        
+        // Use SQL with subquery to safely handle IDs
+        $sql = "
+            INSERT INTO " . self::TBL_CYCLES . " (program_id, cycle_year, cycle_label, is_active)
+            SELECT program_id, 2026, 'SIC 2026', 1
+            FROM " . self::TBL_PROGRAMS . "
+            WHERE program_code = 'SIC'
+            ON DUPLICATE KEY UPDATE
+              cycle_label = VALUES(cycle_label),
+              is_active = VALUES(is_active);
+        ";
+        $this->wpdb->query($sql);
+        
+        if ( $this->wpdb->last_error ) {
+            return new WP_Error( 'seed_error', $this->wpdb->last_error );
+        }
+
+        return true;
+    }
 }
 ?>

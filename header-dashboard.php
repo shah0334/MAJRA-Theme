@@ -102,7 +102,7 @@ global $isRTL;
                     <!-- Left: Logo -->
                     <div class="logo">
                         <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>">
-                            <img src="<?php echo content_url('uploads/dashboard-logo.svg'); ?>" alt="Majra Dashboard" />
+                            <img src="<?php echo content_url('uploads/2026/01/dashboard-logo.svg'); ?>" alt="Majra Dashboard" />
                         </a>
                     </div>
 
@@ -175,10 +175,10 @@ global $isRTL;
                             
                             <div class="dashboard-actions">
                                 <button class="dashboard-action-btn btn-profile" title="Profile">
-                                    <img src="<?php echo content_url('uploads/header-icon-profile.svg'); ?>" alt="Profile" />
+                                    <img src="<?php echo content_url('uploads/2026/01/header-icon-profile.svg'); ?>" alt="Profile" />
                                 </button>
                             <a href="<?php echo add_query_arg( 'sic_logout', '1', home_url() ); ?>" class="dashboard-action-btn btn-notification" title="Logout">
-                                    <img src="<?php echo content_url('uploads/header-icon-logout.svg'); ?>" alt="Logout" />
+                                    <img src="<?php echo content_url('uploads/2026/01/header-icon-logout.svg'); ?>" alt="Logout" />
                                 </a>
                          
                             </div>
