@@ -58,7 +58,7 @@ class SIC_DB {
         $db_user = 'cmjqgkmy_majra_sic_admin';
         $db_pass = '+J~Pj!L277Q^';
         $db_name = 'cmjqgkmy_majra_sic';
-        $db_host = 'localhost';
+        $db_host = '127.0.0.1';
 
         $this->wpdb = new wpdb(
             $db_user,

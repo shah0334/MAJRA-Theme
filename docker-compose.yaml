@@ -7,9 +7,9 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: sic_portal
-      MYSQL_USER: sic_user
-      MYSQL_PASSWORD: sic_password
+      MYSQL_DATABASE: cmjqgkmy_majra_sic
+      MYSQL_USER: cmjqgkmy_majra_sic_admin
+      MYSQL_PASSWORD: +J~Pj!L277Q^
     ports:
       - "3306:3306"
     volumes:
