@@ -603,6 +603,34 @@ class SIC_DB {
 
         return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $cycle_id ) );
     }
+
+    /**
+     * Get Organization Profile by ID
+     */
+    public function get_org_profile_by_id( $org_profile_id ) {
+        $sql = "
+            SELECT 
+                op.*, 
+                o.canonical_name 
+            FROM " . self::TBL_ORG_PROFILES . " op
+            JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE op.org_profile_id = %d
+        ";
+        $profile = $this->wpdb->get_row( $this->wpdb->prepare( $sql, $org_profile_id ) );
+
+        if ( !$profile ) return null;
+
+        return $profile;
+    }
+
+    /**
+     * Get Organization CSR Activities for Admin View
+     */
+    public function get_org_csr_activities( $org_profile_id ) {
+        $sql = "SELECT * FROM " . self::TBL_ORG_CSR_ACTIVITIES . " WHERE org_profile_id = %d";
+        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $org_profile_id ) );
+    }
+
     /**
      * Check if Database connection is valid and tables exist
      * @param bool $check_tables Whether to check for specific tables or just connection

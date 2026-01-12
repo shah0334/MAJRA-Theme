@@ -69,7 +69,12 @@ global $language;
     $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id();
     
     $org_profile = $db->get_organization_by_applicant_id( $user_id );
-    $projects = $db->get_projects_by_applicant( $user_id );
+    
+    if ( current_user_can('manage_options') ) {
+        $projects = $db->get_all_projects();
+    } else {
+        $projects = $db->get_projects_by_applicant( $user_id );
+    }
 
     // If Organization exists (Complete or Draft but linked correctly to show "Home with Org" logic?)
     // The current logic only checked $org_profile. 
@@ -123,7 +128,10 @@ global $language;
                                             <i class="bi bi-three-dots-vertical fs-5"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="<?php echo SIC_Routes::get_view_project_url($project->project_id); ?>">View</a></li>
+                                            <?php if ( !current_user_can('manage_options') ): ?>
                                             <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>">Edit</a></li>
+                                            <?php endif; ?>
                                         </ul>
                                     </div>
                                 </td>
@@ -132,9 +140,11 @@ global $language;
                         </tbody>
                     </table>
                 </div>
-                 <div class="mt-4">
+                <?php if ( !current_user_can('manage_options') ): ?>
+                <div class="mt-4">
                     <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn-custom-primary">Complete Organization Profile</a>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -150,8 +160,11 @@ global $language;
                     <i class="bi bi-buildings"></i> <!-- Placeholder for big icon -->
                 </div>
                 <h3>No Organization</h3>
-                <p>To submit your sustainability projects and compete for recognition, you'll need to add your organization details first.</p>
+                <?php if ( !current_user_can('manage_options') ): ?>
                 <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn-custom-primary">Add Your Organization</a>
+                <?php else: ?>
+                <p class="text-secondary">Admin View: No organizations found.</p>
+                <?php endif; ?>
             </div>
         </div>
     </section>

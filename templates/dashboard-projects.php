@@ -16,7 +16,9 @@ global $language;
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <?php if ( !current_user_can('manage_options') ): ?>
                 <a href="<?php echo SIC_Routes::get_create_project_url(); ?>" class="btn-custom-primary"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SUBMIT_NEW_PROJECT_BTN']; ?></a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -65,7 +67,11 @@ global $language;
                         ?>
                             <tr>
                                 <td colspan="6" class="text-center py-5">
-                                    <p class="text-secondary mb-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_TEXT']; ?> <a href="<?php echo SIC_Routes::get_create_project_url(); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_LINK']; ?></a>.</p>
+                                    <p class="text-secondary mb-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_TEXT']; ?> 
+                                    <?php if ( !current_user_can('manage_options') ): ?>
+                                    <a href="<?php echo SIC_Routes::get_create_project_url(); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_LINK']; ?></a>.
+                                    <?php endif; ?>
+                                    </p>
                                 </td>
                             </tr>
                         <?php else: ?>
@@ -90,7 +96,10 @@ global $language;
                                             <i class="bi bi-three-dots-vertical fs-5"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="<?php echo SIC_Routes::get_view_project_url($project->project_id); ?>">View</a></li>
+                                            <?php if ( !current_user_can('manage_options') ): ?>
                                             <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EDIT']; ?></a></li>
+                                            <?php endif; ?>
                                             <!-- <li><a class="dropdown-item text-danger" href="#">Delete</a></li> -->
                                         </ul>
                                     </div>

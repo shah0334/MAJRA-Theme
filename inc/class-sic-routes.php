@@ -75,4 +75,18 @@ class SIC_Routes {
     public static function get_my_organizations_url() {
         return self::get_url_with_lang(self::SLUG_MY_ORGANIZATIONS);
     }
+
+    // View Routes (Admin/Read-Only)
+    const SLUG_VIEW_ORG     = 'sic-view-organization'; // Admin or View Mode
+    const SLUG_VIEW_PROJECT = 'sic-view-project';      // Admin or View Mode
+
+    public static function get_view_org_url( $org_id ) {
+        $url = self::get_url_with_lang(self::SLUG_VIEW_ORG);
+        return add_query_arg( 'org_id', $org_id, $url );
+    }
+
+    public static function get_view_project_url( $project_id ) {
+        $url = self::get_url_with_lang(self::SLUG_VIEW_PROJECT);
+        return add_query_arg( 'project_id', $project_id, $url );
+    }
 }

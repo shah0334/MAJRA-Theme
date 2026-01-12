@@ -41,8 +41,10 @@ global $language;
                         <h2 class="font-graphik fw-bold text-cp-deep-ocean m-0 fs-5"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['REGISTERED_ORG_TITLE']; ?></h2>
                         <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip" title="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['TOOLTIP']; ?>"></i>
                     </div>
+                    <?php if ( !current_user_can('manage_options') ): ?>
                     <!-- Create Button -->
                     <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-custom-aqua text-white rounded-pill px-4 fw-bold"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['CREATE_BTN']; ?></a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Search Bar -->
@@ -84,8 +86,10 @@ global $language;
                                     </td>
                                     <td class="pe-3 py-3 text-end">
                                         <div class="d-flex align-items-center justify-content-end gap-3">
-                                            <button class="btn btn-link p-0 text-secondary" title="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['VIEW']; ?>"><i class="bi bi-eye"></i></button>
+                                            <a href="<?php echo SIC_Routes::get_view_org_url($org_profile->org_profile_id); ?>" class="btn btn-link p-0 text-secondary" title="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['VIEW']; ?>"><i class="bi bi-eye"></i></a>
+                                            <?php if ( !current_user_can('manage_options') ): ?>
                                             <a href="<?php echo SIC_Routes::get_create_project_url( $org_profile->org_profile_id ); ?>" class="text-cp-coral-sunset fw-bold text-decoration-none border-bottom border-cp-coral-sunset"><?php echo $language['DASHBOARD']['DASHBOARD_ORG']['CREATE_PROJECT']; ?></a>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>

@@ -5,15 +5,21 @@
 $db = SIC_DB::get_instance();
 global $language;
 $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id();
-$projects = $db->get_projects_by_applicant( $user_id );
+if ( current_user_can('manage_options') ) {
+    $projects = $db->get_all_projects();
+} else {
+    $projects = $db->get_projects_by_applicant( $user_id );
+}
 ?>
 <section class="projects-section py-5">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="font-mackay text-cp-deep-ocean mb-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['MY_PROJECT_SUBMISSIONS']; ?></h2>
+            <?php if ( !current_user_can('manage_options') ): ?>
             <a href="<?php echo SIC_Routes::get_create_project_url(); ?>" class="btn btn-custom-aqua text-white rounded-pill px-4 fw-bold">
                 <i class="bi bi-plus-lg me-2"></i> <?php echo $language['DASHBOARD']['HOME_WITH_ORG']['CREATE_NEW_PROJECT']; ?>
             </a>
+            <?php endif; ?>
         </div>
 
         <!-- Projects Table -->
@@ -72,7 +78,10 @@ $projects = $db->get_projects_by_applicant( $user_id );
                                             <i class="bi bi-three-dots-vertical fs-5"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="<?php echo SIC_Routes::get_view_project_url($project->project_id); ?>">View</a></li>
+                                            <?php if ( !current_user_can('manage_options') ): ?>
                                             <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EDIT']; ?></a></li>
+                                            <?php endif; ?>
                                         </ul>
                                     </div>
                                 </td>
