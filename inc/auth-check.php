@@ -40,6 +40,11 @@ function sic_check_dashboard_access() {
 
     if ( is_page_template( $protected_templates ) ) {
         
+        // Skip check for admins
+        if ( current_user_can('manage_options') ) {
+            return;
+        }
+
         if ( ! isset($_SESSION['sic_user_id']) ) {
             wp_redirect( SIC_Routes::get_login_url() );
             exit;

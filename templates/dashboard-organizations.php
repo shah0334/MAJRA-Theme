@@ -19,7 +19,12 @@ global $language;
 
             <?php
             $db = SIC_DB::get_instance();
-            $org_profiles = $db->get_organizations_by_applicant_id( $_SESSION['sic_user_id'] );
+            if ( current_user_can('manage_options') ) {
+                $org_profiles = $db->get_all_organizations();
+            } else {
+                $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
+                $org_profiles = $db->get_organizations_by_applicant_id( $user_id );
+            }
             
             // Should show table even if empty, as per typical dashboard behavior, or keep existing logic?
             // "the table is missing a create button, user can create multiple organizations" -> implies create button should be always visible or available.

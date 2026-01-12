@@ -55,7 +55,11 @@ global $language;
                         $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id(); // Fallback
                         // If using dummy login, session variable should be set
                         
-                        $projects = $db->get_projects_by_applicant( $user_id );
+                        if ( current_user_can('manage_options') ) {
+                            $projects = $db->get_all_projects();
+                        } else {
+                            $projects = $db->get_projects_by_applicant( $user_id );
+                        }
 
                         if ( empty($projects) ):
                         ?>

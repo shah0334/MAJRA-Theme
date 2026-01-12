@@ -562,6 +562,47 @@ class SIC_DB {
 
         return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
     }
+
+    /**
+     * Get All Projects (Admin View)
+     */
+    public function get_all_projects() {
+        $cycle_id = $this->get_active_cycle_id();
+        if ( ! $cycle_id ) return [];
+
+        $sql = "
+            SELECT 
+                p.*, 
+                o.canonical_name as organization_name,
+                o.organization_id
+            FROM " . self::TBL_PROJECTS . " p
+            LEFT JOIN " . self::TBL_ORG_PROFILES . " op ON p.org_profile_id = op.org_profile_id
+            LEFT JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE p.cycle_id = %d
+            ORDER BY p.created_at DESC
+        ";
+
+        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $cycle_id ) );
+    }
+
+    /**
+     * Get All Organization Profiles (Admin View)
+     */
+    public function get_all_organizations() {
+        $cycle_id = $this->get_active_cycle_id();
+        if ( ! $cycle_id ) return [];
+
+        $sql = "
+            SELECT 
+                op.*, 
+                o.canonical_name 
+            FROM " . self::TBL_ORG_PROFILES . " op
+            JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE op.cycle_id = %d
+        ";
+
+        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $cycle_id ) );
+    }
     /**
      * Check if Database connection is valid and tables exist
      * @param bool $check_tables Whether to check for specific tables or just connection
