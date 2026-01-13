@@ -41,6 +41,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
     // Helper to upload and link
     $handle_upload = function($file_input_name, $role) use ($db, $storage, $cycle_id, $applicant_id, $project_id, &$errors) {
         if ( !empty($_FILES[$file_input_name]['name']) ) {
+            // Check File Size (25MB = 25 * 1024 * 1024 = 26214400 bytes)
+            if ($_FILES[$file_input_name]['size'] > 26214400) {
+                 $errors[] = "Error uploading $role: " . $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FILE_SIZE_25MB_ERROR'];
+                 return false;
+            }
+
             $upload = $storage->upload_file($_FILES[$file_input_name], 'project-evidence');
             if ( ! is_wp_error($upload) ) {
                 $file_id = $db->save_file($upload, $cycle_id, $applicant_id);
@@ -112,21 +118,22 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 
                 <div class="upload-container" id="container_photos">
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
-                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*" onchange="handleStep3FilePreview(this, 'container_photos')">
+                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_photos')">
                         <div class="default-view">
                             <div class="mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                    <i class="bi bi-upload text-secondary fs-4 pe-none"></i>
                                 </div>
                             </div>
                             <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
                             <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                                <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
+                                <p class="font-graphik text-secondary x-small mb-0">Max 25MB</p>
                         </div>
                     </div>
                     <div class="preview-view d-none mt-3">
                         <!-- JS injected content -->
                     </div>
+                    <div class="error-feedback text-danger small mt-2 d-none"></div>
                 </div>
             </div>
 
@@ -141,15 +148,16 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                         <div class="default-view">
                             <div class="mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                    <i class="bi bi-upload text-secondary fs-4 pe-none"></i>
                                 </div>
                             </div>
                             <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
                             <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0">Max 25MB</p>
                         </div>
                     </div>
                     <div class="preview-view d-none mt-3"></div>
+                    <div class="error-feedback text-danger small mt-2 d-none"></div>
                 </div>
             </div>
 
@@ -164,21 +172,22 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 </div>
 
                 <label class="form-label font-graphik text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FILE_LABEL']; ?></label>
-                    <div class="upload-container" id="container_testimonials">
+                <div class="upload-container" id="container_testimonials">
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
                         <input type="file" name="testimonials_file" id="testimonials_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_testimonials')">
                         <div class="default-view">
                             <div class="mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                    <i class="bi bi-upload text-secondary fs-4 pe-none"></i>
                                 </div>
                             </div>
                             <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
                             <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0">Max 25MB</p>
                         </div>
                     </div>
                     <div class="preview-view d-none mt-3"></div>
+                    <div class="error-feedback text-danger small mt-2 d-none"></div>
                 </div>
             </div>
 
@@ -196,15 +205,16 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                         <div class="default-view">
                             <div class="mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                                    <i class="bi bi-upload text-secondary fs-4"></i>
+                                    <i class="bi bi-upload text-secondary fs-4 pe-none"></i>
                                 </div>
                             </div>
                             <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
                                 <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
-                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['MAX_SIZE']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0">Max 25MB</p>
                         </div>
                     </div>
                     <div class="preview-view d-none mt-3"></div>
+                    <div class="error-feedback text-danger small mt-2 d-none"></div>
                 </div>
             </div>
 
@@ -323,6 +333,25 @@ function handleStep3FilePreview(input, containerId) {
     const file = input.files[0];
 
     if (file) {
+        // Validate Size (25MB)
+        // Validate Size (25MB)
+        if (file.size > 25 * 1024 * 1024) {
+             const msg = '<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FILE_SIZE_25MB_ERROR']); ?>';
+             const errorDiv = container.querySelector('.error-feedback');
+             if (errorDiv) {
+                 errorDiv.textContent = msg;
+                 errorDiv.classList.remove('d-none');
+             }
+             input.value = ''; // Clear input
+             return;
+        } else {
+             const errorDiv = container.querySelector('.error-feedback');
+             if (errorDiv) {
+                 errorDiv.textContent = '';
+                 errorDiv.classList.add('d-none');
+             }
+        }
+
         // Hide default view, show preview
         // But we want to keep the input accessible? 
         // Actually, usually we replace the whole dropzone look or put the preview BELOW it.
@@ -382,10 +411,17 @@ function clearFile(containerId) {
     const input = container.querySelector('input[type="file"]');
     const zone = container.querySelector('.custom-upload-zone');
     const previewView = container.querySelector('.preview-view');
+    const errorDiv = container.querySelector('.error-feedback');
     
     input.value = ''; // Clear file
     zone.classList.remove('d-none');
     previewView.classList.add('d-none');
     previewView.innerHTML = '';
+    
+    // Clear errors if any
+    if (errorDiv) {
+        errorDiv.textContent = '';
+        errorDiv.classList.add('d-none');
+    }
 }
 </script>

@@ -34,6 +34,8 @@
         'JOIN_WAITLIST' => 'Join Waitlist',
         'SUBSCRIBE'   => 'Subscribe',
         'SUBMIT'      => 'Submit',
+        'GENERAL_ERROR' => 'Error',
+        'GENERAL_SUCCESS' => 'Success',
     );
 
     $HOMEPAGE = array(
@@ -559,6 +561,7 @@
                 'CLICK_TO_UPLOAD' => 'Click to upload file',
                 'FORMAT_PDF' => 'Accepted format: PDF only',
                 'MAX_SIZE' => 'Max size: 25 MB',
+                'FILE_SIZE_25MB_ERROR' => 'Error: File size exceeds 25MB limit.',
                 'BACK_BTN' => 'Back',
                 'NEXT_BTN' => 'Next',
                 'SIDEBAR_TITLE' => 'Here’s your opportunity to showcase what you’ve accomplished.',

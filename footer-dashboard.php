@@ -29,10 +29,10 @@ global $language;
         </script>
         <!-- Toast Container -->
         <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
-             <div id="liveToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="me-auto" id="toastTitle">Notification</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            <div id="liveToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header d-flex justify-content-between align-items-center w-100">
+                    <strong id="toastTitle">Notification</strong>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <div class="toast-body" id="toastMessage">
                     <!-- Message here -->
@@ -45,6 +45,10 @@ global $language;
         // Global Toast Helper
         function showToast(message, type = 'success') {
             const toastEl = document.getElementById('liveToast');
+            // Localized Titles
+            const txtError = '<?php echo esc_js($language['LINKS']['GENERAL_ERROR']); ?>';
+            const txtSuccess = '<?php echo esc_js($language['LINKS']['GENERAL_SUCCESS']); ?>';
+
             if (toastEl) {
                 const toastTitle = document.getElementById('toastTitle');
                 const toastBody = document.getElementById('toastMessage');
@@ -53,12 +57,12 @@ global $language;
                 
                 if (type === 'error') {
                    // toastEl.classList.add('bg-danger', 'text-white');
-                    toastTitle.textContent = 'Error';
-                    toastTitle.className = 'me-auto text-danger fw-bold';
+                    toastTitle.textContent = txtError;
+                    toastTitle.className = 'text-danger fw-bold';
                 } else {
                     // toastEl.classList.remove('bg-danger', 'text-white');
-                    toastTitle.textContent = 'Success';
-                    toastTitle.className = 'me-auto text-success fw-bold';
+                    toastTitle.textContent = txtSuccess;
+                    toastTitle.className = 'text-success fw-bold';
                 }
 
                 // Robust Bootstrap Check

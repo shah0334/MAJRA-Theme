@@ -34,6 +34,8 @@
         'JOIN_WAITLIST' => 'انضم إلى قائمة الانتظار',
         'SUBSCRIBE'   => 'اشترك معنا',
         'SUBMIT'      => 'يُقدِّم',
+        'GENERAL_ERROR' => 'خطأ',
+        'GENERAL_SUCCESS' => 'نجاح',
     );
 
     $HOMEPAGE = array(
@@ -559,6 +561,7 @@
                 'CLICK_TO_UPLOAD' => 'اضغط لتحميل الملف',
                 'FORMAT_PDF' => 'التنسيق المقبول: PDF فقط',
                 'MAX_SIZE' => 'الحد الأقصى للحجم: 25 ميجابايت',
+                'FILE_SIZE_25MB_ERROR' => 'خطأ: حجم الملف يتجاوز الحد الأقصى 25 ميجابايت.',
                 'BACK_BTN' => 'رجوع',
                 'NEXT_BTN' => 'التالي',
                 'SIDEBAR_TITLE' => 'إليك فرصتك لعرض ما أنجزته.',
