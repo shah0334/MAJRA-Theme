@@ -20,16 +20,31 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
     // 1. Handle File Uploads
     $logo_id = null;
     $license_id = null;
+    $max_logo_size = 2 * 1024 * 1024; // 2MB
+    $max_license_size = 5 * 1024 * 1024; // 5MB
 
     if ( !empty($_FILES['org_logo']['name']) ) {
-        $upload = $storage->upload_file($_FILES['org_logo'], 'org-logos');
-        $logo_id = $db->save_file($upload, $cycle_id, $user_id);
+        if ($_FILES['org_logo']['size'] > $max_logo_size) {
+            $error_msg = $language['DASHBOARD']['ORG_FORM']['ERR_LOGO_SIZE'];
+        } else {
+            $upload = $storage->upload_file($_FILES['org_logo'], 'org-logos');
+            $logo_id = $db->save_file($upload, $cycle_id, $user_id);
+        }
     }
 
-    if ( !empty($_FILES['org_license_file']['name']) ) {
-        $upload = $storage->upload_file($_FILES['org_license_file'], 'org-licenses');
-        $license_id = $db->save_file($upload, $cycle_id, $user_id);
+    if ( empty($error_msg) && !empty($_FILES['org_license_file']['name']) ) {
+        if ($_FILES['org_license_file']['size'] > $max_license_size) {
+            $error_msg = $language['DASHBOARD']['ORG_FORM']['ERR_LICENSE_SIZE'];
+        } else {
+            $upload = $storage->upload_file($_FILES['org_license_file'], 'org-licenses');
+            $license_id = $db->save_file($upload, $cycle_id, $user_id);
+        }
     }
+
+    // Abort if file validation failed
+    if ( !empty($error_msg) ) {
+        // Do nothing, fall through to display error
+    } else {
 
     // 2. Prepare Data
     $org_data = [
@@ -67,6 +82,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
         wp_redirect( SIC_Routes::get_dashboard_home_url() ); // Redirect to dashboard
         exit;
     }
+    } // End else from file validation check
 }
 
 get_header('dashboard');
@@ -287,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('createOrgForm');
     
     // File Preview Logic
-    function handleFilePreview(inputId, previewId, isImage = true) {
+    function handleFilePreview(inputId, previewId, isImage = true, maxSizeMB = 5, errorMsg = '') {
         const input = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
         
@@ -298,6 +314,21 @@ document.addEventListener('DOMContentLoaded', function() {
             preview.innerHTML = ''; // Clear previous preview
 
             if (file) {
+                // Size Validation
+                let limit = maxSizeMB;
+                // Force 2MB for logo if somehow the argument wasn't passed correctly
+                if (inputId === 'org_logo') {
+                    limit = 2;
+                }
+
+                const maxSize = limit * 1024 * 1024;
+                if (file.size > maxSize) {
+                    const msg = errorMsg || 'Error: File size exceeds ' + limit + 'MB limit. Please upload a smaller file.';
+                    preview.innerHTML = '<span class="text-danger small">' + msg + '</span>';
+                    this.value = ''; // Clear input
+                    return;
+                }
+
                 if (isImage) {
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
@@ -310,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         reader.readAsDataURL(file);
                     } else {
-                        preview.innerHTML = '<span class="text-danger">Invalid file type. Please select an image.</span>';
+                        preview.innerHTML = '<span class="text-danger"><?php echo $language['DASHBOARD']['ORG_FORM']['ERR_INVALID_IMG']; ?></span>';
                     }
                 } else {
                     // For non-image files (PDFs), show name
@@ -323,8 +354,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    handleFilePreview('org_logo', 'org_logo_preview', true);
-    handleFilePreview('org_license_file', 'org_license_preview', false);
+    handleFilePreview('org_logo', 'org_logo_preview', true, 2, '<?php echo $language['DASHBOARD']['ORG_FORM']['ERR_LOGO_SIZE']; ?>'); // 2MB for Logo
+    handleFilePreview('org_license_file', 'org_license_preview', false, 5, '<?php echo $language['DASHBOARD']['ORG_FORM']['ERR_LICENSE_SIZE']; ?>'); // 5MB for License
 
 
     if (form) {
