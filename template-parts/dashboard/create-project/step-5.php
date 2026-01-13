@@ -94,6 +94,7 @@ global $language;
                                  <input type="number" step="0.01" min="0" max="100" name="leadership_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 50" value="<?php echo esc_attr($leadership_women); ?>" required>
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
+                             <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
                          <div class="col-md-6">
                              <label class="form-label font-graphik text-cp-deep-ocean small">
@@ -103,6 +104,7 @@ global $language;
                                  <input type="number" step="0.01" min="0" max="100" name="team_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 65" value="<?php echo esc_attr($team_women); ?>" required>
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
+                             <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
                      </div>
                 </div>
@@ -119,6 +121,7 @@ global $language;
                                  <input type="number" step="0.01" min="0" max="100" name="leadership_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 10" value="<?php echo esc_attr($leadership_pod); ?>">
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
+                             <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
                          <div class="col-md-6">
                              <label class="form-label font-graphik text-cp-deep-ocean small">
@@ -128,6 +131,7 @@ global $language;
                                  <input type="number" step="0.01" min="0" max="100" name="team_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 15" value="<?php echo esc_attr($team_pod); ?>">
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                              </div>
+                             <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
                      </div>
                 </div>
@@ -143,6 +147,7 @@ global $language;
                                  <input type="number" step="0.01" min="0" max="100" name="team_youth_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 25" value="<?php echo esc_attr($team_youth); ?>">
                                  <span class="input-group-text bg-light border-0 text-secondary">%</span>
                          </div>
+                         <div class="error-feedback text-danger small mt-1 d-none"></div>
                      </div>
                      <div class="mb-3">
                          <label class="form-label font-graphik text-cp-deep-ocean small">
@@ -207,3 +212,61 @@ global $language;
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pctInputs = document.querySelectorAll('input[type="number"][name$="_pct"]');
+    // We can use the localized string we added
+    const errorMsg = '<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['PCT_LIMIT_ERROR'] ?? 'Value cannot exceed 100%'); ?>';
+
+    pctInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            // The structure is usually .input-group -> parent .col or .mb-3
+            // We want to find the .error-feedback sibling or neighbor
+            // Structure: <label> <input-group> <error-feedback>
+            
+            // Find the container that holds the input-group
+            const container = this.closest('.col-md-6') || this.closest('.mb-3'); 
+            const errorDiv = container ? container.querySelector('.error-feedback') : null;
+            
+            if (val > 100) {
+                if (errorDiv) {
+                    errorDiv.textContent = errorMsg;
+                    errorDiv.classList.remove('d-none');
+                }
+                this.classList.add('is-invalid');
+                // Optional: Prevent submit button? 
+                // Or just show error. The form usually blocks generic is-invalid submission if handled by BS, 
+                // but this is a simple text feedback as requested.
+            } else {
+                if (errorDiv) {
+                    errorDiv.classList.add('d-none');
+                    errorDiv.textContent = '';
+                }
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+
+    // Prevent submission if invalid
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let hasError = false;
+            pctInputs.forEach(input => {
+                 if (parseFloat(input.value) > 100) {
+                     hasError = true;
+                     input.classList.add('is-invalid'); 
+                 }
+            });
+            
+            if (hasError) {
+                e.preventDefault();
+                 const firstError = document.querySelector('.is-invalid');
+                 if (firstError) firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        });
+    }
+});
+</script>

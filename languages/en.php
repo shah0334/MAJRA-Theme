@@ -610,7 +610,8 @@
                 'NEXT_BTN' => 'Next',
                 'SIDEBAR_TITLE' => 'Help us understand your project’s reach.',
                 'SIDEBAR_SUBTITLE' => 'This information is required for reporting and statistical insights only.',
-                'SIDEBAR_TEXT' => 'Completing this section is mandatory, however your responses will not influence public voting results or project assessment.'
+                'SIDEBAR_TEXT' => 'Completing this section is mandatory, however your responses will not influence public voting results or project assessment.',
+                'PCT_LIMIT_ERROR' => 'Value cannot exceed 100%',
             ),
             'STEP_6' => array(
                 'TITLE' => 'Accept Disclaimer',
