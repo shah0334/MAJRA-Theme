@@ -17,6 +17,7 @@ $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 $project = null;
 if ( $project_id ) {
     $project = $db->get_project($project_id);
+
     if ( $project && $project->org_profile_id ) {
         $selected_org_id = $project->org_profile_id;
     }
@@ -34,9 +35,10 @@ if ( $project_id ) {
 // Handle Form Submission
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) ) {
     // Verify nonce
-    if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_create_project' ) ) {
-        wp_die( 'Security check failed' );
-    }
+            if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_create_project' ) ) {
+                echo '<div class="alert alert-danger">Security check failed.</div>';
+                return;
+            }
 
     $org_profile_id = intval($_POST['org_profile_id']);
     

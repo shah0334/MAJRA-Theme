@@ -10,6 +10,35 @@ if ( current_user_can('manage_options') ) {
     exit;
 }
 
+// Global Security Check: Project Ownership
+// If a project_id is present, the current user MUST verify ownership.
+// If no project_id is present, we must be on Step 1 (Creation).
+$project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+$current_step = isset($_GET['step']) ? intval($_GET['step']) : 1;
+
+if ($project_id) {
+    $db = SIC_DB::get_instance();
+    $project_check = $db->get_project($project_id);
+    $current_user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
+    
+    // If project doesn't exist or doesn't belong to user
+    if ( !$project_check || $project_check->created_by_applicant_id != $current_user_id ) {
+        ?>
+        <main id="primary" class="site-main bg-cp-cream-light py-5">
+            <div class="container">
+                <div class="alert alert-danger">Unauthorized access. This project does not belong to you.</div>
+            </div>
+        </main>
+        <?php
+        get_footer('dashboard');
+        exit;
+    }
+} elseif ($current_step > 1) {
+    // Cannot be on Step 2+ without a project_id
+    wp_safe_redirect( SIC_Routes::get_create_project_url() );
+    exit;
+}
+
 // Get current step from URL, default to 1
 $current_step = isset($_GET['step']) ? intval($_GET['step']) : 1;
 if ($current_step < 1) $current_step = 1;

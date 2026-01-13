@@ -16,25 +16,31 @@ if ( $project_id ) {
 }
 
 if ( !$project ) {
-    echo '<div class="container py-5">Project not found.</div>';
+    ?>
+    <main id="primary" class="site-main bg-cp-cream-light py-5">
+        <div class="container">
+            <div class="alert alert-warning">Project not found.</div>
+        </div>
+    </main>
+    <?php
     get_footer('dashboard');
     exit;
 }
 
-if ( current_user_can('manage_options') ) {
-    $can_view = true;
-} else {
-    // Check ownership
+// Access Check
+if ( !current_user_can('manage_options') ) {
     $current_applicant_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
-    if ( $project->created_by_applicant_id == $current_applicant_id ) {
-        $can_view = true;
+    if ( !$project || $project->created_by_applicant_id != $current_applicant_id ) {
+        ?>
+        <main id="primary" class="site-main bg-cp-cream-light py-5">
+            <div class="container">
+                <div class="alert alert-danger">Unauthorized access. This project does not belong to you.</div>
+            </div>
+        </main>
+        <?php
+        get_footer('dashboard');
+        exit;
     }
-}
-
-if ( !$can_view ) {
-     echo '<div class="container py-5">Unauthorized.</div>';
-     get_footer('dashboard');
-     exit;
 }
 
 // Fetch Organization Name for context

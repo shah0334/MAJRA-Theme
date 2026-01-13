@@ -13,14 +13,17 @@ if ( ! $project_id ) {
 
 $project = $db->get_project($project_id);
 if ( ! $project ) {
-    wp_die('Project not found');
+    echo '<div class="alert alert-danger">Project not found.</div>';
+    return;
 }
+
 
 // Handle Form Submission
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) ) {
     // Verify nonce
     if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_save_step_4' ) ) {
-        wp_die( 'Security check failed' );
+        echo '<div class="alert alert-danger">Security check failed.</div>';
+        return;
     }
 
     $submission_data = [

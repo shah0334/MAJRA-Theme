@@ -20,10 +20,8 @@ if ( current_user_can('manage_options') ) {
     // We have get_organization_by_applicant_id.
     // We need a method to get by Profile ID directly.
 } else {
-    $current_user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
-    // Check ownership
-    // $org_profile = $db->get_org_profile_by_id_and_user($org_id, $current_user_id);
-    $can_view = true; // Placeholder until we robustly check
+    // Applicants can only view if they own it (checked below)
+    $can_view = true; 
 }
 
 // Let's write a direct query here or use existing methods if possible.
@@ -34,8 +32,13 @@ if ( current_user_can('manage_options') ) {
 $profile = $db->get_org_profile_by_id( $org_id );
 
 if ( !$profile ) {
-    // Handle error
-    echo '<div class="container py-5">Organization not found.</div>';
+    ?>
+    <main id="primary" class="site-main bg-cp-cream-light py-5">
+        <div class="container">
+            <div class="alert alert-warning">Organization not found.</div>
+        </div>
+    </main>
+    <?php
     get_footer('dashboard');
     exit;
 }
@@ -43,8 +46,16 @@ if ( !$profile ) {
 // Access Check for non-admins
 if ( !current_user_can('manage_options') ) {
     $current_applicant_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
-    if ( $profile->created_by_applicant_id != $current_applicant_id ) {
-         echo '<div class="container py-5">Unauthorized.</div>';
+    
+    // Safety check: created_by_applicant_id must match session
+    if ( !$current_applicant_id || $profile->created_by_applicant_id != $current_applicant_id ) {
+         ?>
+         <main id="primary" class="site-main bg-cp-cream-light py-5">
+             <div class="container">
+                 <div class="alert alert-danger">Unauthorized access. This organization does not belong to you.</div>
+             </div>
+         </main>
+         <?php
          get_footer('dashboard');
          exit;
     }

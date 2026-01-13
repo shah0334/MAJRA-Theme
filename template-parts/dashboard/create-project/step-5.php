@@ -34,7 +34,8 @@ global $language;
         // Handle Form Submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) && $_POST['sic_project_action'] === 'save_step_5') {
             if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_save_step_5' ) ) {
-                wp_die( 'Security check failed' );
+                echo '<div class="alert alert-danger">Security check failed.</div>';
+                return;
             }
 
             $project_data = [

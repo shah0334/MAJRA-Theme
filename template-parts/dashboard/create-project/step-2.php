@@ -17,8 +17,12 @@ if ( ! $project_id ) {
 
 $project = $db->get_project($project_id);
 if ( ! $project ) {
-    wp_die('Project not found');
+    ?>
+    <div class="alert alert-danger">Project not found.</div>
+    <?php
+    return; // Stop processing this template part, but don't kill the whole page abruptly if possible, though in a template part return just ends the part.
 }
+
 
 // Fetch Reference Data
 $all_impact_areas = $db->get_impact_areas();
@@ -26,70 +30,78 @@ $all_beneficiaries = $db->get_beneficiaries();
 $all_sdgs = $db->get_sdgs();
 
 // Handle Form Submission
+// Handle Form Submission
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) ) {
+    $should_save = true;
+
     // Verify nonce
     if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_save_step_2' ) ) {
-        wp_die( 'Security check failed' );
+        $error_message = 'Security check failed. Please try again.';
+        $should_save = false;
     }
 
-    // Impact Areas Processing
-    $impact_areas = [];
-    foreach ($all_impact_areas as $ia) {
-        // Look for impact_area_{ID}
-        if ( isset($_POST['impact_area_' . $ia->impact_area_id]) ) {
-            $impact_areas[] = $ia->impact_area_id;
+    if ( $should_save ) {
+        // Impact Areas Processing
+        $impact_areas = [];
+        foreach ($all_impact_areas as $ia) {
+            if ( isset($_POST['impact_area_' . $ia->impact_area_id]) ) {
+                $impact_areas[] = $ia->impact_area_id;
+            }
         }
-    }
-    
-    // Validate Max 2 Impact Areas
-    if ( count($impact_areas) > 2 ) {
-        // Technically this should be caught by JS, but good for security
-        wp_die( 'Error: You can only select up to 2 Impact Areas.' );
-    }
-
-    // Beneficiaries Processing
-    $beneficiaries = [];
-    foreach ($all_beneficiaries as $ben) {
-        // Look for beneficiary_{ID}
-        if ( isset($_POST['beneficiary_' . $ben->beneficiary_type_id]) ) {
-            $beneficiaries[] = $ben->beneficiary_type_id;
-        }
-    }
-
-    // Validate Max 2 Beneficiaries
-    if ( count($beneficiaries) > 2 ) {
-        wp_die( 'Error: You can only select up to 2 Beneficiaries.' );
-    }
-
-    // SDGs
-    $sdgs = isset($_POST['sdgs']) ? array_map('intval', explode(',', $_POST['sdgs'])) : [];
-    
-    // Validate Max 3 SDGs
-    if ( count($sdgs) > 3 ) {
-        wp_die( 'Error: You can only select up to 3 SDGs.' );
-    }
-
-    $submission_data = [
-        'total_beneficiaries_targeted' => intval($_POST['total_beneficiaries_targeted']),
-        'total_beneficiaries_reached'  => intval($_POST['total_beneficiaries_reached']),
-        'contributes_env_social'       => sanitize_text_field($_POST['contributes_env_social']),
-        'has_governance_monitoring'    => sanitize_text_field($_POST['has_governance_monitoring']),
-        'details_completed'            => 1,
         
-        // Multi-selects passed to update_project
-        'impact_areas' => $impact_areas,
-        'beneficiaries' => $beneficiaries,
-        'sdgs' => $sdgs
-    ];
+        // Validate Max 2 Impact Areas
+        if ( count($impact_areas) > 2 ) {
+            $error_message = 'Error: You can only select up to 2 Impact Areas.';
+            $should_save = false;
+        }
+    }
 
-    $result = $db->update_project($project_id, $submission_data);
+    if ( $should_save ) {
+        // Beneficiaries Processing
+        $beneficiaries = [];
+        foreach ($all_beneficiaries as $ben) {
+            if ( isset($_POST['beneficiary_' . $ben->beneficiary_type_id]) ) {
+                $beneficiaries[] = $ben->beneficiary_type_id;
+            }
+        }
 
-    if ( ! is_wp_error($result) ) {
-        // Redirect to Step 3
-        wp_redirect( add_query_arg(['step' => 3, 'project_id' => $project_id], SIC_Routes::get_create_project_url()) );
-        exit;
-    } else {
-        $error_message = $result->get_error_message();
+        // Validate Max 2 Beneficiaries
+        if ( count($beneficiaries) > 2 ) {
+            $error_message = 'Error: You can only select up to 2 Beneficiaries.';
+            $should_save = false;
+        }
+    }
+
+    if ( $should_save ) {
+        // SDGs
+        $sdgs = isset($_POST['sdgs']) ? array_map('intval', explode(',', $_POST['sdgs'])) : [];
+        // Validate Max 3 SDGs
+        if ( count($sdgs) > 3 ) {
+            $error_message = 'Error: You can only select up to 3 SDGs.';
+            $should_save = false;
+        }
+    }
+
+    if ( $should_save ) {
+        $submission_data = [
+            'total_beneficiaries_targeted' => intval($_POST['total_beneficiaries_targeted']),
+            'total_beneficiaries_reached'  => intval($_POST['total_beneficiaries_reached']),
+            'contributes_env_social'       => sanitize_text_field($_POST['contributes_env_social']),
+            'has_governance_monitoring'    => sanitize_text_field($_POST['has_governance_monitoring']),
+            'details_completed'            => 1,
+            'impact_areas' => $impact_areas,
+            'beneficiaries' => $beneficiaries,
+            'sdgs' => $sdgs
+        ];
+
+        $result = $db->update_project($project_id, $submission_data);
+
+        if ( ! is_wp_error($result) ) {
+            wp_redirect( add_query_arg(['step' => 3, 'project_id' => $project_id], SIC_Routes::get_create_project_url()) );
+            exit;
+        } else {
+            $error_message = $result->get_error_message();
+        }
     }
 }
 ?>

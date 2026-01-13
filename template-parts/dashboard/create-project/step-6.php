@@ -10,12 +10,14 @@
         
         <?php
         $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+        
         global $language;
         
         // Handle Submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) && $_POST['sic_project_action'] === 'submit_project') {
             if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'sic_submit_project' ) ) {
-                wp_die( 'Security check failed' );
+                echo '<div class="alert alert-danger">Security check failed.</div>';
+                return;
             }
             
             // Check if disclaimer is checked (Server side check)
