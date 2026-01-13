@@ -129,7 +129,7 @@ global $language;
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a class="dropdown-item" href="<?php echo SIC_Routes::get_view_project_url($project->project_id); ?>">View</a></li>
-                                            <?php if ( !current_user_can('manage_options') ): ?>
+                                            <?php if ( !current_user_can('manage_options') && $project->submission_status !== 'submitted' ): ?>
                                             <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>">Edit</a></li>
                                             <?php endif; ?>
                                         </ul>
