@@ -48,6 +48,15 @@ global $language;
                 'involves_influencers' => isset($_POST['involves_influencers']) ? sanitize_text_field($_POST['involves_influencers']) : 'No',
                 'demographics_completed' => 1
             ];
+
+            // Validation: Check for negative values
+            $pct_fields = ['leadership_women_pct', 'team_women_pct', 'leadership_pod_pct', 'team_pod_pct', 'team_youth_pct'];
+            foreach ($pct_fields as $field) {
+                if ( isset($project_data[$field]) && $project_data[$field] < 0 ) {
+                    echo '<div class="alert alert-danger">Error: Percentage values cannot be negative.</div>';
+                    return;
+                }
+            }
             
             // Note: engages_youth and involves_influencers are likely boolean or tinyint in DB? 
             // Checking Step-5 HTML, they are Yes/No. 
@@ -231,9 +240,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const container = this.closest('.col-md-6') || this.closest('.mb-3'); 
             const errorDiv = container ? container.querySelector('.error-feedback') : null;
             
-            if (val > 100) {
+            if (val > 100 || val < 0) {
                 if (errorDiv) {
-                    errorDiv.textContent = errorMsg;
+                    const isRTL = document.body.classList.contains('rtl');
+                    const negativeMsg = isRTL ? 'القيمة لا يمكن أن تكون سلبية' : 'Value cannot be negative';
+                    errorDiv.textContent = (val < 0) ? negativeMsg : errorMsg;
                     errorDiv.classList.remove('d-none');
                 }
                 this.classList.add('is-invalid');
@@ -256,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             let hasError = false;
             pctInputs.forEach(input => {
-                 if (parseFloat(input.value) > 100) {
+                 if (parseFloat(input.value) > 100 || parseFloat(input.value) < 0) {
                      hasError = true;
                      input.classList.add('is-invalid'); 
                  }

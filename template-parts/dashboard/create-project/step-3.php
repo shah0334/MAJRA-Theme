@@ -121,7 +121,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 
                 <div class="upload-container" id="container_photos">
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
-                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_photos')">
+                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.pdf" onchange="handleStep3FilePreview(this, 'container_photos')">
                         <div class="default-view">
                             <div class="mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
@@ -129,7 +129,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                                 </div>
                             </div>
                             <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
-                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF'] . ' or JPG/PNG'; ?></p>
                                 <p class="font-graphik text-secondary x-small mb-0">Max 25MB</p>
                         </div>
                     </div>
@@ -277,12 +277,14 @@ const existingFiles = <?php echo json_encode($project_files); ?>;
 document.addEventListener('DOMContentLoaded', function() {
     // Pre-fill files
     if (existingFiles.photos) {
-        showExistingFile('container_photos', existingFiles.photos, true);
+        const ext = existingFiles.photos.name.split('.').pop().toLowerCase();
+        const isImg = ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
+        showExistingFile('container_photos', existingFiles.photos, isImg);
     }
     if (existingFiles.impact_report) {
          showExistingFile('container_impact', existingFiles.impact_report, false);
     }
-    if (existingFiles.testimonials_file) { // Note: role is 'testimonials_file' in save logic
+    if (existingFiles.testimonials_file) {
          showExistingFile('container_testimonials', existingFiles.testimonials_file, false);
     }
     if (existingFiles.sustainable_impact_plan) {

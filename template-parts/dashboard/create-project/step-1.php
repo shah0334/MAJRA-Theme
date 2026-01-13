@@ -54,16 +54,27 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         // Image upload handling to be added here
     ];
 
-    if ( $project_id ) {
-        // Update existing
-        $db->update_project($project_id, $submission_data);
-        $new_project_id = $project_id;
-    } else {
-        // Create new
-        $new_project_id = $db->create_project($org_profile_id, $applicant_id, $submission_data);
-        if ( ! is_wp_error($new_project_id) ) {
-            $db->update_project($new_project_id, $submission_data); // Update rest of fields
+    // Date Validation
+    if ( !empty($submission_data['start_date']) && !empty($submission_data['end_date']) ) {
+        if ( strtotime($submission_data['end_date']) < strtotime($submission_data['start_date']) ) {
+             $error_message = 'Error: Project end date cannot be earlier than project start date.';
         }
+    }
+
+    if ( ! isset($error_message) ) {
+        if ( $project_id ) {
+            // Update existing
+            $db->update_project($project_id, $submission_data);
+            $new_project_id = $project_id;
+        } else {
+            // Create new
+            $new_project_id = $db->create_project($org_profile_id, $applicant_id, $submission_data);
+            if ( ! is_wp_error($new_project_id) ) {
+                $db->update_project($new_project_id, $submission_data); // Update rest of fields
+            }
+        }
+    } else {
+        $new_project_id = new WP_Error('validation_error', $error_message);
     }
 
     if ( ! is_wp_error($new_project_id) ) {
@@ -174,7 +185,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_LABEL']; ?> <span class="text-danger">*</span></label>
                 <div class="position-relative">
                     <input type="file" name="project_image" id="project_image" class="form-control ps-3 pe-5" <?php echo !empty($profile_image_url) ? '' : 'required'; ?>>
-                    <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+                    <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary pe-none"></i>
                 </div>
                 <div id="project_image_preview" class="mt-2"></div>
                 <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_HELP']; ?></div>
@@ -262,6 +273,34 @@ document.addEventListener('DOMContentLoaded', function() {
         img.className = 'img-thumbnail';
         img.style.maxHeight = '150px';
         preview.appendChild(img);
+    }
+
+    // Date Validation
+    const startDateInput = document.querySelector('input[name="start_date"]');
+    const endDateInput = document.querySelector('input[name="end_date"]');
+
+    function validateDates() {
+        if (startDateInput.value && endDateInput.value) {
+            if (new Date(endDateInput.value) < new Date(startDateInput.value)) {
+                // Determine Language
+                const isRTL = document.body.classList.contains('rtl'); // Assuming body has class rtl or inspecting dir
+                const msg = isRTL ? 'خطأ: تاريخ الانتهاء لا يمكن أن يكون قبل تاريخ البدء' : 'Error: End date cannot be earlier than start date';
+                
+                endDateInput.setCustomValidity(msg);
+                
+                // Show visual feedback immediately if needed, or rely on browser submit block
+                // Let's add an invalid class manually for styling if desired, though standard validation handles it
+                endDateInput.classList.add('is-invalid');
+            } else {
+                endDateInput.setCustomValidity('');
+                endDateInput.classList.remove('is-invalid');
+            }
+        }
+    }
+
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', validateDates);
+        endDateInput.addEventListener('change', validateDates);
     }
 });
 </script>

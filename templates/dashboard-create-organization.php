@@ -62,25 +62,33 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
         'csr_initiatives'      => []
     ];
 
-    if ( !empty($_POST['csr_name']) ) {
-        $org_data['csr_initiatives'][] = [
-            'name'   => sanitize_text_field($_POST['csr_name']),
-            'amount' => floatval($_POST['csr_amount'])
-        ];
+    // Validation: Check negative values
+    if ($org_data['employee_count'] < 0) {
+         $error_msg = $is_rtl ? 'خطأ: عدد الموظفين لا يمكن أن يكون سلبيًا.' : 'Error: Number of employees cannot be negative.';
+         // Stop processing
     }
 
-    // 3. Save to DB
-    $result = $db->create_organization( $user_id, $org_data, [
-        'logo_id' => $logo_id,
-        'license_id' => $license_id
-    ]);
+    if ( !isset($error_msg) ) {
+        if ( !empty($_POST['csr_name']) ) {
+            $org_data['csr_initiatives'][] = [
+                'name'   => sanitize_text_field($_POST['csr_name']),
+                'amount' => floatval($_POST['csr_amount'])
+            ];
+        }
 
-    if ( is_wp_error($result) ) {
-        $error_msg = $result->get_error_message();
-    } else {
-        // Success
-        wp_redirect( SIC_Routes::get_dashboard_home_url() . '?success=org_created' ); // Redirect to dashboard with success param
-        exit;
+        // 3. Save to DB
+        $result = $db->create_organization( $user_id, $org_data, [
+            'logo_id' => $logo_id,
+            'license_id' => $license_id
+        ]);
+    
+        if ( is_wp_error($result) ) {
+            $error_msg = $result->get_error_message();
+        } else {
+            // Success
+            wp_redirect( SIC_Routes::get_dashboard_home_url() . '?success=org_created' ); // Redirect to dashboard with success param
+            exit;
+        }
     }
     } // End else from file validation check
 }
@@ -240,7 +248,7 @@ if ( current_user_can('manage_options') ) {
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['EMPLOYEES']; ?> <span class="text-danger">*</span></label>
-                                 <input type="number" name="org_employees" class="form-control" required>
+                                 <input type="number" min="0" name="org_employees" class="form-control" required>
                             </div>
                             
                             <!-- Row 2 -->
@@ -392,6 +400,65 @@ document.addEventListener('DOMContentLoaded', function() {
             input.addEventListener('input', function() {
                 input.classList.remove('is-invalid');
             });
+        });
+    }
+
+    // CSR Conditional Visibility
+    const csrYes = document.getElementById('csrYes');
+    const csrNo = document.getElementById('csrNo');
+    const csrFields = document.getElementById('csr-fields');
+    
+    function toggleCsrFields() {
+        if (!csrYes || !csrNo || !csrFields) return;
+        
+        if (csrYes.checked) {
+            csrFields.style.display = 'flex'; // Restore row flex display
+            // Optional: make them required if shown? User request didn't specify, but implies data is expected if "Yes".
+            // Leaving as optional per current PHP logic unless specified.
+        } else {
+            csrFields.style.display = 'none';
+            // Clear values if hidden?
+             const inputs = csrFields.querySelectorAll('input');
+             inputs.forEach(input => input.value = '');
+        }
+    }
+
+    // Initialize
+    toggleCsrFields();
+
+    // Add listeners
+    if (csrYes && csrNo) {
+        csrYes.addEventListener('change', toggleCsrFields);
+        csrNo.addEventListener('change', toggleCsrFields);
+    }
+
+    // Negative Number Validation (Employees)
+    const employeeInput = document.querySelector('input[name="org_employees"]');
+    if (employeeInput) {
+        employeeInput.addEventListener('input', function() {
+            const val = parseInt(this.value);
+            if (val < 0) {
+                 const isRTL = document.body.classList.contains('rtl');
+                 const msg = isRTL ? 'القيمة لا يمكن أن تكون سلبية' : 'Value cannot be negative';
+                 this.setCustomValidity(msg);
+                 
+                 // Visual feedback
+                 // Check if error div exists, if not create little helper? 
+                 // Or just rely on standard validation bubble. Let's add red border.
+                 this.classList.add('is-invalid');
+                 
+                 // Optional: Add helper text if not present
+                 let errorDiv = this.parentElement.querySelector('.invalid-feedback');
+                 if (!errorDiv) {
+                     errorDiv = document.createElement('div');
+                     errorDiv.className = 'invalid-feedback';
+                     this.parentElement.appendChild(errorDiv);
+                 }
+                 errorDiv.textContent = msg;
+            } else {
+                 this.setCustomValidity('');
+                 this.classList.remove('is-invalid');
+            }
         });
     }
 });

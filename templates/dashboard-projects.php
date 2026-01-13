@@ -11,15 +11,14 @@ global $language;
         <div class="row mb-5">
             <div class="col-lg-8">
                 <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['PAGE_TITLE']; ?></h1>
-                <p class="font-graphik text-cp-deep-ocean fs-5">
+                <p class="font-graphik text-cp-deep-ocean fs-5 mb-4">
                     <?php echo $language['DASHBOARD']['HOME_WITH_ORG']['PAGE_SUBTITLE']; ?>
                 </p>
-            </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <?php if ( !current_user_can('manage_options') ): ?>
+                 <?php if ( !current_user_can('manage_options') ): ?>
                 <a href="<?php echo SIC_Routes::get_create_project_url(); ?>" class="btn-custom-primary"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SUBMIT_NEW_PROJECT_BTN']; ?></a>
                 <?php endif; ?>
             </div>
+       
         </div>
 
         <!-- Projects List Card -->
