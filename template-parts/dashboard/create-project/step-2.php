@@ -40,6 +40,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             $impact_areas[] = $ia->impact_area_id;
         }
     }
+    
+    // Validate Max 2 Impact Areas
+    if ( count($impact_areas) > 2 ) {
+        // Technically this should be caught by JS, but good for security
+        wp_die( 'Error: You can only select up to 2 Impact Areas.' );
+    }
 
     // Beneficiaries Processing
     $beneficiaries = [];
@@ -114,7 +120,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                     <?php foreach ($all_impact_areas as $ia): ?>
                     <div class="col-md-6">
                         <div class="form-check">
-                            <input name="impact_area_<?php echo $ia->impact_area_id; ?>" class="form-check-input" type="checkbox" id="ia<?php echo $ia->impact_area_id; ?>" <?php checked(in_array($ia->impact_area_id, $project->impact_areas ?? [])); ?>>
+                            <input name="impact_area_<?php echo $ia->impact_area_id; ?>" class="form-check-input impact-area-checkbox" type="checkbox" id="ia<?php echo $ia->impact_area_id; ?>" <?php checked(in_array($ia->impact_area_id, $project->impact_areas ?? [])); ?> onchange="handleImpactAreaLimit(this)">
                             <label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia<?php echo $ia->impact_area_id; ?>">
                                 <?php echo esc_html($ia->$name_col); ?>
                             </label>
@@ -244,7 +250,35 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 let selectedSDGs = <?php echo json_encode(array_map('strval', $project->sdgs ?? [])); ?>;
 document.addEventListener('DOMContentLoaded', function() {
     updateSDGInput();
+    // Run limit check on load to disable others if already 2 selected
+    handleImpactAreaLimit();
 });
+
+function handleImpactAreaLimit() {
+    const checkboxes = document.querySelectorAll('.impact-area-checkbox');
+    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+    const limit = 2;
+
+    checkboxes.forEach(cb => {
+        if (!cb.checked) {
+            cb.disabled = checkedCount >= limit;
+            // distinct visual cue for disabled state
+            cb.parentElement.style.opacity = (checkedCount >= limit) ? '0.5' : '1'; 
+        } else {
+            cb.disabled = false;
+            cb.parentElement.style.opacity = '1';
+        }
+    });
+
+    if (checkedCount > limit) {
+         // Should not happen with disabled logic, but as fail-safe
+         if (typeof showToast === 'function') {
+             showToast('You can only select up to ' + limit + ' Impact Areas.', 'error');
+         } else {
+             alert('You can only select up to ' + limit + ' Impact Areas.');
+         }
+    }
+}
 
 function toggleSDG(element) {
     const id = element.getAttribute('data-sdg');
