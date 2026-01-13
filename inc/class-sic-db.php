@@ -100,8 +100,12 @@ class SIC_DB {
     /**
      * Get or create a dummy applicant for mock authentication.
      */
-    public function get_or_create_dummy_applicant() {
-        $email = 'dummy@sic.ae';
+    /**
+     * Get or create a dummy applicant for mock authentication.
+     */
+    public function get_or_create_dummy_applicant( $index = 1 ) {
+        $email_suffix = $index > 1 ? $index : '';
+        $email = 'dummy' . $email_suffix . '@sic.ae';
         
         // Check if exists
         $row = $this->wpdb->get_row( $this->wpdb->prepare( 
@@ -119,7 +123,7 @@ class SIC_DB {
             [
                 'email'      => $email,
                 'first_name' => 'SIC',
-                'last_name'  => 'User',
+                'last_name'  => 'User ' . $index,
                 'phone'      => '0500000000'
             ],
             ['%s', '%s', '%s', '%s']

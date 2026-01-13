@@ -11,8 +11,9 @@ if ( isset($_SESSION['sic_user_id']) ) {
 
 // Handle Login Action
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'sic_mock_login' ) {
+    $user_index = isset($_POST['user_index']) ? intval($_POST['user_index']) : 1;
     $db = SIC_DB::get_instance();
-    $applicant = $db->get_or_create_dummy_applicant();
+    $applicant = $db->get_or_create_dummy_applicant($user_index);
     
     if ( $applicant ) {
         $_SESSION['sic_user_id'] = $applicant->applicant_id;
@@ -98,8 +99,11 @@ get_header(); // Use main header but we might hide nav
             }
             ?>
 
-            <button type="submit" class="btn btn-lg w-100 text-white font-graphik fw-medium" style="background-color: var(--cp-aqua-marine);">
-                Login with Dummy User
+            <button type="submit" name="user_index" value="1" class="btn btn-lg w-100 text-white font-graphik fw-medium mb-3" style="background-color: var(--cp-aqua-marine);">
+                Login with Dummy User 1
+            </button>
+            <button type="submit" name="user_index" value="2" class="btn btn-lg w-100 text-white font-graphik fw-medium" style="background-color: var(--cp-deep-ocean);">
+                Login with Dummy User 2
             </button>
             
             <div class="mt-4 pt-4 border-top">
