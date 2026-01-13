@@ -48,7 +48,7 @@ $steps = $language['DASHBOARD']['PROJ_WIZARD']['STEPS'];
                     ?>
                     <div class="step-item d-flex align-items-top <?php echo $is_last ? '' : 'flex-fill'; ?>">
                         <div class="d-flex flex-column align-items-center" style="width: 180px;"> <!-- Width to contain label text -->
-                             <a href="<?php echo esc_url($step_link); ?>" class="text-decoration-none d-flex flex-column align-items-center">
+                             <div class="d-flex flex-column align-items-center" style="cursor: default;">
                                  <div class="step-circle rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 mb-3 <?php echo $circle_cls; ?>" style="<?php echo $circle_style; ?>">
                                     <?php if ($is_completed): ?>
                                        <i class="bi bi-check-lg"></i>
@@ -59,7 +59,7 @@ $steps = $language['DASHBOARD']['PROJ_WIZARD']['STEPS'];
                                 <span class="step-label text-center font-mackay small <?php echo $text_cls; ?>" style="font-size: 14px; line-height: 1.2;">
                                     <?php echo $step_name; ?>
                                 </span>
-                            </a>
+                            </div>
                         </div>
                         
                         <?php if (!$is_last): ?>
