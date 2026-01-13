@@ -56,8 +56,18 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         }
     }
 
+    // Validate Max 2 Beneficiaries
+    if ( count($beneficiaries) > 2 ) {
+        wp_die( 'Error: You can only select up to 2 Beneficiaries.' );
+    }
+
     // SDGs
     $sdgs = isset($_POST['sdgs']) ? array_map('intval', explode(',', $_POST['sdgs'])) : [];
+    
+    // Validate Max 3 SDGs
+    if ( count($sdgs) > 3 ) {
+        wp_die( 'Error: You can only select up to 3 SDGs.' );
+    }
 
     $submission_data = [
         'total_beneficiaries_targeted' => intval($_POST['total_beneficiaries_targeted']),
@@ -139,7 +149,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                     <?php foreach ($all_beneficiaries as $ben): ?>
                     <div class="col-md-6">
                         <div class="form-check">
-                            <input name="beneficiary_<?php echo $ben->beneficiary_type_id; ?>" class="form-check-input" type="checkbox" id="b<?php echo $ben->beneficiary_type_id; ?>" <?php checked(in_array($ben->beneficiary_type_id, $project->beneficiaries ?? [])); ?>>
+                            <input name="beneficiary_<?php echo $ben->beneficiary_type_id; ?>" class="form-check-input beneficiary-checkbox" type="checkbox" id="b<?php echo $ben->beneficiary_type_id; ?>" <?php checked(in_array($ben->beneficiary_type_id, $project->beneficiaries ?? [])); ?> onchange="handleBeneficiaryLimit(this)">
                             <label class="form-check-label font-graphik text-cp-deep-ocean small" for="b<?php echo $ben->beneficiary_type_id; ?>">
                                 <?php echo esc_html($ben->$name_col); ?>
                             </label>
@@ -252,6 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSDGInput();
     // Run limit check on load to disable others if already 2 selected
     handleImpactAreaLimit();
+    handleBeneficiaryLimit();
+    updateSDGVisualState(); // Initial visual check for SDGs
 });
 
 function handleImpactAreaLimit() {
@@ -262,22 +274,60 @@ function handleImpactAreaLimit() {
     checkboxes.forEach(cb => {
         if (!cb.checked) {
             cb.disabled = checkedCount >= limit;
-            // distinct visual cue for disabled state
             cb.parentElement.style.opacity = (checkedCount >= limit) ? '0.5' : '1'; 
         } else {
             cb.disabled = false;
             cb.parentElement.style.opacity = '1';
         }
     });
+}
 
+function handleBeneficiaryLimit() {
+    const checkboxes = document.querySelectorAll('.beneficiary-checkbox');
+    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+    const limit = 2;
+
+    checkboxes.forEach(cb => {
+        if (!cb.checked) {
+            cb.disabled = checkedCount >= limit;
+            cb.parentElement.style.opacity = (checkedCount >= limit) ? '0.5' : '1'; 
+        } else {
+            cb.disabled = false;
+            cb.parentElement.style.opacity = '1';
+        }
+    });
+    
     if (checkedCount > limit) {
-         // Should not happen with disabled logic, but as fail-safe
          if (typeof showToast === 'function') {
-             showToast('You can only select up to ' + limit + ' Impact Areas.', 'error');
+             showToast('You can only select up to ' + limit + ' Beneficiaries.', 'error');
          } else {
-             alert('You can only select up to ' + limit + ' Impact Areas.');
+             alert('You can only select up to ' + limit + ' Beneficiaries.');
          }
     }
+}
+
+function updateSDGVisualState() {
+     const allCards = document.querySelectorAll('.sdg-card');
+     const limit = 3;
+     const currentCount = selectedSDGs.length;
+     
+     allCards.forEach(card => {
+         const id = card.getAttribute('data-sdg');
+         if (!selectedSDGs.includes(id)) {
+             // If not selected, establish disabled state based on limit
+             if (currentCount >= limit) {
+                 card.style.opacity = '0.5';
+                 card.style.pointerEvents = 'none'; // Prevent clicks
+             } else {
+                 card.style.opacity = '1';
+                 card.style.pointerEvents = 'auto';
+             }
+         } else {
+             // Selected items always active
+             card.style.opacity = '1';
+             card.style.pointerEvents = 'auto';
+         }
+     });
 }
 
 function toggleSDG(element) {
@@ -287,12 +337,15 @@ function toggleSDG(element) {
         // Deselect
         selectedSDGs = selectedSDGs.filter(sdg => sdg !== id);
         element.classList.remove('selected');
-        // element.style.borderColor = 'inherit';
-        // element.style.backgroundColor = 'white';
     } else {
         // Select (limit 3)
         if (selectedSDGs.length >= 3) {
-            alert('<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_LIMIT_ALERT']); ?>');
+            // Should be prevented by updateSDGVisualState, but strictly enforce here
+            if (typeof showToast === 'function') {
+                showToast('<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_LIMIT_ALERT']); ?>', 'error');
+            } else {
+                alert('<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_LIMIT_ALERT']); ?>');
+            }
             return;
         }
         selectedSDGs.push(id);
@@ -300,6 +353,7 @@ function toggleSDG(element) {
     }
     
     updateSDGInput();
+    updateSDGVisualState();
 }
 
 function updateSDGInput() {
