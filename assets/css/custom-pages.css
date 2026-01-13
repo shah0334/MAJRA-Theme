@@ -519,3 +519,15 @@ input[type="file"].form-control.is-invalid {
   border: 1px solid var(--cp-coral-sunset);
   border-radius: 14px;
 }
+
+.btn-add-org-custom {
+  padding-top: 9px;
+}
+.btn-add-org-custom:hover {
+  background-color: #f0fdfa !important;
+  color: #3bc4bd !important;
+}
+.thankyou-close-btn:hover {
+  background-color: #f0fdfa !important;
+  color: #3bc4bd !important;
+}

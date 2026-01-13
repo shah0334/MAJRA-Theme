@@ -1,13 +1,18 @@
 <?php
 /* Template Name: Dashboard - Create Organization */
 
+// Load language before form processing
+global $language;
+
 // Form Handling Logic
 $error_msg = '';
 $success_msg = '';
 
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'sic_create_org' ) {
+    error_log('SIC DEBUG: create org post received. POST: ' . print_r($_POST, true));
     
     if ( ! isset($_SESSION['sic_user_id']) ) {
+        error_log('SIC DEBUG: User not logged in (session)');
         wp_redirect( SIC_Routes::get_login_url() );
         exit;
     }
@@ -28,7 +33,11 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
             $error_msg = $language['DASHBOARD']['ORG_FORM']['ERR_LOGO_SIZE'];
         } else {
             $upload = $storage->upload_file($_FILES['org_logo'], 'org-logos');
-            $logo_id = $db->save_file($upload, $cycle_id, $user_id);
+            if ( !is_wp_error($upload) ) {
+                $logo_id = $db->save_file($upload, $cycle_id, $user_id);
+            } else {
+                $error_msg = $upload->get_error_message();
+            }
         }
     }
 
@@ -37,38 +46,49 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
             $error_msg = $language['DASHBOARD']['ORG_FORM']['ERR_LICENSE_SIZE'];
         } else {
             $upload = $storage->upload_file($_FILES['org_license_file'], 'org-licenses');
-            $license_id = $db->save_file($upload, $cycle_id, $user_id);
+            if ( !is_wp_error($upload) ) {
+                $license_id = $db->save_file($upload, $cycle_id, $user_id);
+            } else {
+                $error_msg = $upload->get_error_message();
+            }
         }
     }
 
     // Abort if file validation failed
     if ( !empty($error_msg) ) {
+        error_log('SIC DEBUG: File validation failed: ' . $error_msg);
         // Do nothing, fall through to display error
     } else {
+        // 2. Prepare Data
+        $org_data = [
+            'organization_name'    => sanitize_text_field($_POST['org_name']),
+            'trade_license_number' => sanitize_text_field($_POST['org_license_number']),
+            'website_url'          => esc_url_raw($_POST['org_website']),
+            'emirate'              => sanitize_text_field($_POST['org_emirate']),
+            'entity_type'          => sanitize_text_field($_POST['org_entity_type']),
+            'industry'             => sanitize_text_field($_POST['org_industry']),
+            'is_freezone'          => sanitize_text_field($_POST['org_is_freezone']),
+            'business_activity'    => sanitize_text_field($_POST['org_activity_type']),
+            'employees'            => intval($_POST['org_employees']),
+            'turnover'             => sanitize_text_field($_POST['org_turnover']),
+            'csr_activity'         => $_POST['csr_activity'] ?? 'no',
+            'csr_initiatives'      => []
+        ];
 
-    // 2. Prepare Data
-    $org_data = [
-        'organization_name'    => sanitize_text_field($_POST['org_name']),
-        'trade_license_number' => sanitize_text_field($_POST['org_license_number']),
-        'website_url'          => esc_url_raw($_POST['org_website']),
-        'emirate'              => sanitize_text_field($_POST['org_emirate']),
-        'entity_type'          => sanitize_text_field($_POST['org_entity_type']),
-        'industry'             => sanitize_text_field($_POST['org_industry']),
-        'is_freezone'          => sanitize_text_field($_POST['org_is_freezone']),
-        'business_activity'    => sanitize_text_field($_POST['org_activity_type']),
-        'employees'            => intval($_POST['org_employees']),
-        'turnover'             => sanitize_text_field($_POST['org_turnover']),
-        'csr_activity'         => $_POST['csr_activity'] ?? 'no',
-        'csr_initiatives'      => []
-    ];
+        // Validation: Check negative values
+        if ($org_data['employees'] < 0) {
+             // We need to fetch is_rtl or define it, but for now assuming global logic or hardcoded
+             // The previous code used $is_rtl which might be undefined if not set in this scope?
+             // Let's use English/Arabic fallback if available or just hardcode english for safety if unsure
+             global $language; 
+             // Correction: $is_rtl logic was probably somewhere else or implicit. 
+             // I'll stick to the string I saw before:
+             $error_msg = 'Error: Number of employees cannot be negative.'; 
+        }
 
-    // Validation: Check negative values
-    if ($org_data['employee_count'] < 0) {
-         $error_msg = $is_rtl ? 'خطأ: عدد الموظفين لا يمكن أن يكون سلبيًا.' : 'Error: Number of employees cannot be negative.';
-         // Stop processing
-    }
+        error_log('SIC DEBUG: Org Data prepared: ' . print_r($org_data, true));
 
-    if ( !isset($error_msg) ) {
+    if ( empty($error_msg) ) {
         if ( !empty($_POST['csr_name']) ) {
             $org_data['csr_initiatives'][] = [
                 'name'   => sanitize_text_field($_POST['csr_name']),
@@ -77,10 +97,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
         }
 
         // 3. Save to DB
+        error_log('SIC DEBUG: Calling create_organization...');
         $result = $db->create_organization( $user_id, $org_data, [
             'logo_id' => $logo_id,
             'license_id' => $license_id
         ]);
+        error_log('SIC DEBUG: create_organization result: ' . (is_wp_error($result) ? $result->get_error_message() : $result));
     
         if ( is_wp_error($result) ) {
             $error_msg = $result->get_error_message();

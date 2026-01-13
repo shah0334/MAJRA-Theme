@@ -6,10 +6,11 @@ $db = SIC_DB::get_instance();
 global $language;
 $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id();
 if ( current_user_can('manage_options') ) {
-    $projects = $db->get_all_projects();
+    $data = $db->get_all_projects('', 1, 5);
 } else {
-    $projects = $db->get_projects_by_applicant( $user_id );
+    $data = $db->get_projects_by_applicant( $user_id, '', 1, 5 );
 }
+$projects = $data['results'];
 ?>
 <section class="projects-section py-5">
     <div class="container">

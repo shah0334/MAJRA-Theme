@@ -129,7 +129,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                                 </div>
                             </div>
                             <h6 class="font-graphik fw-bold text-cp-deep-ocean mb-1 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['CLICK_TO_UPLOAD']; ?></h6>
-                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF'] . ' or JPG/PNG'; ?></p>
+                            <p class="font-graphik text-secondary x-small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['FORMAT_PDF']; ?></p>
                                 <p class="font-graphik text-secondary x-small mb-0">Max 25MB</p>
                         </div>
                     </div>

@@ -9,7 +9,9 @@ $applicant = $db->get_applicant_by_wp_user($user_id);
 // Note: get_applicant_by_wp_user might return boolean false if not implemented, using get_applicant_by_id logic or session
 // Fallback to session applicant id
 $applicant_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
-$orgs = $db->get_organizations_by_applicant_id($applicant_id);
+// Fetch orgs with high limit for dropdown
+$org_data = $db->get_organizations_by_applicant_id($applicant_id, '', 1, 100); 
+$orgs = $org_data['results'];
 
 $selected_org_id = isset($_GET['org_id']) ? intval($_GET['org_id']) : 0;
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
@@ -134,8 +136,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                     <?php if ($project_id): ?>
                          <input type="hidden" name="org_profile_id" value="<?php echo esc_attr($project ? $project->org_profile_id : ''); ?>">
                     <?php endif; ?>
-                    
-                    <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-outline-info text-nowrap px-4" style="border-color: #3bc4bd; color: #3bc4bd;">
+                
+                    <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-outline-info text-nowrap px-4 btn-add-org-custom" style="border-color: #3bc4bd; color: #3bc4bd;">
                         <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['ADD_ORG_BTN']; ?>
                     </a>
                 </div>

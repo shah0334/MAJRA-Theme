@@ -71,10 +71,11 @@ global $language;
     $org_profile = $db->get_organization_by_applicant_id( $user_id );
     
     if ( current_user_can('manage_options') ) {
-        $projects = $db->get_all_projects();
+        $data = $db->get_all_projects('', 1, 5);
     } else {
-        $projects = $db->get_projects_by_applicant( $user_id );
+        $data = $db->get_projects_by_applicant( $user_id, '', 1, 5 );
     }
+    $projects = $data['results'];
 
     // If Organization exists (Complete or Draft but linked correctly to show "Home with Org" logic?)
     // The current logic only checked $org_profile. 

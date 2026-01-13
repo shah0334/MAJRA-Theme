@@ -321,16 +321,40 @@ class SIC_DB {
         $applicant = $this->get_applicant_by_id( $user_id );
         if ( ! $applicant ) return null;
         
-        return $this->get_organization_by_applicant_id( $applicant->applicant_id );
+        $data = $this->get_organizations_by_applicant_id( $applicant->applicant_id );
+        return !empty($data['results']) ? $data['results'][0] : null;
     }
 
     /**
      * Get All Organization Profiles by Applicant ID for Active Cycle
      */
-    public function get_organizations_by_applicant_id( $applicant_id ) {
+    /**
+     * Get All Organization Profiles by Applicant ID for Active Cycle with Search & Pagination
+     */
+    public function get_organizations_by_applicant_id( $applicant_id, $search = '', $page = 1, $limit = 10 ) {
         $cycle_id = $this->get_active_cycle_id();
-        if ( ! $cycle_id ) return [];
+        if ( ! $cycle_id ) return ['results' => [], 'total' => 0];
 
+        $offset = $this->get_pagination_offset($page, $limit);
+        $search_term = '%' . $this->wpdb->esc_like( $search ) . '%';
+
+        // 1. Count
+        $count_sql = "
+            SELECT COUNT(op.org_profile_id)
+            FROM " . self::TBL_ORG_PROFILES . " op
+            JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE op.created_by_applicant_id = %d 
+            AND op.cycle_id = %d
+        ";
+        $params = [$applicant_id, $cycle_id];
+        if ( !empty($search) ) {
+            $count_sql .= " AND (o.canonical_name LIKE %s OR op.trade_license_number LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+        $total = $this->wpdb->get_var( $this->wpdb->prepare( $count_sql, ...$params ) );
+
+        // 2. Data
         $sql = "
             SELECT 
                 op.*, 
@@ -340,8 +364,20 @@ class SIC_DB {
             WHERE op.created_by_applicant_id = %d 
             AND op.cycle_id = %d
         ";
+        $params = [$applicant_id, $cycle_id];
+        if ( !empty($search) ) {
+            $sql .= " AND (o.canonical_name LIKE %s OR op.trade_license_number LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
 
-        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
+        $sql .= " ORDER BY op.created_at DESC LIMIT %d OFFSET %d";
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $results = $this->wpdb->get_results( $this->wpdb->prepare( $sql, ...$params ) );
+
+        return ['results' => $results, 'total' => (int)$total];
     }
 
     /**
@@ -511,6 +547,13 @@ class SIC_DB {
     }
 
     /**
+     * Helper: Get Pagination Offset
+     */
+    private function get_pagination_offset($page, $limit) {
+        return ($page - 1) * $limit;
+    }
+
+    /**
      * Save Project Link
      */
     public function save_project_link( $project_id, $role, $url ) {
@@ -568,10 +611,37 @@ class SIC_DB {
     /**
      * Get Projects by Applicant ID (Draft & Submitted)
      */
-    public function get_projects_by_applicant( $applicant_id ) {
+    /**
+     * Get Projects by Applicant ID (Draft & Submitted) with Search & Pagination
+     */
+    public function get_projects_by_applicant( $applicant_id, $search = '', $page = 1, $limit = 10 ) {
         $cycle_id = $this->get_active_cycle_id();
-        if ( ! $cycle_id ) return [];
+        if ( ! $cycle_id ) return ['results' => [], 'total' => 0];
 
+        $offset = $this->get_pagination_offset($page, $limit);
+        $search_term = '%' . $this->wpdb->esc_like( $search ) . '%';
+
+        // 1. Get Total Count
+        $count_sql = "
+            SELECT COUNT(p.project_id)
+            FROM " . self::TBL_PROJECTS . " p
+            LEFT JOIN " . self::TBL_ORG_PROFILES . " op ON p.org_profile_id = op.org_profile_id
+            LEFT JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE p.created_by_applicant_id = %d 
+            AND p.cycle_id = %d
+        ";
+        
+        $params = [$applicant_id, $cycle_id];
+
+        if ( !empty($search) ) {
+            $count_sql .= " AND (p.project_name LIKE %s OR o.canonical_name LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+
+        $total = $this->wpdb->get_var( $this->wpdb->prepare( $count_sql, ...$params ) );
+
+        // 2. Get Data
         $sql = "
             SELECT 
                 p.*, 
@@ -582,19 +652,55 @@ class SIC_DB {
             LEFT JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
             WHERE p.created_by_applicant_id = %d 
             AND p.cycle_id = %d
-            ORDER BY p.created_at DESC
         ";
 
-        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $applicant_id, $cycle_id ) );
+        // Re-use params for main query but need to re-build as we add LIMIT/OFFSET
+        $params = [$applicant_id, $cycle_id];
+        if ( !empty($search) ) {
+            $sql .= " AND (p.project_name LIKE %s OR o.canonical_name LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+
+        $sql .= " ORDER BY p.created_at DESC LIMIT %d OFFSET %d";
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $results = $this->wpdb->get_results( $this->wpdb->prepare( $sql, ...$params ) );
+
+        return ['results' => $results, 'total' => (int)$total];
     }
 
     /**
      * Get All Projects (Admin View)
      */
-    public function get_all_projects() {
+    /**
+     * Get All Projects (Admin View) with Search & Pagination
+     */
+    public function get_all_projects( $search = '', $page = 1, $limit = 10 ) {
         $cycle_id = $this->get_active_cycle_id();
-        if ( ! $cycle_id ) return [];
+        if ( ! $cycle_id ) return ['results' => [], 'total' => 0];
 
+        $offset = $this->get_pagination_offset($page, $limit);
+        $search_term = '%' . $this->wpdb->esc_like( $search ) . '%';
+
+        // 1. Count
+        $count_sql = "
+            SELECT COUNT(p.project_id)
+            FROM " . self::TBL_PROJECTS . " p
+            LEFT JOIN " . self::TBL_ORG_PROFILES . " op ON p.org_profile_id = op.org_profile_id
+            LEFT JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE p.cycle_id = %d
+        ";
+        $params = [$cycle_id];
+        if ( !empty($search) ) {
+            $count_sql .= " AND (p.project_name LIKE %s OR o.canonical_name LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+        $total = $this->wpdb->get_var( $this->wpdb->prepare( $count_sql, ...$params ) );
+
+        // 2. Data
         $sql = "
             SELECT 
                 p.*, 
@@ -604,19 +710,53 @@ class SIC_DB {
             LEFT JOIN " . self::TBL_ORG_PROFILES . " op ON p.org_profile_id = op.org_profile_id
             LEFT JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
             WHERE p.cycle_id = %d
-            ORDER BY p.created_at DESC
         ";
+        
+        $params = [$cycle_id];
+        if ( !empty($search) ) {
+            $sql .= " AND (p.project_name LIKE %s OR o.canonical_name LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
 
-        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $cycle_id ) );
+        $sql .= " ORDER BY p.created_at DESC LIMIT %d OFFSET %d";
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $results = $this->wpdb->get_results( $this->wpdb->prepare( $sql, ...$params ) );
+
+        return ['results' => $results, 'total' => (int)$total];
     }
 
     /**
      * Get All Organization Profiles (Admin View)
      */
-    public function get_all_organizations() {
+    /**
+     * Get All Organization Profiles (Admin View) with Search & Pagination
+     */
+    public function get_all_organizations( $search = '', $page = 1, $limit = 10 ) {
         $cycle_id = $this->get_active_cycle_id();
-        if ( ! $cycle_id ) return [];
+        if ( ! $cycle_id ) return ['results' => [], 'total' => 0];
 
+        $offset = $this->get_pagination_offset($page, $limit);
+        $search_term = '%' . $this->wpdb->esc_like( $search ) . '%';
+
+        // 1. Count
+        $count_sql = "
+            SELECT COUNT(op.org_profile_id)
+            FROM " . self::TBL_ORG_PROFILES . " op
+            JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
+            WHERE op.cycle_id = %d
+        ";
+        $params = [$cycle_id];
+        if ( !empty($search) ) {
+            $count_sql .= " AND (o.canonical_name LIKE %s OR op.trade_license_number LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+        $total = $this->wpdb->get_var( $this->wpdb->prepare( $count_sql, ...$params ) );
+
+        // 2. Data
         $sql = "
             SELECT 
                 op.*, 
@@ -625,8 +765,20 @@ class SIC_DB {
             JOIN " . self::TBL_ORGANIZATIONS . " o ON op.organization_id = o.organization_id
             WHERE op.cycle_id = %d
         ";
+        $params = [$cycle_id];
+        if ( !empty($search) ) {
+            $sql .= " AND (o.canonical_name LIKE %s OR op.trade_license_number LIKE %s)";
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
 
-        return $this->wpdb->get_results( $this->wpdb->prepare( $sql, $cycle_id ) );
+        $sql .= " ORDER BY op.created_at DESC LIMIT %d OFFSET %d";
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $results = $this->wpdb->get_results( $this->wpdb->prepare( $sql, ...$params ) );
+
+        return ['results' => $results, 'total' => (int)$total];
     }
 
     /**

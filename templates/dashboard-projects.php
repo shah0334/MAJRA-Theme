@@ -26,14 +26,16 @@ global $language;
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="font-graphik fw-medium text-cp-deep-ocean m-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['LISTINGS_TITLE']; ?></h2>
                 
-                <!-- Filter/Search (Optional placeholder) -->
+                <!-- Filter/Search -->
                 <div class="d-none d-md-block">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-end-0 rounded-start-pill ps-4" placeholder="<?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SEARCH_PLACEHOLDER']; ?>">
-                        <span class="input-group-text bg-white border-start-0 rounded-end-pill pe-4">
-                            <i class="bi bi-search text-secondary"></i>
-                        </span>
-                    </div>
+                    <form method="GET" action="">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control border-end-0 rounded-start-pill ps-4" placeholder="<?php echo $language['DASHBOARD']['HOME_WITH_ORG']['SEARCH_PLACEHOLDER']; ?>" value="<?php echo isset($_GET['search']) ? esc_attr($_GET['search']) : ''; ?>">
+                            <button type="submit" class="input-group-text bg-white border-start-0 rounded-end-pill pe-4">
+                                <i class="bi bi-search text-secondary"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -54,20 +56,28 @@ global $language;
                         <?php
                         $db = SIC_DB::get_instance();
                         $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : get_current_user_id(); // Fallback
-                        // If using dummy login, session variable should be set
                         
+                        // Pagination & Search Params
+                        $paged = isset($_GET['curr_page']) ? max(1, intval($_GET['curr_page'])) : 1;
+                        $limit = 10;
+                        $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
+
                         if ( current_user_can('manage_options') ) {
-                            $projects = $db->get_all_projects();
+                            $data = $db->get_all_projects($search, $paged, $limit);
                         } else {
-                            $projects = $db->get_projects_by_applicant( $user_id );
+                            $data = $db->get_projects_by_applicant( $user_id, $search, $paged, $limit );
                         }
+                        
+                        $projects = $data['results'];
+                        $total_records = $data['total'];
+                        $total_pages = ceil($total_records / $limit);
 
                         if ( empty($projects) ):
                         ?>
                             <tr>
                                 <td colspan="6" class="text-center py-5">
                                     <p class="text-secondary mb-0"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_TEXT']; ?> 
-                                    <?php if ( !current_user_can('manage_options') ): ?>
+                                    <?php if ( !current_user_can('manage_options') && empty($search) ): ?>
                                     <a href="<?php echo SIC_Routes::get_create_project_url(); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EMPTY_STATE_LINK']; ?></a>.
                                     <?php endif; ?>
                                     </p>
@@ -99,7 +109,6 @@ global $language;
                                             <?php if ( !current_user_can('manage_options') && $project->submission_status !== 'submitted' ): ?>
                                             <li><a class="dropdown-item" href="<?php echo esc_url($edit_url); ?>"><?php echo $language['DASHBOARD']['HOME_WITH_ORG']['EDIT']; ?></a></li>
                                             <?php endif; ?>
-                                            <!-- <li><a class="dropdown-item text-danger" href="#">Delete</a></li> -->
                                         </ul>
                                     </div>
                                 </td>
@@ -110,12 +119,41 @@ global $language;
                 </table>
             </div>
 
-            <!-- Pagination (Hidden for now until implemented) -->
-            <!-- 
+            <!-- Pagination -->
+            <?php if ($total_pages > 1): ?>
             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                ... 
+                <div class="text-secondary small">
+                    Showing <?php echo (($paged - 1) * $limit) + 1; ?> to <?php echo min($paged * $limit, $total_records); ?> of <?php echo $total_records; ?> entries
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination mb-0">
+                        <!-- Previous -->
+                        <li class="page-item <?php echo ($paged <= 1) ? 'disabled' : ''; ?>">
+                            <a class="page-link border-0 text-secondary" href="<?php echo add_query_arg(['curr_page' => $paged - 1, 'search' => $search]); ?>">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Pages -->
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <li class="page-item <?php echo ($paged == $i) ? 'active' : ''; ?>">
+                            <a class="page-link border-0 rounded-circle d-flex align-items-center justify-content-center mx-1 <?php echo ($paged == $i) ? 'bg-cp-platinum text-cp-deep-ocean fw-bold' : 'text-secondary'; ?>" 
+                               href="<?php echo add_query_arg(['curr_page' => $i, 'search' => $search]); ?>" style="width: 32px; height: 32px;">
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
+                        <?php endfor; ?>
+
+                        <!-- Next -->
+                        <li class="page-item <?php echo ($paged >= $total_pages) ? 'disabled' : ''; ?>">
+                            <a class="page-link border-0 text-secondary" href="<?php echo add_query_arg(['curr_page' => $paged + 1, 'search' => $search]); ?>">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-            -->
+            <?php endif; ?>
         </div>
     </div>
 </main>

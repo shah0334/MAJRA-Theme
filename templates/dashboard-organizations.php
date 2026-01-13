@@ -19,20 +19,24 @@ global $language;
 
             <?php
             $db = SIC_DB::get_instance();
+            
+            // Pagination & Search Params
+            $paged = isset($_GET['curr_page']) ? max(1, intval($_GET['curr_page'])) : 1;
+            $limit = 10;
+            $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
+
             if ( current_user_can('manage_options') ) {
-                $org_profiles = $db->get_all_organizations();
+                $data = $db->get_all_organizations($search, $paged, $limit);
             } else {
                 $user_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
-                $org_profiles = $db->get_organizations_by_applicant_id( $user_id );
+                $data = $db->get_organizations_by_applicant_id( $user_id, $search, $paged, $limit );
             }
             
-            // Should show table even if empty, as per typical dashboard behavior, or keep existing logic?
-            // "the table is missing a create button, user can create multiple organizations" -> implies create button should be always visible or available.
-            
-            // Let's change the condition: ALWAYS show the table structure (or at least the header/create button), and loop through rows.
-            // If empty, show "No organizations found".
-            
+            $org_profiles = $data['results'];
+            $total_records = $data['total'];
+            $total_pages = ceil($total_records / $limit);
             ?>
+
             <!-- Registered Organizations Section -->
             <div class="bg-white rounded-4 p-4 shadow-sm">
                 <!-- Header & Create Button -->
@@ -49,10 +53,12 @@ global $language;
 
                 <!-- Search Bar -->
                 <div class="mb-4">
-                    <div class="position-relative">
-                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                        <input type="text" class="form-control form-control-lg bg-light border-0 ps-5 fs-6" placeholder="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['SEARCH_PLACEHOLDER']; ?>">
-                    </div>
+                    <form method="GET" action="">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                            <input type="text" name="search" class="form-control form-control-lg bg-light border-0 ps-5 fs-6" placeholder="<?php echo $language['DASHBOARD']['DASHBOARD_ORG']['SEARCH_PLACEHOLDER']; ?>" value="<?php echo esc_attr($search); ?>">
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Organizations Table -->
@@ -82,7 +88,7 @@ global $language;
                                     </td>
                                     <td class="py-3 font-graphik text-secondary">
                                         <i class="bi bi-calendar4 me-2"></i>
-                                        <?php echo date('d F Y'); // Placeholder ?>
+                                        <?php echo date('d F Y', strtotime($org_profile->created_at)); ?>
                                     </td>
                                     <td class="pe-3 py-3 text-end">
                                         <div class="d-flex align-items-center justify-content-end gap-3">
@@ -102,6 +108,42 @@ global $language;
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Pagination -->
+                <?php if ($total_pages > 1): ?>
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <div class="text-secondary small">
+                        Showing <?php echo (($paged - 1) * $limit) + 1; ?> to <?php echo min($paged * $limit, $total_records); ?> of <?php echo $total_records; ?> entries
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination mb-0">
+                            <!-- Previous -->
+                            <li class="page-item <?php echo ($paged <= 1) ? 'disabled' : ''; ?>">
+                                <a class="page-link border-0 text-secondary" href="<?php echo add_query_arg(['curr_page' => $paged - 1, 'search' => $search]); ?>">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            
+                            <!-- Pages -->
+                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <li class="page-item <?php echo ($paged == $i) ? 'active' : ''; ?>">
+                                <a class="page-link border-0 rounded-circle d-flex align-items-center justify-content-center mx-1 <?php echo ($paged == $i) ? 'bg-cp-platinum text-cp-deep-ocean fw-bold' : 'text-secondary'; ?>" 
+                                href="<?php echo add_query_arg(['curr_page' => $i, 'search' => $search]); ?>" style="width: 32px; height: 32px;">
+                                    <?php echo $i; ?>
+                                </a>
+                            </li>
+                            <?php endfor; ?>
+
+                            <!-- Next -->
+                            <li class="page-item <?php echo ($paged >= $total_pages) ? 'disabled' : ''; ?>">
+                                <a class="page-link border-0 text-secondary" href="<?php echo add_query_arg(['curr_page' => $paged + 1, 'search' => $search]); ?>">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

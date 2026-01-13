@@ -121,7 +121,7 @@
             <p class="mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['MODAL_TEXT_2']; ?></p>
         </div>
         
-        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border w-100 rounded-3 fw-medium" style="border-color: #3BC4BD !important; color: #0a0a0a; padding-top: 10px; padding-bottom: 10px; font-size: 14px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['CLOSE_BTN']; ?></a>
+        <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-white border w-100 rounded-3 fw-medium thankyou-close-btn" style="border-color: #3BC4BD !important; color: #0a0a0a; padding-top: 10px; padding-bottom: 10px; font-size: 14px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['CLOSE_BTN']; ?></a>
       </div>
     </div>
   </div>
