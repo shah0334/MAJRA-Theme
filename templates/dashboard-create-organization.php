@@ -79,7 +79,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
         $error_msg = $result->get_error_message();
     } else {
         // Success
-        wp_redirect( SIC_Routes::get_dashboard_home_url() ); // Redirect to dashboard
+        wp_redirect( SIC_Routes::get_dashboard_home_url() . '?success=org_created' ); // Redirect to dashboard with success param
         exit;
     }
     } // End else from file validation check
@@ -99,6 +99,14 @@ global $language;
         </div>
 
         <?php if ($error_msg): ?>
+            <!-- Also trigger toast for visibility -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof showToast === 'function') {
+                        showToast("<?php echo esc_js($error_msg); ?>", 'error');
+                    }
+                });
+            </script>
             <div class="alert alert-danger mb-4"><?php echo esc_html($error_msg); ?></div>
         <?php endif; ?>
 
@@ -325,6 +333,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (file.size > maxSize) {
                     const msg = errorMsg || 'Error: File size exceeds ' + limit + 'MB limit. Please upload a smaller file.';
                     preview.innerHTML = '<span class="text-danger small">' + msg + '</span>';
+                    
+                    if (typeof showToast === 'function') {
+                        showToast(msg, 'error');
+                    }
+                    
                     this.value = ''; // Clear input
                     return;
                 }

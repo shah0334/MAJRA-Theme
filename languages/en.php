@@ -453,7 +453,8 @@
             'GUIDANCE_TEXT' => 'Your organization represents the foundation for meaningful change; therefore, it is essential to ensure accuracy from the outset. Please carefully review all details before submitting, as submissions cannot be edited once finalized.',
             'ERR_LOGO_SIZE' => 'Organization Logo exceeds the maximum allowed size of 2MB.',
             'ERR_LICENSE_SIZE' => 'Trade License file exceeds the maximum allowed size of 5MB.',
-            'ERR_INVALID_IMG' => 'Invalid file type. Please select an image.'
+            'ERR_INVALID_IMG' => 'Invalid file type. Please select an image.',
+            'ORG_CREATED_SUCCESS' => 'Organization created successfully.'
         ),
         'PROJ_WIZARD' => array(
             'STEPS' => array(
