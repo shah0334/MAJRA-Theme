@@ -141,7 +141,7 @@ global $language;
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['LOGO']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="file" name="org_logo" id="org_logo" class="form-control ps-3 pe-5" accept="image/png, image/jpeg" required>
-                                    <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+                                    <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary pe-none"></i>
                                 </div>
                                 <div id="org_logo_preview" class="mt-2"></div>
                                 <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['ORG_FORM']['LOGO_HELP']; ?></div>
@@ -156,7 +156,7 @@ global $language;
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_FILE']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="file" name="org_license_file" id="org_license_file" class="form-control ps-3 pe-5" accept="application/pdf" required>
-                                    <i class="bi bi-file-earmark-text position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+                                    <i class="bi bi-file-earmark-text position-absolute top-50 end-0 translate-middle-y me-3 text-secondary pe-none"></i>
                                 </div>
                                 <div id="org_license_preview" class="mt-2"></div>
                                 <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_HELP']; ?></div>
