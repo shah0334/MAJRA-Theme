@@ -4,6 +4,10 @@
  */
 $db = SIC_DB::get_instance();
 global $language;
+global $current_language; // Ensure we have access to the current language
+$lang_code = isset($current_language) ? $current_language : 'en'; // Default to en
+$name_col = ($lang_code == 'ar') ? 'name_ar' : 'name';
+
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
 if ( ! $project_id ) {
@@ -16,13 +20,10 @@ if ( ! $project ) {
     wp_die('Project not found');
 }
 
-// Fetch existing relations for pre-filling
-// Note: We need methods in SIC_DB to fetch these. For now, assuming empty or need to add get_project_relations later.
-// To keep it simple, I'll update get_project to fetch these or just do a direct query here if needed, 
-// OR I can add a helper method in this file for now.
-// Let's rely on SIC_DB::get_project returning them if possible, otherwise we might lose saved state on refresh.
-// *Update plan*: I'll assume for now we don't display saved relations until I update SIC_DB, 
-// but the submission will work. TO DO: Update SIC_DB::get_project to include relations.
+// Fetch Reference Data
+$all_impact_areas = $db->get_impact_areas();
+$all_beneficiaries = $db->get_beneficiaries();
+$all_sdgs = $db->get_sdgs();
 
 // Handle Form Submission
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']) ) {
@@ -31,25 +32,22 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         wp_die( 'Security check failed' );
     }
 
-    // Impact Areas Mapping
-    $impact_areas_map = [
-        1 => 'impact_area_1', 2 => 'impact_area_2', 3 => 'impact_area_3',
-        4 => 'impact_area_4', 5 => 'impact_area_5', 6 => 'impact_area_6'
-    ];
+    // Impact Areas Processing
     $impact_areas = [];
-    foreach ($impact_areas_map as $id => $name) {
-        if ( isset($_POST[$name]) ) $impact_areas[] = $id;
+    foreach ($all_impact_areas as $ia) {
+        // Look for impact_area_{ID}
+        if ( isset($_POST['impact_area_' . $ia->impact_area_id]) ) {
+            $impact_areas[] = $ia->impact_area_id;
+        }
     }
 
-    // Beneficiaries Mapping
-    $beneficiaries_map = [
-        1 => 'beneficiary_1', 2 => 'beneficiary_2', 3 => 'beneficiary_3',
-        4 => 'beneficiary_4', 5 => 'beneficiary_5', 6 => 'beneficiary_6',
-        7 => 'beneficiary_7', 8 => 'beneficiary_8', 9 => 'beneficiary_9'
-    ];
+    // Beneficiaries Processing
     $beneficiaries = [];
-    foreach ($beneficiaries_map as $id => $name) {
-        if ( isset($_POST[$name]) ) $beneficiaries[] = $id;
+    foreach ($all_beneficiaries as $ben) {
+        // Look for beneficiary_{ID}
+        if ( isset($_POST['beneficiary_' . $ben->beneficiary_type_id]) ) {
+            $beneficiaries[] = $ben->beneficiary_type_id;
+        }
     }
 
     // SDGs
@@ -113,12 +111,16 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IMPACT_AREAS_DESC']; ?></p>
                 
                 <div class="row g-3">
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_1" class="form-check-input" type="checkbox" id="ia1" <?php checked(in_array(1, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_ART_CULTURE']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_2" class="form-check-input" type="checkbox" id="ia2" <?php checked(in_array(2, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_ENV']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_3" class="form-check-input" type="checkbox" id="ia3" <?php checked(in_array(3, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_TECH']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_4" class="form-check-input" type="checkbox" id="ia4" <?php checked(in_array(4, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_HEALTH']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_5" class="form-check-input" type="checkbox" id="ia5" <?php checked(in_array(5, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_SPORTS']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="impact_area_6" class="form-check-input" type="checkbox" id="ia6" <?php checked(in_array(6, $project->impact_areas ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IA_EDU']; ?></label></div></div>
+                    <?php foreach ($all_impact_areas as $ia): ?>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input name="impact_area_<?php echo $ia->impact_area_id; ?>" class="form-check-input" type="checkbox" id="ia<?php echo $ia->impact_area_id; ?>" <?php checked(in_array($ia->impact_area_id, $project->impact_areas ?? [])); ?>>
+                            <label class="form-check-label font-graphik text-cp-deep-ocean small" for="ia<?php echo $ia->impact_area_id; ?>">
+                                <?php echo esc_html($ia->$name_col); ?>
+                            </label>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
@@ -128,15 +130,16 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BENEFICIARIES_DESC']; ?></p>
                  
                  <div class="row g-3 mb-4">
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_1" class="form-check-input" type="checkbox" id="b1" <?php checked(in_array(1, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_YOUTH']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_2" class="form-check-input" type="checkbox" id="b2" <?php checked(in_array(2, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_WOMEN']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_3" class="form-check-input" type="checkbox" id="b3" <?php checked(in_array(3, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_ELDERLY']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_4" class="form-check-input" type="checkbox" id="b4" <?php checked(in_array(4, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_POD']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_5" class="form-check-input" type="checkbox" id="b5" <?php checked(in_array(5, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_FAMILIES']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_6" class="form-check-input" type="checkbox" id="b6" <?php checked(in_array(6, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_SMALL_BIZ']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_7" class="form-check-input" type="checkbox" id="b7" <?php checked(in_array(7, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b7"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_CREATIVE']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_8" class="form-check-input" type="checkbox" id="b8" <?php checked(in_array(8, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b8"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_THIRD_SECTOR']; ?></label></div></div>
-                    <div class="col-md-6"><div class="form-check"><input name="beneficiary_9" class="form-check-input" type="checkbox" id="b9" <?php checked(in_array(9, $project->beneficiaries ?? [])); ?>><label class="form-check-label font-graphik text-cp-deep-ocean small" for="b9"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BEN_PUBLIC']; ?></label></div></div>
+                    <?php foreach ($all_beneficiaries as $ben): ?>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input name="beneficiary_<?php echo $ben->beneficiary_type_id; ?>" class="form-check-input" type="checkbox" id="b<?php echo $ben->beneficiary_type_id; ?>" <?php checked(in_array($ben->beneficiary_type_id, $project->beneficiaries ?? [])); ?>>
+                            <label class="form-check-label font-graphik text-cp-deep-ocean small" for="b<?php echo $ben->beneficiary_type_id; ?>">
+                                <?php echo esc_html($ben->$name_col); ?>
+                            </label>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <div class="row g-3">
@@ -189,8 +192,9 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
                    <div class="row g-2">
                        <?php 
-                       $sdgs = $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_NAMES'];
-                       foreach($sdgs as $num => $name):
+                       foreach($all_sdgs as $sdg):
+                         $num = $sdg->sdg_id;
+                         $name = $sdg->$name_col;
                          $is_selected = in_array($num, $project->sdgs ?? []);
                          $card_class = $is_selected ? 'sdg-card border rounded-3 p-3 h-100 cursor-pointer d-flex align-items-center gap-3 selected' : 'sdg-card border rounded-3 p-3 h-100 cursor-pointer d-flex align-items-center gap-3';
                        ?>
@@ -199,7 +203,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                                <div class="sdg-icon rounded-3 d-flex align-items-center justify-content-center text-white fw-bold" style="width: 40px; height: 40px; background-color: var(--sdg-<?php echo $num; ?>, #E5243B); font-size: 14px;">
                                    <?php echo $num; ?>
                                </div>
-                               <span class="font-graphik text-cp-deep-ocean small fw-medium text-truncate-2" style="font-size: 11px; line-height: 1.3;"><?php echo $name; ?></span>
+                               <span class="font-graphik text-cp-deep-ocean small fw-medium text-truncate-2" style="font-size: 11px; line-height: 1.3;"><?php echo esc_html($name); ?></span>
                            </div>
                        </div>
                        <?php endforeach; ?>

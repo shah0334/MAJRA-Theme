@@ -593,3 +593,5 @@ function rd_duplicate_post_as_draft(){
   }
   add_filter('wp_image_editors', 'use_gd_editor');
   add_filter('http_request_timeout', function() { return 30; });
+
+

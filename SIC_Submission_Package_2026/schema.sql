@@ -397,6 +397,7 @@ CREATE TABLE sic_project_links (
 CREATE TABLE sic_impact_areas (
   impact_area_id TINYINT UNSIGNED NOT NULL,
   name VARCHAR(100) NOT NULL,
+  name_ar VARCHAR(255) NULL,
   PRIMARY KEY (impact_area_id),
   UNIQUE KEY uq_impact_area_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -423,6 +424,7 @@ CREATE TABLE sic_project_impact_areas (
 CREATE TABLE sic_beneficiary_types (
   beneficiary_type_id TINYINT UNSIGNED NOT NULL,
   name VARCHAR(150) NOT NULL,
+  name_ar VARCHAR(255) NULL,
   PRIMARY KEY (beneficiary_type_id),
   UNIQUE KEY uq_beneficiary_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -449,6 +451,7 @@ CREATE TABLE sic_project_beneficiaries (
 CREATE TABLE sic_sdgs (
   sdg_id TINYINT UNSIGNED NOT NULL,
   name VARCHAR(150) NOT NULL,
+  name_ar VARCHAR(255) NULL,
   PRIMARY KEY (sdg_id),
   UNIQUE KEY uq_sdg_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

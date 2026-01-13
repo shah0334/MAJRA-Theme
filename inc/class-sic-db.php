@@ -545,6 +545,27 @@ class SIC_DB {
     }
 
     /**
+     * Get All Impact Areas
+     */
+    public function get_impact_areas() {
+        return $this->wpdb->get_results( "SELECT * FROM " . self::TBL_IMPACT_AREAS . " ORDER BY impact_area_id ASC" );
+    }
+
+    /**
+     * Get All Beneficiary Types
+     */
+    public function get_beneficiaries() {
+        return $this->wpdb->get_results( "SELECT * FROM " . self::TBL_BENEFICIARY_TYPES . " ORDER BY beneficiary_type_id ASC" );
+    }
+
+    /**
+     * Get All SDGs
+     */
+    public function get_sdgs() {
+        return $this->wpdb->get_results( "SELECT * FROM " . self::TBL_SDGS . " ORDER BY sdg_id ASC" );
+    }
+
+    /**
      * Get Projects by Applicant ID (Draft & Submitted)
      */
     public function get_projects_by_applicant( $applicant_id ) {
