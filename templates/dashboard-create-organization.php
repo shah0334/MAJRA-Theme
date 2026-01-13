@@ -87,6 +87,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
 
 get_header('dashboard');
 global $language;
+
+// Restrict Admin Access
+if ( current_user_can('manage_options') ) {
+    wp_safe_redirect( SIC_Routes::get_dashboard_home_url() );
+    exit;
+}
 ?>
 
 <main id="primary" class="site-main bg-cp-cream-light py-5">

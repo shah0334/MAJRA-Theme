@@ -4,6 +4,12 @@
 get_header('dashboard');
 global $language;
 
+// Restrict Admin Access
+if ( current_user_can('manage_options') ) {
+    wp_safe_redirect( SIC_Routes::get_dashboard_home_url() );
+    exit;
+}
+
 // Get current step from URL, default to 1
 $current_step = isset($_GET['step']) ? intval($_GET['step']) : 1;
 if ($current_step < 1) $current_step = 1;
