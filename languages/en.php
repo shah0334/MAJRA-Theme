@@ -427,7 +427,7 @@
             'TRADE_LICENSE_NUM' => 'Trade License / Certificate Number',
             'LOGO' => 'Logo',
             'LOGO_HELP' => 'Upload your organization\'s logo in PNG or JPG (Max 2MB)',
-            'WEBSITE' => 'Organization Website',
+            'WEBSITE' => 'Website and/or Social Media Account',
             'CONTACT_NUM' => 'Contact Number',
             'IBAN_NUM' => 'IBAN Number',
             'BANK_NAME' => 'Bank Name',

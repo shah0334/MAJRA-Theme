@@ -91,9 +91,13 @@ $csr_activities = $db->get_org_csr_activities( $org_id );
             <div class="details-row">
                 <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_WEBSITE']; ?></div>
                 <div class="details-value">
-                    <a href="<?php echo esc_url($profile->website_url); ?>" target="_blank" class="text-cp-app-blue text-decoration-none">
-                        <?php echo esc_html($profile->website_url); ?> <i class="bi bi-box-arrow-up-right ms-1 small"></i>
-                    </a>
+                    <?php if ( filter_var($profile->website_url, FILTER_VALIDATE_URL) ): ?>
+                        <a href="<?php echo esc_url($profile->website_url); ?>" target="_blank" class="text-cp-app-blue text-decoration-none">
+                            <?php echo esc_html($profile->website_url); ?> <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                        </a>
+                    <?php else: ?>
+                        <?php echo esc_html($profile->website_url); ?>
+                    <?php endif; ?>
                 </div>
             </div>
 

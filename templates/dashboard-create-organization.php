@@ -63,7 +63,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
         $org_data = [
             'organization_name'    => sanitize_text_field($_POST['org_name']),
             'trade_license_number' => sanitize_text_field($_POST['org_license_number']),
-            'website_url'          => esc_url_raw($_POST['org_website']),
+            'website_url'          => sanitize_text_field($_POST['org_website']),
             'emirate'              => sanitize_text_field($_POST['org_emirate']),
             'entity_type'          => sanitize_text_field($_POST['org_entity_type']),
             'industry'             => sanitize_text_field($_POST['org_industry']),
@@ -187,7 +187,7 @@ if ( current_user_can('manage_options') ) {
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['WEBSITE']; ?> <span class="text-danger">*</span></label>
-                                <input type="url" name="org_website" class="form-control" required>
+                                <input type="text" name="org_website" class="form-control" required>
                             </div>
 
                             <!-- Row 3: Contact & Bank Name -->
