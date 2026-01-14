@@ -55,10 +55,10 @@ class SIC_DB {
      */
     private function connect() {
         // Hardcoded Credentials
-        $db_user = 'cmjqgkmy_majra_sic_admin';
-        $db_pass = '+J~Pj!L277Q^';
-        $db_name = 'cmjqgkmy_majra_sic';
-        $db_host = '127.0.0.1';
+        $db_user = SIC_DB_USER;
+        $db_pass = SIC_DB_PASSWORD;
+        $db_name = SIC_DB_NAME;
+        $db_host = SIC_DB_HOST;
 
         $this->wpdb = new wpdb( 
             $db_user,
@@ -135,12 +135,51 @@ class SIC_DB {
         ) );
     }
 
+        public function get_or_create_applicant( $user ) {
+        $uuid = $user['uuid'];
+        $mobile = $user['mobile'] ?? '';
+        $email = $user['email'] ?? '';
+        if( empty($email) ){
+            $email = sanitize_email($uuid . '@majra.ae');
+        }
+        $firstnameEN = $user['firstnameEN'];
+        $lastnameEN  = $user['lastnameEN'];
+
+        // CHECK EXISTING USER
+        $existing_user = $this->wpdb->get_row( $this->wpdb->prepare( 
+            "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE email = %s", 
+            $email 
+        ) );
+  
+         if (!$existing_user) {
+            $this->wpdb->insert( 
+                self::TBL_APPLICANTS, 
+                [
+                    'uuid'       => $uuid,
+                    'email'      => $email,
+                    'first_name' => $firstnameEN,
+                    'last_name'  => $lastnameEN,
+                    'phone'      => $mobile
+                ],
+                ['%s', '%s', '%s', '%s', '%s']
+            );
+
+            return $this->wpdb->get_row( $this->wpdb->prepare( 
+                "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE applicant_id = %d", 
+                $this->wpdb->insert_id
+            ));
+        }else{
+            return $existing_user;
+        }
+    }
+
     public function get_applicant_by_id($id) {
         return $this->wpdb->get_row( $this->wpdb->prepare( 
             "SELECT * FROM " . self::TBL_APPLICANTS . " WHERE applicant_id = %d", 
             $id 
         ) );
     }
+
 
     /**
      * Save a file record to the database.
