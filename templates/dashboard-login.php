@@ -94,6 +94,13 @@ global $isRTL;
     </style>
 	<link rel="stylesheet" type="text/css" href="<?php bloginfo('template_directory'); ?>/assets/css/style.css" />
 	<link rel="stylesheet" type="text/css" href="<?php bloginfo('template_directory'); ?>/assets/css/responsive.css" />
+    <style>
+        .login-section{
+            background-image: url('<?php echo get_template_directory_uri();?>/assets/img/login-bg.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
 </head>
 
 <body <?php body_class($current_language); ?> style='direction:<?php echo $isRTL ? 'rtl' : 'ltr'; ?>;'>
@@ -101,28 +108,35 @@ global $isRTL;
 
     <div class="vh-100 w-100 overflow-hidden" style="background-color: #F7FAFB">
         <div class="row h-100">
-            <div class="d-none d-md-block col-12 col-md-7">
-                <!-- TODO: ADD IMAGE HERE -->
+            <div class="d-none d-lg-flex align-items-end col-12 col-lg-7 login-section text-white">
+                <div class="p-5">
+                    <p class="text-uppercase m-0 fs-4">Participate in the</p>
+                    <p class="font-mackay display-2 fw-bold m-0">Sustainable</p>
+                    <p class="font-mackay display-2 fw-bold m-0 text-nowrap">Impact Challenge</p>
+                </div>
             </div>
-            <div class="col-12 col-md-5 d-flex align-items-center justify-content-center">
-                <div class="d-flex flex-column bg-white p-5 rounded-4 shadow-sm text-center" style="min-height: 450px; max-width: 440px; width: 90%;">
-                    <div class="mb-4 flex-grow-1">
-                        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Log in</h2>
-                        <p class="font-graphik text-secondary fs-6 mb-3">Log in securely using your UAE Pass.</p>
-                        <p class="font-graphik text-deep-ocean fs-5 m-0">Register your company and submit your projects to join the journey toward national recognition.</p>
+            <div class="col-12 col-lg-5 d-flex flex-column align-items-center py-5">
+                <img src="<?php echo get_template_directory_uri();?>/assets/img/sic-logo-2026.png" style="max-width: 300px; width: 90%;" class="mb-5">
+                <div class="flex-grow-1 d-flex align-items-center">
+                    <div class=" d-flex flex-column bg-white p-5 rounded-4 shadow-sm text-center" style="min-height: 450px; max-width: 440px; width: 90%;">
+                        <div class="mb-4 flex-grow-1">
+                            <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3">Log in</h2>
+                            <p class="font-graphik text-secondary fs-6 mb-3">Log in securely using your UAE Pass.</p>
+                            <p class="font-graphik text-deep-ocean fs-5 m-0">Register your company and submit your projects to join the journey toward national recognition.</p>
+                        </div>
+
+                        <a href="<?php echo $uaepass_auth->get_login_url(); ?>">
+                            <img src="<?php echo get_template_directory_uri();?>/assets/img/UAEPASS_Login_Btn_Outline_Pill_Active@2x.png" class="img-fluid">
+                        </a>
+
+                        <?php
+                            if(!empty($error)){
+                                echo '<p class="text-danger mt-3 m-0">ERROR: ';
+                                echo $error;
+                                echo '</p>';
+                            }
+                        ?>
                     </div>
-
-                    <a href="<?php echo $uaepass_auth->get_login_url(); ?>" class="btn bg-white btn-lg w-100 text-deep-ocean border rounded-pill font-graphik fw-medium">
-                        Sign in with UAE PASS
-                    </a>
-
-                    <?php
-                        if(!empty($error)){
-                            echo '<p class="text-danger mt-3 m-0">ERROR: ';
-                            echo $error;
-                            echo '</p>';
-                        }
-                    ?>
                 </div>
             </div>
         </div>
