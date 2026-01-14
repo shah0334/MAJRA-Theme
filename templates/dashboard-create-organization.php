@@ -89,6 +89,11 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
              $error_msg = 'Error: Number of employees cannot be negative.'; 
         }
 
+        // Validate IBAN
+        if (empty($error_msg) && !preg_match('/^AE\d{2}\d{3}\d{16}$/', $org_data['iban_number'])) {
+            $error_msg = 'Error: Invalid IBAN format. Must be a valid UAE IBAN (starts with AE followed by 21 digits).'; 
+        }
+
         error_log('SIC DEBUG: Org Data prepared: ' . print_r($org_data, true));
 
     if ( empty($error_msg) ) {
@@ -500,6 +505,37 @@ document.addEventListener('DOMContentLoaded', function() {
                  this.setCustomValidity('');
                  this.classList.remove('is-invalid');
             }
+        });
+    }
+
+    // IBAN Validation
+    const ibanInput = document.querySelector('input[name="iban_number"]');
+    if (ibanInput) {
+        ibanInput.addEventListener('change', function() {
+            const regex = /^AE\d{2}\d{3}\d{16}$/;
+            if (!regex.test(this.value)) {
+                 const isRTL = document.body.classList.contains('rtl');
+                 const msg = isRTL ? 'رقم الآيبان غير صحيح. يجب أن يبدأ بـ AE متبوعاً بـ 21 رقماً.' : 'Invalid IBAN format. Must start with AE followed by 21 digits.';
+                 this.setCustomValidity(msg);
+                 this.classList.add('is-invalid');
+                 
+                 let errorDiv = this.parentElement.querySelector('.invalid-feedback');
+                 if (!errorDiv) {
+                     errorDiv = document.createElement('div');
+                     errorDiv.className = 'invalid-feedback';
+                     this.parentElement.appendChild(errorDiv);
+                 }
+                 errorDiv.textContent = msg;
+            } else {
+                 this.setCustomValidity('');
+                 this.classList.remove('is-invalid');
+            }
+        });
+        
+        ibanInput.addEventListener('input', function() {
+            // Clear error on generic input to allow correction
+            this.setCustomValidity('');
+            this.classList.remove('is-invalid');
         });
     }
 });
