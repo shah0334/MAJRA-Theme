@@ -96,6 +96,16 @@ $csr_activities = $db->get_org_csr_activities( $org_id );
                     </a>
                 </div>
             </div>
+
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_CONTACT_NUM']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->contact_phone); ?></div>
+            </div>
+
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_IBAN_NUM']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->iban_number); ?></div>
+            </div>
             
             <div class="details-row">
                 <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_EMIRATE']; ?></div>

@@ -365,6 +365,12 @@ require get_template_directory() . '/inc/class-sic-storage.php';
  */
 require get_template_directory() . '/inc/class-sic-routes.php';
 
+/** UAE PASS Authentication */
+require get_template_directory() . '/inc/uaepass/admin-uaepass-settings.php';
+require get_template_directory() . '/inc/uaepass/uaepass-auth.php';
+global $uaepass_auth;
+$uaepass_auth = new UAE_PASS_Authentication();
+$uaepass_auth->init();
 
 // Add Image Upload Field to "faq-categories" (Edit and Add Screens)
 function faq_categories_image_field($term) {
@@ -593,5 +599,7 @@ function rd_duplicate_post_as_draft(){
   }
   add_filter('wp_image_editors', 'use_gd_editor');
   add_filter('http_request_timeout', function() { return 30; });
+
+
 
 

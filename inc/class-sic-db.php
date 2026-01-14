@@ -223,6 +223,8 @@ class SIC_DB {
             'organization_name'       => $data['organization_name'],
             'trade_license_number'    => $data['trade_license_number'],
             'website_url'             => $data['website_url'],
+            'contact_phone'           => isset($data['contact_phone']) ? sanitize_text_field($data['contact_phone']) : null,
+            'iban_number'             => isset($data['iban_number']) ? sanitize_text_field($data['iban_number']) : null,
             'emirate_of_registration' => $data['emirate'],
             'legal_entity_type'       => $data['entity_type'],
             'industry'                => $data['industry'],
@@ -235,9 +237,11 @@ class SIC_DB {
         ];
 
         if ( $profile_id ) {
-            $this->wpdb->update( self::TBL_ORG_PROFILES, $profile_data, ['org_profile_id' => $profile_id] );
+            $res = $this->wpdb->update( self::TBL_ORG_PROFILES, $profile_data, ['org_profile_id' => $profile_id] );
+            if ( $res === false ) return new WP_Error( 'db_update_error', 'DB Update Error: ' . $this->wpdb->last_error );
         } else {
-            $this->wpdb->insert( self::TBL_ORG_PROFILES, $profile_data );
+            $res = $this->wpdb->insert( self::TBL_ORG_PROFILES, $profile_data );
+            if ( $res === false ) return new WP_Error( 'db_insert_error', 'DB Insert Error: ' . $this->wpdb->last_error );
             $profile_id = $this->wpdb->insert_id;
         }
 
@@ -1012,6 +1016,25 @@ class SIC_DB {
         }
 
         return true;
+    }
+    /**
+     * Migration: Add Contact and IBAN columns
+     */
+    public function migrate_contact_iban() {
+        if ( ! isset($this->wpdb) ) return;
+        
+        $table = self::TBL_ORG_PROFILES;
+        
+        // Force reload of column list mostly
+        $cols = $this->wpdb->get_results("SHOW COLUMNS FROM {$table} LIKE 'contact_phone'");
+        if ( empty($cols) ) {
+            $this->wpdb->query("ALTER TABLE {$table} ADD COLUMN contact_phone VARCHAR(50) NULL AFTER website_url");
+        }
+
+        $cols = $this->wpdb->get_results("SHOW COLUMNS FROM {$table} LIKE 'iban_number'");
+        if ( empty($cols) ) {
+            $this->wpdb->query("ALTER TABLE {$table} ADD COLUMN iban_number VARCHAR(100) NULL AFTER contact_phone");
+        }
     }
 }
 ?>

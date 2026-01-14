@@ -71,6 +71,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST[
             'business_activity'    => sanitize_text_field($_POST['org_activity_type']),
             'employees'            => intval($_POST['org_employees']),
             'turnover'             => sanitize_text_field($_POST['org_turnover']),
+            'contact_phone'        => sanitize_text_field($_POST['contact_phone']),
+            'iban_number'          => sanitize_text_field($_POST['iban_number']),
             'csr_activity'         => $_POST['csr_activity'] ?? 'no',
             'csr_initiatives'      => []
         ];
@@ -187,7 +189,17 @@ if ( current_user_can('manage_options') ) {
                                 <input type="url" name="org_website" class="form-control" required>
                             </div>
 
-                            <!-- Row 3 -->
+                            <!-- Row 3: Contact & IBAN -->
+                            <div class="col-md-6">
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['CONTACT_NUM']; ?> <span class="text-danger">*</span></label>
+                                <input type="text" name="contact_phone" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['IBAN_NUM']; ?> <span class="text-danger">*</span></label>
+                                <input type="text" name="iban_number" class="form-control" required>
+                            </div>
+
+                            <!-- Row 4 -->
                             <div class="col-md-6">
                                 <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['ORG_FORM']['TRADE_LICENSE_FILE']; ?> <span class="text-danger">*</span></label>
                                 <div class="position-relative">
