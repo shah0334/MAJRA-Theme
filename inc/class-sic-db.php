@@ -504,10 +504,32 @@ class SIC_DB {
 
         if ( ! $project ) return null;
 
-        // Fetch relations
+        // Fetch relations (IDs)
         $project->impact_areas = $this->get_project_relations($project_id, self::TBL_PROJECT_IMPACT_AREAS, 'impact_area_id');
         $project->sdgs = $this->get_project_relations($project_id, self::TBL_PROJECT_SDGS, 'sdg_id');
         $project->beneficiaries = $this->get_project_relations($project_id, self::TBL_PROJECT_BENEFICIARIES, 'beneficiary_type_id');
+
+        // Fetch relations (Details with Names)
+        $project->impact_areas_details = $this->wpdb->get_results($this->wpdb->prepare(
+            "SELECT t.* FROM " . self::TBL_IMPACT_AREAS . " t 
+             JOIN " . self::TBL_PROJECT_IMPACT_AREAS . " p ON t.impact_area_id = p.impact_area_id 
+             WHERE p.project_id = %d", 
+            $project_id
+        ));
+
+        $project->beneficiaries_details = $this->wpdb->get_results($this->wpdb->prepare(
+            "SELECT t.* FROM " . self::TBL_BENEFICIARY_TYPES . " t 
+             JOIN " . self::TBL_PROJECT_BENEFICIARIES . " p ON t.beneficiary_type_id = p.beneficiary_type_id 
+             WHERE p.project_id = %d", 
+            $project_id
+        ));
+
+        $project->sdgs_details = $this->wpdb->get_results($this->wpdb->prepare(
+            "SELECT t.* FROM " . self::TBL_SDGS . " t 
+             JOIN " . self::TBL_PROJECT_SDGS . " p ON t.sdg_id = p.sdg_id 
+             WHERE p.project_id = %d", 
+            $project_id
+        ));
 
         return $project;
     }
