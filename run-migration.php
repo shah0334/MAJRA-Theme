@@ -25,7 +25,7 @@ if ( class_exists('SIC_DB') ) {
     if ( method_exists($db, 'migrate_contact_iban') ) {
         $db->migrate_contact_iban();
         echo "<p style='color:green;'><strong>Success:</strong> Migration method executed.</p>";
-        echo "<p>Checked/Added columns: <code>contact_phone</code>, <code>iban_number</code> to <code>sic_organization_profiles</code>.</p>";
+        echo "<p>Checked/Added columns: <code>contact_phone</code>, <code>iban_number</code>, <code>bank_name</code> to <code>sic_organization_profiles</code>.</p>";
     } else {
         echo "<p style='color:red;'><strong>Error:</strong> Method <code>migrate_contact_iban</code> not found in SIC_DB class.</p>";
     }

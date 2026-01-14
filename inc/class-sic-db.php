@@ -264,6 +264,7 @@ class SIC_DB {
             'website_url'             => $data['website_url'],
             'contact_phone'           => isset($data['contact_phone']) ? sanitize_text_field($data['contact_phone']) : null,
             'iban_number'             => isset($data['iban_number']) ? sanitize_text_field($data['iban_number']) : null,
+            'bank_name'               => isset($data['bank_name']) ? sanitize_text_field($data['bank_name']) : null,
             'emirate_of_registration' => $data['emirate'],
             'legal_entity_type'       => $data['entity_type'],
             'industry'                => $data['industry'],
@@ -1073,6 +1074,11 @@ class SIC_DB {
         $cols = $this->wpdb->get_results("SHOW COLUMNS FROM {$table} LIKE 'iban_number'");
         if ( empty($cols) ) {
             $this->wpdb->query("ALTER TABLE {$table} ADD COLUMN iban_number VARCHAR(100) NULL AFTER contact_phone");
+        }
+
+        $cols = $this->wpdb->get_results("SHOW COLUMNS FROM {$table} LIKE 'bank_name'");
+        if ( empty($cols) ) {
+            $this->wpdb->query("ALTER TABLE {$table} ADD COLUMN bank_name VARCHAR(255) NULL AFTER iban_number");
         }
     }
 }
