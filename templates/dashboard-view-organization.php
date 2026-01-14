@@ -6,29 +6,9 @@ global $language;
 $db = SIC_DB::get_instance();
 
 $org_id = isset($_GET['org_id']) ? intval($_GET['org_id']) : 0;
-// Security: Admin can see any. Applicant only their own? 
-// For now, let's assume if you have the link you can view, or we check ownership.
-// User said: "separate view pages for both organizations and projects for admin"
-// But also "both admins and applicants can see the view option".
-// So we should verify access.
 
+// Access Check
 $can_view = false;
-if ( current_user_can('manage_options') ) {
-    $can_view = true;
-    $org_profile = $db->get_org_profile_by_id( $org_id ); // Need to ensure this method exists or write query
-    // Actually get_org_profile_by_id might not exist.
-    // We have get_organization_by_applicant_id.
-    // We need a method to get by Profile ID directly.
-} else {
-    // Applicants can only view if they own it (checked below)
-    $can_view = true; 
-}
-
-// Let's write a direct query here or use existing methods if possible.
-// existing: get_organization_by_applicant_id (returns single row for active cycle)
-// But we might be strictly viewing a specific ID passed in URL.
-// Let's add a helper query here for now to get the profile by ID.
-
 $profile = $db->get_org_profile_by_id( $org_id );
 
 if ( !$profile ) {
@@ -36,6 +16,7 @@ if ( !$profile ) {
     <main id="primary" class="site-main bg-cp-cream-light py-5">
         <div class="container">
             <div class="alert alert-warning">Organization not found.</div>
+            <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="btn btn-outline-primary mt-3">Back to Dashboard</a>
         </div>
     </main>
     <?php
@@ -43,7 +24,6 @@ if ( !$profile ) {
     exit;
 }
 
-// Access Check for non-admins
 if ( !current_user_can('manage_options') ) {
     $current_applicant_id = isset($_SESSION['sic_user_id']) ? $_SESSION['sic_user_id'] : 0;
     
@@ -72,116 +52,189 @@ $csr_activities = $db->get_org_csr_activities( $org_id );
 <main id="primary" class="site-main bg-cp-cream-light py-5">
     <div class="container">
         <!-- Page Header -->
-        <div class="row mb-5">
-            <div class="col-12">
-                <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>" class="text-decoration-none text-secondary mb-3 d-inline-block"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
-                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-0">Organization Details</h1>
-                <p class="text-secondary">View Mode</p>
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-4">
+            <div>
+                <h1 class="font-mackay fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['VIEW_ORG']['PAGE_TITLE']; ?></h1>
+                <p class="text-secondary mb-0"><?php echo $language['DASHBOARD']['VIEW_ORG']['PAGE_SUBTITLE']; ?></p>
+            </div>
+            <div>
+                <a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>" class="btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-left"></i> <?php echo $language['DASHBOARD']['VIEW_ORG']['BACK_BTN']; ?>
+                </a>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg p-5 shadow-sm mb-4">
-             <div class="row g-4">
-                <!-- Data Display -->
-                <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Organization Name</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->canonical_name); ?></p>
+        <!-- Info Alert -->
+        <div class="info-alert-custom mb-4">
+            <i class="bi bi-info-circle"></i>
+            <div>
+                <?php echo $language['DASHBOARD']['VIEW_ORG']['INFO_ALERT']; ?>
+            </div>
+        </div>
+
+        <!-- 1. Organization Overview -->
+        <div class="details-section-card">
+            <div class="details-header">
+                <h2><?php echo $language['DASHBOARD']['VIEW_ORG']['SECTION_OVERVIEW']; ?></h2>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_ORG_NAME']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->canonical_name); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_TRADE_LICENSE']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->trade_license_number); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_WEBSITE']; ?></div>
+                <div class="details-value">
+                    <a href="<?php echo esc_url($profile->website_url); ?>" target="_blank" class="text-cp-app-blue text-decoration-none">
+                        <?php echo esc_html($profile->website_url); ?> <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                    </a>
                 </div>
-                <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Trade License Number</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->trade_license_number); ?></p>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_EMIRATE']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->emirate_of_registration); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_ENTITY_TYPE']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->legal_entity_type); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_INDUSTRY']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->industry); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_FREEZONE']; ?></div>
+                <div class="details-value"><?php echo $profile->is_freezone ? $language['DASHBOARD']['VIEW_ORG']['YES'] : $language['DASHBOARD']['VIEW_ORG']['NO']; ?></div>
+            </div>
+        </div>
+
+        <!-- 2. Legal Documents -->
+        <div class="details-section-card">
+             <div class="details-header">
+                <h2><?php echo $language['DASHBOARD']['VIEW_ORG']['SECTION_DOCUMENTS']; ?></h2>
+            </div>
+            <div class="p-4">
+                <div class="file-download-card">
+                    <div class="d-flex align-items-center">
+                        <div class="file-icon-wrapper">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <div class="file-info">
+                            <h4><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_TRADE_LICENSE_FILE']; ?></h4>
+                            <div class="file-meta">
+                                <?php 
+                                // We don't have exact filename or size easily available without more queries, 
+                                // so we'll just show a generic label or try to parse the URL if possible, 
+                                // but for now keeping it simple as per Figma "Trade-License.pdf" style not critical to be dynamic
+                                echo basename($license_url); 
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if ($license_url): ?>
+                    <a href="<?php echo esc_url($license_url); ?>" target="_blank" class="btn-download-outline" download>
+                        <i class="bi bi-download"></i> <?php echo $language['DASHBOARD']['VIEW_ORG']['BTN_DOWNLOAD']; ?>
+                    </a>
+                    <?php else: ?>
+                        <span class="text-secondary small"><?php echo $language['DASHBOARD']['VIEW_ORG']['NOT_UPLOADED']; ?></span>
+                    <?php endif; ?>
                 </div>
+            </div>
+        </div>
+
+        <!-- 3. Classification Profile -->
+        <div class="details-section-card">
+            <div class="details-header">
+                <h2><?php echo $language['DASHBOARD']['VIEW_ORG']['SECTION_CLASSIFICATION']; ?></h2>
+            </div>
+             <div class="p-3 bg-warning-subtle mx-4 mt-4 rounded border border-warning-subtle text-warning-emphasis small">
+                <i class="bi bi-exclamation-circle me-2"></i> <?php echo $language['DASHBOARD']['VIEW_ORG']['ALERT_REPORTING_ONLY']; ?>
+            </div>
+
+            <div class="details-row border-top mt-3"> <!-- Added border top since we have content above it inside body -->
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_BUSINESS_ACTIVITY']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->business_activity_type); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_EMPLOYEES']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->number_of_employees); ?></div>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_TURNOVER']; ?></div>
+                <div class="details-value"><?php echo esc_html($profile->annual_turnover_band); ?></div>
+            </div>
+        </div>
+
+        <!-- 4. CSR Declaration Summary -->
+        <div class="details-section-card">
+            <div class="details-header">
+                <h2><?php echo $language['DASHBOARD']['VIEW_ORG']['SECTION_CSR']; ?></h2>
+            </div>
+            
+            <div class="details-row">
+                <div class="details-label"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_CSR_IMPLEMENTED']; ?></div>
+                <div class="details-value">
+                    <div class="csr-status-indicator">
+                        <span class="csr-dot <?php echo $profile->csr_implemented ? 'yes' : 'no'; ?>"></span>
+                        <?php echo $profile->csr_implemented ? $language['DASHBOARD']['VIEW_ORG']['YES'] : $language['DASHBOARD']['VIEW_ORG']['NO']; ?>
+                    </div>
+                </div>
+            </div>
+            
+            <?php if ( $profile->csr_implemented ): ?>
+             <div class="px-4 py-3 bg-white">
+                <h3 class="font-graphik text-secondary fs-6 fw-bold mb-3"><?php echo $language['DASHBOARD']['VIEW_ORG']['SUBHEADER_CSR_ACTIVITIES']; ?></h3>
                 
-                <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Website</label>
-                     <p class="fs-5 text-cp-deep-ocean"><a href="<?php echo esc_url($profile->website_url); ?>" target="_blank"><?php echo esc_html($profile->website_url); ?></a></p>
-                </div>
-                 <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Emirate</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->emirate_of_registration); ?></p>
-                </div>
+                <?php if ( !empty($csr_activities) ): ?>
+                    <?php foreach( $csr_activities as $activity ): ?>
+                    <div class="bg-cp-cream-light border rounded-3 p-3 mb-3" style="background-color: #f9fafb; border-color: #e5e7eb;">
+                        <div class="row">
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                <label class="font-graphik text-secondary d-block mb-1" style="font-size: 12px;"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_PROJ_NAME']; ?></label>
+                                <div class="font-graphik text-cp-deep-ocean fw-medium" style="font-size: 14px; color: #111827;"><?php echo esc_html($activity->program_name); ?></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="font-graphik text-secondary d-block mb-1" style="font-size: 12px;"><?php echo $language['DASHBOARD']['VIEW_ORG']['LBL_AMOUNT']; ?></label>
+                                <div class="font-graphik text-cp-deep-ocean fw-bold" style="font-size: 14px; color: #111827;"><?php echo number_format($activity->allocated_amount_aed); ?></div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-secondary small fst-italic mb-0"><?php echo $language['DASHBOARD']['VIEW_ORG']['NO_ACTIVITIES']; ?></p>
+                <?php endif; ?>
                 
-                <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Entity Type</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->legal_entity_type); ?></p>
-                </div>
-                <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Industry</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->industry); ?></p>
-                </div>
-                
-                 <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Business Activity</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->business_activity_type); ?></p>
-                </div>
-                 <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Employees</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->number_of_employees); ?></p>
-                </div>
-                
-                <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Annual Turnover</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo esc_html($profile->annual_turnover_band); ?></p>
-                </div>
-                 <div class="col-md-6">
-                    <label class="font-graphik fw-bold text-secondary text-uppercase small">Freezone?</label>
-                    <p class="fs-5 text-cp-deep-ocean"><?php echo $profile->is_freezone ? 'Yes' : 'No'; ?></p>
-                </div>
              </div>
+            <?php endif; ?>
+
+            <!-- Declaration Text -->
+            <div class="px-4 pb-4">
+                 <div class="p-3 rounded bg-light border">
+                    <p class="mb-0 font-graphik text-secondary small">
+                        <?php echo $language['DASHBOARD']['ORG_FORM']['CSR_DECLARATION_TEXT']; ?>
+                    </p>
+                 </div>
+            </div>
+
         </div>
         
-        <!-- CSR Section -->
-        <div class="bg-white rounded-lg p-5 shadow-sm mb-4">
-             <h3 class="font-mackay text-cp-deep-ocean mb-4">CSR Activities</h3>
-             <?php if ( $profile->csr_implemented ): ?>
-                <p><strong>CSR Implemented:</strong> Yes</p>
-                <?php if ( !empty($csr_activities) ): ?>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Initiative Name</th>
-                                <th>Amount (AED)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($csr_activities as $activity): ?>
-                            <tr>
-                                <td><?php echo esc_html($activity->program_name); ?></td>
-                                <td><?php echo number_format($activity->allocated_amount_aed, 2); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p class="text-secondary">No specific initiatives listed.</p>
-                <?php endif; ?>
-             <?php else: ?>
-                <p><strong>CSR Implemented:</strong> No</p>
-             <?php endif; ?>
+        <div class="mb-5">
+             <a href="<?php echo SIC_Routes::get_my_organizations_url(); ?>" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i> <?php echo $language['DASHBOARD']['VIEW_ORG']['BACK_BTN']; ?>
+            </a>
         </div>
-
-        <!-- Files Section -->
-         <div class="bg-white rounded-lg p-5 shadow-sm mb-4">
-            <h3 class="font-mackay text-cp-deep-ocean mb-4">Documents</h3>
-            <div class="row g-4">
-                <div class="col-md-6">
-                     <p><strong>Logo:</strong></p>
-                     <?php if ($logo_url): ?>
-                        <img src="<?php echo esc_url($logo_url); ?>" class="img-thumbnail" style="max-height: 150px;">
-                     <?php else: ?>
-                        <span class="text-secondary">Not uploaded</span>
-                     <?php endif; ?>
-                </div>
-                 <div class="col-md-6">
-                     <p><strong>Trade License:</strong></p>
-                     <?php if ($license_url): ?>
-                        <a href="<?php echo esc_url($license_url); ?>" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark-pdf"></i> View License</a>
-                     <?php else: ?>
-                        <span class="text-secondary">Not uploaded</span>
-                     <?php endif; ?>
-                </div>
-            </div>
-         </div>
 
     </div>
 </main>

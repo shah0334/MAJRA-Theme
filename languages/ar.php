@@ -665,6 +665,37 @@
                 'EMPTY_STATE' => 'لم يتم العثور على مؤسسات. انقر فوق "إنشاء" لإضافة واحدة.',
                 'VIEW' => 'عرض',
                 'CREATE_PROJECT' => 'إنشاء مشروع'
+            ),
+            'VIEW_ORG' => array(
+                'PAGE_TITLE' => 'Organization Details',
+                'PAGE_SUBTITLE' => 'Overview of your registered organization information',
+                'BACK_BTN' => 'Back to My Organizations',
+                'INFO_ALERT' => 'This information is used solely for classification purposes in line with UAE Ministry of Economy criteria. It remains confidential and is not publicly displayed.',
+                'SECTION_OVERVIEW' => 'Organization Overview',
+                'LBL_ORG_NAME' => 'Organization Name',
+                'LBL_TRADE_LICENSE' => 'Trade License / Certificate Number',
+                'LBL_WEBSITE' => 'Organization Website',
+                'LBL_EMIRATE' => 'Emirate of Registration',
+                'LBL_ENTITY_TYPE' => 'Type of Legal Entity',
+                'LBL_INDUSTRY' => 'Industry',
+                'LBL_FREEZONE' => 'Freezone Registration',
+                'SECTION_DOCUMENTS' => 'Legal Documents',
+                'LBL_TRADE_LICENSE_FILE' => 'Trade License / Certificate',
+                'BTN_DOWNLOAD' => 'Download',
+                'NOT_UPLOADED' => 'Not uploaded',
+                'SECTION_CLASSIFICATION' => 'Classification Profile',
+                'ALERT_REPORTING_ONLY' => 'Collected for reporting purposes only. Not publicly visible.',
+                'LBL_BUSINESS_ACTIVITY' => 'Business Activity Type',
+                'LBL_EMPLOYEES' => 'Number of Employees',
+                'LBL_TURNOVER' => 'Annual Turnover Range',
+                'SECTION_CSR' => 'CSR Declaration Summary',
+                'LBL_CSR_IMPLEMENTED' => 'CSR activities implemented in UAE',
+                'SUBHEADER_CSR_ACTIVITIES' => 'CSR Projects & Activities',
+                'LBL_PROJ_NAME' => 'Project / Program name',
+                'LBL_AMOUNT' => 'Allocated monetary amount (AED)',
+                'NO_ACTIVITIES' => 'No specific activities details were recorded.',
+                'YES' => 'Yes',
+                'NO' => 'No'
             )
         );
 
