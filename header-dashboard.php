@@ -174,9 +174,9 @@ global $isRTL;
                             <span class="user-name d-none d-md-block"><?php printf( esc_html__( 'Hello, %s', 'majra' ), $sic_user_name ); ?></span>
                             
                             <div class="dashboard-actions">
-                                <button class="dashboard-action-btn btn-profile" title="Profile">
+                                <a href="<?php echo SIC_Routes::get_profile_url(); ?>" class="dashboard-action-btn btn-profile" title="Profile">
                                     <img src="<?php echo content_url('uploads/2026/01/header-icon-profile.svg'); ?>" alt="Profile" />
-                                </button>
+                                </a>
                             <a href="<?php echo add_query_arg( 'sic_logout', '1', home_url() ); ?>" class="dashboard-action-btn btn-notification" title="Logout">
                                     <img src="<?php echo content_url('uploads/2026/01/header-icon-logout.svg'); ?>" alt="Logout" />
                                 </a>

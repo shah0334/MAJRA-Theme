@@ -18,6 +18,7 @@ class SIC_Routes {
     const SLUG_CREATE_PROJECT     = 'sic-create-project';
     const SLUG_MY_PROJECTS        = 'sic-projects';
     const SLUG_MY_ORGANIZATIONS   = 'sic-organizations';
+    const SLUG_PROFILE            = 'sic-profile';
 
     /**
      * Helper to append current language param
@@ -74,6 +75,13 @@ class SIC_Routes {
      */
     public static function get_my_organizations_url() {
         return self::get_url_with_lang(self::SLUG_MY_ORGANIZATIONS);
+    }
+
+    /**
+     * Get Profile URL
+     */
+    public static function get_profile_url() {
+        return self::get_url_with_lang(self::SLUG_PROFILE);
     }
 
     // View Routes (Admin/Read-Only)

@@ -180,6 +180,32 @@ class SIC_DB {
         ) );
     }
 
+    /**
+     * Update Applicant Data
+     */
+    public function update_applicant( $applicant_id, $data ) {
+        $allowed_fields = ['first_name', 'last_name', 'email', 'phone', 'designation', 'uuid'];
+        
+        $update_data = [];
+        foreach ( $allowed_fields as $field ) {
+            if ( isset( $data[$field] ) ) {
+                $update_data[$field] = $data[$field];
+            }
+        }
+
+        if ( empty($update_data) ) {
+            return false;
+        }
+
+        $result = $this->wpdb->update( 
+            self::TBL_APPLICANTS, 
+            $update_data, 
+            ['applicant_id' => $applicant_id]
+        );
+
+        return $result !== false;
+    }
+
 
     /**
      * Save a file record to the database.
