@@ -119,7 +119,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
     <div class="col-lg-8">
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['TITLE']; ?></h2>
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" novalidate id="create-project-step-1-form">
             <?php wp_nonce_field( 'sic_create_project' ); ?>
             <input type="hidden" name="sic_project_action" value="save_step_1">
 
@@ -177,7 +177,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 <div class="col-md-6">
                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['END_DATE']; ?> <span class="text-danger">*</span></label>
                     <div class="position-relative">
-                        <input type="date" name="end_date" class="form-control" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>">
+                        <input type="date" name="end_date" class="form-control" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>" required>
                     </div>
                 </div>
             </div>
@@ -280,22 +280,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Date Validation
     const startDateInput = document.querySelector('input[name="start_date"]');
     const endDateInput = document.querySelector('input[name="end_date"]');
+    
+    // Initial RTL Check
+    const isRTL = document.body.classList.contains('rtl');
 
     function validateDates() {
         if (startDateInput.value && endDateInput.value) {
             if (new Date(endDateInput.value) < new Date(startDateInput.value)) {
-                // Determine Language
-                const isRTL = document.body.classList.contains('rtl'); // Assuming body has class rtl or inspecting dir
                 const msg = isRTL ? 'خطأ: تاريخ الانتهاء لا يمكن أن يكون قبل تاريخ البدء' : 'Error: End date cannot be earlier than start date';
-                
-                endDateInput.setCustomValidity(msg);
-                
-                // Show visual feedback immediately if needed, or rely on browser submit block
-                // Let's add an invalid class manually for styling if desired, though standard validation handles it
-                endDateInput.classList.add('is-invalid');
+                showError(endDateInput, msg);
             } else {
-                endDateInput.setCustomValidity('');
-                endDateInput.classList.remove('is-invalid');
+                removeError(endDateInput);
             }
         }
     }
@@ -303,6 +298,95 @@ document.addEventListener('DOMContentLoaded', function() {
     if (startDateInput && endDateInput) {
         startDateInput.addEventListener('change', validateDates);
         endDateInput.addEventListener('change', validateDates);
+    }
+
+    // Custom Form Validation
+    const form = document.getElementById('create-project-step-1-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            const requiredMsg = isRTL ? 'هذا الحقل مطلوب' : 'This field is required';
+
+            requiredFields.forEach(function(field) {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    showError(field, requiredMsg);
+                } else {
+                    // Only remove if it's not the end date failing date logic
+                    if (field !== endDateInput || (field === endDateInput && (!startDateInput.value || new Date(endDateInput.value) >= new Date(startDateInput.value)))) {
+                         removeError(field);
+                    }
+                }
+            });
+            
+            // Explicitly run date validation again
+             if (startDateInput && endDateInput && startDateInput.value && endDateInput.value) {
+                if (new Date(endDateInput.value) < new Date(startDateInput.value)) {
+                    isValid = false;
+                     // Error handled by existing change listener or let's ensure it shows
+                    const msg = isRTL ? 'خطأ: تاريخ الانتهاء لا يمكن أن يكون قبل تاريخ البدء' : 'Error: End date cannot be earlier than start date';
+                    showError(endDateInput, msg);
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                const firstError = form.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        const inputs = form.querySelectorAll('[required]');
+        inputs.forEach(function(input) {
+            const eventType = (input.tagName === 'SELECT' || input.type === 'file' || input.type === 'date') ? 'change' : 'input';
+            input.addEventListener(eventType, function() {
+                if (this.value.trim()) {
+                     removeError(this);
+                     if (this === endDateInput || this === startDateInput) {
+                         validateDates();
+                     }
+                }
+            });
+        });
+    }
+
+    function showError(field, msg) {
+        field.classList.add('is-invalid');
+        let parent = field.parentNode;
+        let container = parent;
+
+        if (field.tagName === 'SELECT' && parent.classList.contains('d-flex')) {
+            container = parent.parentNode;
+        }
+        
+        let existing = container.querySelector('.invalid-feedback');
+        if (!existing) {
+            const div = document.createElement('div');
+            div.className = 'invalid-feedback d-block';
+            div.innerText = msg;
+            container.appendChild(div);
+        } else {
+            existing.innerText = msg;
+            existing.style.display = 'block';
+        }
+    }
+
+    function removeError(field) {
+        field.classList.remove('is-invalid');
+        let parent = field.parentNode;
+        let container = parent;
+        
+        if (field.tagName === 'SELECT' && parent.classList.contains('d-flex')) {
+            container = parent.parentNode;
+        }
+        
+        const existing = container.querySelector('.invalid-feedback');
+        if (existing) {
+            existing.remove();
+        }
     }
 });
 </script>

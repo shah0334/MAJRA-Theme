@@ -489,7 +489,7 @@ class SIC_DB {
             'location_address', 'location_place_id', 'location_provider',
             'latitude', 'longitude', 'leadership_women_pct',
             'team_women_pct', 'leadership_pod_pct', 'team_pod_pct',
-            'team_youth_pct', 'engages_youth', 'involves_influencers',
+            'team_youth_pct', 'engages_youth', 'involves_influencers', 'founder_is_youth',
             'submission_status', 'profile_completed', 'details_completed',
             'evidence_completed', 'pinpoint_completed', 'demographics_completed'
         ];
@@ -1079,6 +1079,20 @@ class SIC_DB {
         $cols = $this->wpdb->get_results("SHOW COLUMNS FROM {$table} LIKE 'bank_name'");
         if ( empty($cols) ) {
             $this->wpdb->query("ALTER TABLE {$table} ADD COLUMN bank_name VARCHAR(255) NULL AFTER iban_number");
+        }
+    }
+
+    /**
+     * Migration: Add Founder Youth column
+     */
+    public function migrate_founder_youth() {
+        if ( ! isset($this->wpdb) ) return;
+        
+        $table = self::TBL_PROJECTS;
+        
+        $cols = $this->wpdb->get_results("SHOW COLUMNS FROM {$table} LIKE 'founder_is_youth'");
+        if ( empty($cols) ) {
+            $this->wpdb->query("ALTER TABLE {$table} ADD COLUMN founder_is_youth TINYINT(1) DEFAULT 0 AFTER involves_influencers");
         }
     }
 }

@@ -26,22 +26,28 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         return;
     }
 
-    $submission_data = [
-        'location_search_text' => sanitize_text_field($_POST['location_search_text']),
-        'location_address'     => sanitize_text_field($_POST['location_address']),
-        'pinpoint_completed'   => 1
-    ];
+    // Validation: Location is mandatory
+    if ( empty($_POST['location_search_text']) && empty($_POST['location_address']) ) {
+        $error_message = 'Please select a location for the project.';
+    } else {
 
-    // Optional: dummy lat/long if provided by a map later
-    if ( !empty($_POST['latitude']) ) $submission_data['latitude'] = floatval($_POST['latitude']);
-    if ( !empty($_POST['longitude']) ) $submission_data['longitude'] = floatval($_POST['longitude']);
-    if ( !empty($_POST['location_place_id']) ) $submission_data['location_place_id'] = sanitize_text_field($_POST['location_place_id']);
+        $submission_data = [
+            'location_search_text' => sanitize_text_field($_POST['location_search_text']),
+            'location_address'     => sanitize_text_field($_POST['location_address']),
+            'pinpoint_completed'   => 1
+        ];
 
-    $db->update_project($project_id, $submission_data);
-    
-    // Redirect to Step 5
-    wp_redirect( add_query_arg(['step' => 5, 'project_id' => $project_id], SIC_Routes::get_create_project_url()) );
-    exit;
+        // Optional: dummy lat/long if provided by a map later
+        if ( !empty($_POST['latitude']) ) $submission_data['latitude'] = floatval($_POST['latitude']);
+        if ( !empty($_POST['longitude']) ) $submission_data['longitude'] = floatval($_POST['longitude']);
+        if ( !empty($_POST['location_place_id']) ) $submission_data['location_place_id'] = sanitize_text_field($_POST['location_place_id']);
+
+        $db->update_project($project_id, $submission_data);
+        
+        // Redirect to Step 5
+        wp_redirect( add_query_arg(['step' => 5, 'project_id' => $project_id], SIC_Routes::get_create_project_url()) );
+        exit;
+    }
 }
 ?>
 
@@ -52,13 +58,17 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
     </p>
 </div>
 
+<?php if ( isset($error_message) ): ?>
+    <div class="alert alert-danger mb-4"><?php echo esc_html($error_message); ?></div>
+<?php endif; ?>
+
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['TITLE']; ?></h2>
         <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SUBTITLE']; ?></p>
 
-        <form method="POST">
+        <form method="POST" id="step_4_form" novalidate>
             <?php wp_nonce_field( 'sic_save_step_4' ); ?>
             <input type="hidden" name="sic_project_action" value="save_step_4">
             
@@ -66,12 +76,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 
                 <!-- Search Bar -->
                 <div class="mb-4">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1 d-none"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_LABEL']; ?></label>
+                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_LABEL']; ?> <span class="text-danger">*</span></label>
                     <div class="input-group mb-3 border rounded-3 overflow-hidden p-1 bg-white" style="border-color: #D1D5DC;">
                         <span class="input-group-text bg-white border-0 ps-3 pe-2">
                              <i class="bi bi-search text-secondary"></i>
                         </span>
-                        <input type="text" id="location-search" name="location_search_text" class="form-control border-0 shadow-none ps-2" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_PLACEHOLDER']; ?>" style="height: 48px;" value="<?php echo esc_attr($project->location_search_text); ?>">
+                        <input type="text" id="location-search" name="location_search_text" class="form-control border-0 shadow-none ps-2" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_4']['SEARCH_PLACEHOLDER']; ?>" style="height: 48px;" value="<?php echo esc_attr($project->location_search_text); ?>" required>
                          <button type="button" class="btn btn-secondary px-4 rounded-3 text-white" style="background-color: #D1D5DB; border: none; margin: 4px;">Search</button>
                     </div>
                 </div>
@@ -142,6 +152,7 @@ function initMap() {
     };
 
     const map = new google.maps.Map(document.getElementById("project-map"), mapOptions);
+    const geocoder = new google.maps.Geocoder();
 
     const marker = new google.maps.Marker({
         position: { lat: savedLat, lng: savedLng },
@@ -180,9 +191,30 @@ function initMap() {
     // Marker Drag Event
     marker.addListener("dragend", () => {
         const position = marker.getPosition();
-        updateHiddenFields(position.lat(), position.lng(), '', '');
-        // Reverse geocoding could be added here to fetch address on drag
+        geocodePosition(position);
     });
+
+    // Map Click Event
+    map.addListener("click", (e) => {
+        const position = e.latLng;
+        marker.setPosition(position);
+        geocodePosition(position);
+    });
+
+    function geocodePosition(pos) {
+        geocoder.geocode({
+            latLng: pos
+        }, function(responses) {
+            if (responses && responses.length > 0) {
+                const address = responses[0].formatted_address;
+                const placeId = responses[0].place_id;
+                
+                updateHiddenFields(pos.lat(), pos.lng(), placeId, address);
+            } else {
+                 updateHiddenFields(pos.lat(), pos.lng(), '', '');
+            }
+        });
+    }
 
     function updateHiddenFields(lat, lng, placeId, address) {
         document.getElementById('latitude').value = lat;
@@ -190,8 +222,70 @@ function initMap() {
         
         if(placeId) document.getElementById('location_place_id').value = placeId;
         
-        // Only update address if it comes from autocomplete
-        if(address) document.getElementById('location-address').value = address;
+        // Update address fields
+        if(address) {
+            document.getElementById('location-search').value = address;
+            document.getElementById('location-address').value = address;
+            
+            // Clear error if present
+            const container = document.getElementById('location-search').closest('.mb-4');
+            removeError(container);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('step_4_form');
+    const isRTL = document.body.classList.contains('rtl');
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredMsg = isRTL ? 'هذا الحقل مطلوب' : 'This field is required';
+            const locationInput = document.getElementById('location-search');
+            
+            if (!locationInput.value.trim()) {
+                isValid = false;
+                showError(locationInput.closest('.mb-4'), requiredMsg);
+            } else {
+                 removeError(locationInput.closest('.mb-4'));
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                const firstError = document.querySelector('.invalid-feedback');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+        
+        const locationInput = document.getElementById('location-search');
+        if (locationInput) {
+             locationInput.addEventListener('input', function() {
+                 if (this.value.trim()) removeError(this.closest('.mb-4'));
+             });
+        }
+    }
+});
+
+function showError(container, msg) {
+    let existing = container.querySelector('.invalid-feedback');
+    if (!existing) {
+            const div = document.createElement('div');
+            div.className = 'invalid-feedback d-block mt-2';
+            div.innerText = msg;
+            container.appendChild(div);
+    } else {
+            existing.innerText = msg;
+            existing.style.display = 'block';
+    }
+}
+
+function removeError(container) {
+    const existing = container.querySelector('.invalid-feedback');
+    if (existing) {
+        existing.remove();
     }
 }
 </script>

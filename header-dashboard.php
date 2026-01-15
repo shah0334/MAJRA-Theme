@@ -102,7 +102,7 @@ global $isRTL;
                     <!-- Left: Logo -->
                     <div class="logo">
                         <a href="<?php echo SIC_Routes::get_dashboard_home_url(); ?>">
-                            <img src="<?php echo content_url('uploads/2026/01/dashboard-logo.svg'); ?>" alt="Majra Dashboard" />
+                            <img src="<?php echo content_url('uploads/2026/01/sic-logo-2026.png'); ?>" alt="Majra Dashboard" />
                         </a>
                     </div>
 

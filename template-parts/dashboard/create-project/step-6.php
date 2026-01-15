@@ -76,14 +76,14 @@
                  </div>
 
                  <!-- Terms & Conditions Box -->
-                 <div class="p-4 rounded-3 text-start mb-5" style="max-width: 750px; margin: 0 auto; background-color: #F9FAFB; border: 1px solid #E5E7EB;">
+                 <!-- <div class="p-4 rounded-3 text-start mb-5" style="max-width: 750px; margin: 0 auto; background-color: #F9FAFB; border: 1px solid #E5E7EB;">
                      <p class="font-graphik text-secondary small mb-0">
                          <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TERMS_TEXT_START']; ?> 
                          <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['TERMS_LINK']; ?> <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a> 
                          <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['AND']; ?> 
                          <a href="#" class="text-cp-aqua-marine text-decoration-none fw-bold"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_6']['PRIVACY_LINK']; ?> <i class="bi bi-info-circle ms-1" style="font-size: 10px;"></i></a>.
                      </p>
-                 </div>
+                 </div> -->
 
                 <!-- Navigation Buttons -->
                 <div class="d-flex justify-content-center gap-3">

@@ -75,7 +75,41 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         $url = esc_url_raw($_POST['media_link']);
         if ( $url ) {
             $db->save_project_link($project_id, 'testimonials_media_coverage', $url);
+        } else {
+             // Handle clear link case if needed, or just ignore (it remains empty)
+             // Ideally we should allow clearing it?
+             // save_project_link updates if exists. if we pass empty url?
+             // The db method handles update. If url empty, it saves empty.
+             $db->save_project_link($project_id, 'testimonials_media_coverage', '');
         }
+    }
+
+    // Validation: Check Mandatory Files
+    $current_files = $db->get_project_files($project_id);
+    $files_map = [];
+    foreach ($current_files as $f) {
+        $files_map[$f->file_role] = $f;
+    }
+
+    // Photos
+    if ( !isset($files_map['photos']) ) {
+        $errors[] = $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_LABEL'] . ' is required.'; 
+    }
+    // Impact Report
+    if ( !isset($files_map['impact_report']) ) {
+        $errors[] = $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_LABEL'] . ' is required.';
+    }
+    // Sustainable Plan
+    if ( !isset($files_map['sustainable_impact_plan']) ) {
+         $errors[] = $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_LABEL'] . ' is required.';
+    }
+
+    // Testimonials (File OR Link)
+    $has_testim_file = isset($files_map['testimonials_file']);
+    $has_testim_link = !empty($_POST['media_link']); // Use POST value as it's the current intent
+
+    if ( !$has_testim_file && !$has_testim_link ) {
+        $errors[] = "Please provide a Testimonials file OR a Media Link.";
     }
 
     // Update Status
@@ -108,20 +142,20 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TITLE']; ?></h2>
         <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUBTITLE']; ?></p>
 
-        <form method="POST" enctype="multipart/form-data" id="step_3_form">
+        <form method="POST" enctype="multipart/form-data" id="step_3_form" novalidate>
             <?php wp_nonce_field( 'sic_save_step_3' ); ?>
             <input type="hidden" name="sic_project_action" value="save_step_3">
             
             <!-- Photos -->
             <div class="mb-5">
                 <div class="d-flex justify-content-between">
-                        <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_LABEL']; ?></label>
+                        <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_LABEL']; ?> <span class="text-danger">*</span></label>
                 </div>
                 <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['PHOTOS_DESC']; ?></p>
                 
                 <div class="upload-container" id="container_photos">
                     <div class="custom-upload-zone text-center p-5 rounded-3 border-dashed position-relative bg-white" style="border: 1px dashed #D0D5DD;">
-                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.pdf" onchange="handleStep3FilePreview(this, 'container_photos')">
+                        <input type="file" name="photos_file" id="photos_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".pdf" onchange="handleStep3FilePreview(this, 'container_photos')">
                         <div class="default-view">
                             <div class="mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
@@ -142,7 +176,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Impact Report -->
             <div class="mb-5">
-                <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_LABEL']; ?></label>
+                <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_LABEL']; ?> <span class="text-danger">*</span></label>
                 <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['IMPACT_REPORT_DESC']; ?></p>
                 
                 <div class="upload-container" id="container_impact">
@@ -166,7 +200,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Testimonials -->
             <div class="mb-5">
-                <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_LABEL']; ?></label>
+                <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-1"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_LABEL']; ?> <span class="text-danger">*</span></label>
                 <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['TESTIMONIALS_DESC']; ?></p>
                 
                 <div class="mb-3">
@@ -197,7 +231,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
             <!-- Sustainable Impact Plan -->
             <div class="mb-4">
                 <div class="d-flex align-items-center mb-1">
-                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-0 me-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_LABEL']; ?></label>
+                    <label class="form-label font-graphik fw-bold text-cp-deep-ocean mb-0 me-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_LABEL']; ?> <span class="text-danger">*</span></label>
                     <i class="bi bi-info-circle text-secondary" style="font-size: 14px;" data-bs-toggle="tooltip" title="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_TOOLTIP']; ?>"></i>
                 </div>
                 <p class="font-graphik text-secondary small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SUST_PLAN_DESC']; ?></p>
@@ -428,5 +462,121 @@ function clearFile(containerId) {
         errorDiv.textContent = '';
         errorDiv.classList.add('d-none');
     }
+    
+    // Also remove the form validation error if present (special case for our custom validation)
+    const invalidFeedback = container.parentNode.querySelector('.invalid-feedback');
+    if (invalidFeedback) {
+        invalidFeedback.remove();
+    }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Form Validation logic
+    const form = document.getElementById('step_3_form');
+    const isRTL = document.body.classList.contains('rtl');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredMsg = isRTL ? 'هذا الحقل مطلوب' : 'This field is required';
+            const testimMsg = isRTL ? 'يرجى تقديم ملف أو رابط' : 'Please provide a file or a link';
+
+            function checkFile(containerId) {
+                const container = document.getElementById(containerId);
+                const input = container.querySelector('input[type="file"]');
+                // It's valid if input has value OR if preview-view is NOT hidden (meaning existing file showed)
+                // Note: when clearing file, we hide preview-view.
+                const hasExisting = !container.querySelector('.preview-view').classList.contains('d-none');
+                
+                if (!input.value && !hasExisting) {
+                    showError(container, requiredMsg);
+                    return false;
+                } else {
+                    removeError(container);
+                    return true;
+                }
+            }
+
+            // 1. Photos
+            if (!checkFile('container_photos')) isValid = false;
+            
+            // 2. Impact Report
+            if (!checkFile('container_impact')) isValid = false;
+
+            // 3. Sustainable Plan
+            if (!checkFile('container_plan')) isValid = false;
+
+            // 4. Testimonials (File OR Link)
+            const testimContainer = document.getElementById('container_testimonials');
+            const testimInput = testimContainer.querySelector('input[type="file"]');
+            const testimLink = form.querySelector('input[name="media_link"]');
+            const hasTestimFile = testimInput.value || !testimContainer.querySelector('.preview-view').classList.contains('d-none');
+            const hasTestimLink = testimLink.value.trim().length > 0;
+
+            if (!hasTestimFile && !hasTestimLink) {
+                isValid = false;
+                // Show error under one of them or the main container. Let's show under file upload for consistency
+                showError(testimContainer, testimMsg);
+            } else {
+                removeError(testimContainer);
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                const firstError = document.querySelector('.invalid-feedback');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+        
+        // Add listeners to clear errors on change
+        // We already have onchange="handleStep3FilePreview..." which helps, 
+        // but we might need to hook into it or event listeners.
+        // Let's add explicit listeners.
+        
+        ['container_photos', 'container_impact', 'container_plan', 'container_testimonials'].forEach(id => {
+            const container = document.getElementById(id);
+            const input = container.querySelector('input[type="file"]');
+            input.addEventListener('change', function() {
+                if (this.value) removeError(container);
+            });
+        });
+        
+        const linkInput = form.querySelector('input[name="media_link"]');
+        if (linkInput) {
+            linkInput.addEventListener('input', function() {
+                 if (this.value.trim()) removeError(document.getElementById('container_testimonials'));
+            });
+        }
+    }
+
+    function showError(container, msg) {
+        // Validation "container" is the div.upload-container mostly
+        // Error should go AFTER the .upload-container
+        // Wait, the structure is <div class="mb-5">... <div class="upload-container">...</div> </div>
+        // Let's attach to the upload-container parent or just append to upload-container?
+        // Appending to upload-container is fine.
+        
+        let existing = container.parentNode.querySelector('.invalid-feedback');
+        // Actually for testimonials, if we attach to container_testimonials, it's inside the .mb-5
+        
+        if (!existing) {
+             const div = document.createElement('div');
+             div.className = 'invalid-feedback d-block mt-2';
+             div.innerText = msg;
+             container.insertAdjacentElement('afterend', div);
+        } else {
+             existing.innerText = msg;
+             existing.style.display = 'block';
+        }
+    }
+
+    function removeError(container) {
+        const existing = container.parentNode.querySelector('.invalid-feedback');
+        if (existing) {
+            existing.remove();
+        }
+    }
+});
 </script>

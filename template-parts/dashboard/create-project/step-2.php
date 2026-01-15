@@ -129,13 +129,13 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
         <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TITLE']; ?></h2>
         <p class="font-graphik text-secondary mb-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SUBTITLE']; ?></p>
 
-        <form method="POST">
+        <form method="POST" novalidate id="create-project-step-2-form" enctype="multipart/form-data">
             <?php wp_nonce_field( 'sic_save_step_2' ); ?>
             <input type="hidden" name="sic_project_action" value="save_step_2">
             
             <!-- Project Impact Areas -->
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
-                <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IMPACT_AREAS_TITLE']; ?></h3>
+                <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IMPACT_AREAS_TITLE']; ?> <span class="text-danger">*</span></h3>
                 <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['IMPACT_AREAS_DESC']; ?></p>
                 
                 <div class="row g-3">
@@ -154,7 +154,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
             <!-- Beneficiaries -->
             <div class="bg-white rounded-4 p-4 shadow-sm mb-4">
-                 <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BENEFICIARIES_TITLE']; ?></h3>
+                 <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BENEFICIARIES_TITLE']; ?> <span class="text-danger">*</span></h3>
                 <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['BENEFICIARIES_DESC']; ?></p>
                  
                  <div class="row g-3 mb-4">
@@ -172,12 +172,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_TARGETED']; ?></label>
-                         <input type="number" name="total_beneficiaries_targeted" class="form-control" placeholder="e.g., 500" value="<?php echo esc_attr($project->total_beneficiaries_targeted); ?>">
+                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_TARGETED']; ?> <span class="text-danger">*</span></label>
+                         <input type="number" name="total_beneficiaries_targeted" class="form-control" placeholder="e.g., 500" value="<?php echo esc_attr($project->total_beneficiaries_targeted); ?>" required>
                     </div>
                     <div class="col-md-6">
-                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_REACHED']; ?></label>
-                         <input type="number" name="total_beneficiaries_reached" class="form-control" placeholder="e.g., 435" value="<?php echo esc_attr($project->total_beneficiaries_reached); ?>">
+                         <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['TOTAL_BEN_REACHED']; ?> <span class="text-danger">*</span></label>
+                         <input type="number" name="total_beneficiaries_reached" class="form-control" placeholder="e.g., 435" value="<?php echo esc_attr($project->total_beneficiaries_reached); ?>" required>
                     </div>
                 </div>
                 <div class="mt-2">
@@ -191,16 +191,16 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                  <p class="font-graphik text-secondary small mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SUST_GOV_DESC']; ?></p>
 
                  <div class="mb-3">
-                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['CONTRIBUTES_ENV_LABEL']; ?></label>
-                     <select name="contributes_env_social" class="form-select">
+                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['CONTRIBUTES_ENV_LABEL']; ?> <span class="text-danger">*</span></label>
+                     <select name="contributes_env_social" class="form-select" required>
                          <option value="" disabled <?php selected(!$project->contributes_env_social); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SELECT_OPTION']; ?></option>
                          <option value="Yes" <?php selected($project->contributes_env_social == 'Yes'); ?>>Yes</option>
                          <option value="No" <?php selected($project->contributes_env_social == 'No'); ?>>No</option>
                      </select>
                  </div>
                  <div>
-                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['HAS_GOV_LABEL']; ?></label>
-                     <select name="has_governance_monitoring" class="form-select">
+                     <label class="form-label font-graphik fw-medium text-cp-deep-ocean small"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['HAS_GOV_LABEL']; ?> <span class="text-danger">*</span></label>
+                     <select name="has_governance_monitoring" class="form-select" required>
                          <option value="" disabled <?php selected(!$project->has_governance_monitoring); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SELECT_OPTION']; ?></option>
                           <option value="Yes" <?php selected($project->has_governance_monitoring == 'Yes'); ?>>Yes</option>
                          <option value="No" <?php selected($project->has_governance_monitoring == 'No'); ?>>No</option>
@@ -210,7 +210,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
              <!-- SDG Alignment -->
               <div class="bg-white rounded-4 p-4 shadow-sm mb-5">
-                   <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_TITLE']; ?></h3>
+                   <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-2 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_TITLE']; ?> <span class="text-danger">*</span></h3>
                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <p class="font-graphik text-secondary small mb-0"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_DESC']; ?></p>
                         <span id="sdg-count" class="text-cp-aqua-marine small font-graphik fw-medium">0/3 <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_2']['SDG_COUNT_SUFFIX']; ?></span>
@@ -276,6 +276,162 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImpactAreaLimit();
     handleBeneficiaryLimit();
     updateSDGVisualState(); // Initial visual check for SDGs
+
+    // Form Validation logic
+    const form = document.getElementById('create-project-step-2-form');
+    const isRTL = document.body.classList.contains('rtl');
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredMsg = isRTL ? 'هذا الحقل مطلوب' : 'This field is required';
+            const selectOptionMsg = isRTL ? 'يرجى تحديد خيار واحد على الأقل' : 'Please select at least one option';
+            const selectSdgMsg = isRTL ? 'يرجى تحديد هدف واحد على الأقل من أهداف التنمية المستدامة' : 'Please select at least one SDG';
+
+            // 1. Validate Text Inputs and Selects (Standard HTML required)
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(function(field) {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    showError(field, requiredMsg);
+                } else {
+                    removeError(field);
+                }
+            });
+
+            // 2. Validate Impact Areas (Checkbox Group)
+            // Check if at least one checkbox with class 'impact-area-checkbox' is checked
+            const impactCheckboxes = document.querySelectorAll('.impact-area-checkbox');
+            const impactChecked = Array.from(impactCheckboxes).some(cb => cb.checked);
+            
+            if (impactCheckboxes.length > 0) {
+                const impactRow = impactCheckboxes[0].closest('.row');
+                if (!impactChecked) {
+                    isValid = false;
+                    showGroupError(impactRow, selectOptionMsg);
+                } else {
+                    removeGroupError(impactRow);
+                }
+            }
+
+            // 3. Validate Beneficiaries (Checkbox Group)
+            const benCheckboxes = document.querySelectorAll('.beneficiary-checkbox');
+            const benChecked = Array.from(benCheckboxes).some(cb => cb.checked);
+            
+            if (benCheckboxes.length > 0) {
+                 const benRow = benCheckboxes[0].closest('.row');
+                 if (!benChecked) {
+                    isValid = false;
+                    showGroupError(benRow, selectOptionMsg);
+                } else {
+                    removeGroupError(benRow);
+                }
+            }
+
+            // 4. Validate SDGs (Custom logic using selectedSDGs array)
+            const sdgCard = document.querySelector('.sdg-card');
+            if (sdgCard) {
+                const sdgRow = sdgCard.closest('.row');
+                if (selectedSDGs.length === 0) {
+                    isValid = false;
+                    showGroupError(sdgRow, selectSdgMsg);
+                } else {
+                     removeGroupError(sdgRow);
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                // Scroll to first error
+                const firstError = document.querySelector('.is-invalid, .group-invalid-feedback');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        // Add real-time removal of errors for Inputs/Selects
+        const inputs = form.querySelectorAll('[required]');
+        inputs.forEach(function(input) {
+            const eventType = (input.tagName === 'SELECT') ? 'change' : 'input';
+            input.addEventListener(eventType, function() {
+                if (this.value.trim()) {
+                     removeError(this);
+                }
+            });
+        });
+        
+        // Real-time for Checkboxes (Impact Areas)
+        const impactCheckboxes = document.querySelectorAll('.impact-area-checkbox');
+        impactCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                const impactChecked = Array.from(impactCheckboxes).some(c => c.checked);
+                if (impactChecked) {
+                     removeGroupError(this.closest('.row'));
+                }
+                handleImpactAreaLimit(this);
+            });
+        });
+
+         // Real-time for Checkboxes (Beneficiaries)
+        const benCheckboxes = document.querySelectorAll('.beneficiary-checkbox');
+        benCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                const benChecked = Array.from(benCheckboxes).some(c => c.checked);
+                if (benChecked) {
+                     removeGroupError(this.closest('.row'));
+                }
+                handleBeneficiaryLimit(this);
+            });
+        });
+    }
+
+    function showError(field, msg) {
+        field.classList.add('is-invalid');
+        const container = field.parentNode;
+        
+        let existing = container.querySelector('.invalid-feedback');
+        if (!existing) {
+            const div = document.createElement('div');
+            div.className = 'invalid-feedback d-block';
+            div.innerText = msg;
+            container.appendChild(div);
+        } else {
+            existing.innerText = msg;
+            existing.style.display = 'block';
+        }
+    }
+
+    function removeError(field) {
+        field.classList.remove('is-invalid');
+        const container = field.parentNode;
+        const existing = container.querySelector('.invalid-feedback');
+        if (existing) {
+            existing.remove();
+        }
+    }
+
+    // Helper for group errors (inserts after the reference element, e.g. the row of checkboxes)
+    function showGroupError(referenceElement, msg) {
+        const container = referenceElement.parentNode;
+        let existing = container.querySelector('.group-invalid-feedback');
+        if (existing) {
+            existing.remove(); // Remove to ensure correct position
+        }
+        
+        const div = document.createElement('div');
+        div.className = 'group-invalid-feedback text-danger mt-2 small invalid-feedback d-block';
+        div.innerText = msg;
+        referenceElement.insertAdjacentElement('afterend', div);
+    }
+
+    function removeGroupError(referenceElement) {
+        const container = referenceElement.parentNode;
+        const existing = container.querySelector('.group-invalid-feedback');
+        if (existing) {
+            existing.remove();
+        }
+    }
 });
 
 function handleImpactAreaLimit() {
@@ -366,6 +522,14 @@ function toggleSDG(element) {
     
     updateSDGInput();
     updateSDGVisualState();
+    
+    // Validate Real-time
+    const sdgContainer = element.closest('.row').parentNode;
+    if (selectedSDGs.length > 0) {
+        // remove error
+         const existing = sdgContainer.querySelector('.group-invalid-feedback');
+         if (existing) existing.remove();
+    }
 }
 
 function updateSDGInput() {

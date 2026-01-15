@@ -4,6 +4,21 @@
  */
 global $language;
 ?>
+<style>
+    .form-range::-webkit-slider-thumb {
+        background: #3bc4bd !important;
+    }
+    .form-range::-moz-range-thumb {
+        background: #3bc4bd !important;
+    }
+    .form-range::-ms-thumb {
+        background: #3bc4bd !important;
+    }
+    .form-check-input:checked {
+        background-color: #3bc4bd;
+        border-color: #3bc4bd;
+    }
+</style>
 
 <!-- Eligibility Banner -->
 <div class="eligibility-banner p-4 mb-5">
@@ -28,6 +43,9 @@ global $language;
 
         if ($project_id) {
             $db = SIC_DB::get_instance();
+            // Ensure DB schema has the new column (Temporary fix for development)
+            $db->migrate_founder_youth();
+            
             $project = $db->get_project($project_id);
         }
 
@@ -46,6 +64,7 @@ global $language;
                 'team_youth_pct'       => floatval($_POST['team_youth_pct']),
                 'engages_youth'        => isset($_POST['engages_youth']) ? sanitize_text_field($_POST['engages_youth']) : 'No', // DB might expect 1/0 or Yes/No, checking schema... schema says VARCHAR usually or boolean. Reviewing update_project logic... it just passes data. Let's assume Yes/No string based on dropdown.
                 'involves_influencers' => isset($_POST['involves_influencers']) ? sanitize_text_field($_POST['involves_influencers']) : 'No',
+                'founder_is_youth'     => isset($_POST['founder_is_youth']) ? sanitize_text_field($_POST['founder_is_youth']) : 'No',
                 'demographics_completed' => 1
             ];
 
@@ -66,6 +85,7 @@ global $language;
             
             $project_data['engages_youth'] = ($_POST['engages_youth'] === 'Yes') ? 1 : 0;
             $project_data['involves_influencers'] = ($_POST['involves_influencers'] === 'Yes') ? 1 : 0;
+            $project_data['founder_is_youth'] = ($_POST['founder_is_youth'] === '1' || $_POST['founder_is_youth'] === 'Yes') ? 1 : 0;
 
             $db->update_project($project_id, $project_data);
 
@@ -84,6 +104,7 @@ global $language;
         
         $engages_youth_val = $project ? $project->engages_youth : 0;
         $influencers_val   = $project ? $project->involves_influencers : 0;
+        $founder_youth_val = $project ? $project->founder_is_youth : 0;
         ?>
 
         <form method="POST">
@@ -100,9 +121,9 @@ global $language;
                              <label class="form-label font-graphik text-cp-deep-ocean small">
                                  <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['LEADERSHIP_WOMEN_LABEL']; ?>
                              </label>
-                             <div class="input-group">
-                                 <input type="number" step="0.01" min="0" max="100" name="leadership_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 50" value="<?php echo esc_attr($leadership_women); ?>" required>
-                                 <span class="input-group-text bg-light border-0 text-secondary">%</span>
+                             <div class="d-flex align-items-center gap-2">
+                                 <input type="range" class="form-range w-100" min="0" max="100" step="0.01" name="leadership_women_pct" value="<?php echo esc_attr($leadership_women); ?>" required oninput="this.nextElementSibling.textContent = this.value + '%'">
+                                 <span class="font-graphik text-cp-deep-ocean" style="min-width: 48px; text-align: right;"><?php echo esc_html(($leadership_women !== '') ? $leadership_women : '0'); ?>%</span>
                              </div>
                              <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
@@ -110,9 +131,9 @@ global $language;
                              <label class="form-label font-graphik text-cp-deep-ocean small">
                                  <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TEAM_WOMEN_LABEL']; ?>
                              </label>
-                             <div class="input-group">
-                                 <input type="number" step="0.01" min="0" max="100" name="team_women_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 65" value="<?php echo esc_attr($team_women); ?>" required>
-                                 <span class="input-group-text bg-light border-0 text-secondary">%</span>
+                             <div class="d-flex align-items-center gap-2">
+                                 <input type="range" class="form-range w-100" min="0" max="100" step="0.01" name="team_women_pct" value="<?php echo esc_attr($team_women); ?>" required oninput="this.nextElementSibling.textContent = this.value + '%'">
+                                 <span class="font-graphik text-cp-deep-ocean" style="min-width: 48px; text-align: right;"><?php echo esc_html(($team_women !== '') ? $team_women : '0'); ?>%</span>
                              </div>
                              <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
@@ -127,9 +148,9 @@ global $language;
                              <label class="form-label font-graphik text-cp-deep-ocean small">
                                  <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['LEADERSHIP_POD_LABEL']; ?>
                              </label>
-                             <div class="input-group">
-                                 <input type="number" step="0.01" min="0" max="100" name="leadership_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 10" value="<?php echo esc_attr($leadership_pod); ?>">
-                                 <span class="input-group-text bg-light border-0 text-secondary">%</span>
+                             <div class="d-flex align-items-center gap-2">
+                                 <input type="range" class="form-range w-100" min="0" max="100" step="0.01" name="leadership_pod_pct" value="<?php echo esc_attr($leadership_pod); ?>" oninput="this.nextElementSibling.textContent = this.value + '%'">
+                                 <span class="font-graphik text-cp-deep-ocean" style="min-width: 48px; text-align: right;"><?php echo esc_html(($leadership_pod !== '') ? $leadership_pod : '0'); ?>%</span>
                              </div>
                              <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
@@ -137,9 +158,9 @@ global $language;
                              <label class="form-label font-graphik text-cp-deep-ocean small">
                                  <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TEAM_POD_LABEL']; ?>
                              </label>
-                             <div class="input-group">
-                                 <input type="number" step="0.01" min="0" max="100" name="team_pod_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 15" value="<?php echo esc_attr($team_pod); ?>">
-                                 <span class="input-group-text bg-light border-0 text-secondary">%</span>
+                             <div class="d-flex align-items-center gap-2">
+                                 <input type="range" class="form-range w-100" min="0" max="100" step="0.01" name="team_pod_pct" value="<?php echo esc_attr($team_pod); ?>" oninput="this.nextElementSibling.textContent = this.value + '%'">
+                                 <span class="font-graphik text-cp-deep-ocean" style="min-width: 48px; text-align: right;"><?php echo esc_html(($team_pod !== '') ? $team_pod : '0'); ?>%</span>
                              </div>
                              <div class="error-feedback text-danger small mt-1 d-none"></div>
                          </div>
@@ -153,9 +174,9 @@ global $language;
                          <label class="form-label font-graphik text-cp-deep-ocean small">
                              <span class="text-danger">*</span> <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['TEAM_YOUTH_LABEL']; ?>
                          </label>
-                         <div class="input-group">
-                                 <input type="number" step="0.01" min="0" max="100" name="team_youth_pct" class="form-control bg-light border-0 fs-6" placeholder="e.g., 25" value="<?php echo esc_attr($team_youth); ?>">
-                                 <span class="input-group-text bg-light border-0 text-secondary">%</span>
+                         <div class="d-flex align-items-center gap-2">
+                             <input type="range" class="form-range w-100" min="0" max="100" step="0.01" name="team_youth_pct" value="<?php echo esc_attr($team_youth); ?>" oninput="this.nextElementSibling.textContent = this.value + '%'">
+                             <span class="font-graphik text-cp-deep-ocean" style="min-width: 48px; text-align: right;"><?php echo esc_html(($team_youth !== '') ? $team_youth : '0'); ?>%</span>
                          </div>
                          <div class="error-feedback text-danger small mt-1 d-none"></div>
                      </div>
@@ -172,6 +193,7 @@ global $language;
                 </div>
 
                 <!-- Influencers -->
+                <!--
                 <div class="mb-5">
                      <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['INFLUENCERS_TITLE']; ?></h3>
                      <div>
@@ -184,6 +206,31 @@ global $language;
                              <option value="No" <?php if($project && $influencers_val == 0) echo 'selected'; ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['NO']; ?></option>
                          </select>
                      </div>
+                </div>
+                -->
+
+                <!-- Founder Information (Replaces Influencers) -->
+                <div class="mb-5">
+                    <h3 class="font-graphik fw-bold text-cp-deep-ocean mb-3 fs-6">Founder Information</h3>
+                    <div>
+                        <label class="form-label font-graphik text-cp-deep-ocean small mb-3">
+                            <span class="text-danger">*</span> Are you the CEO/Founder and within the youth age bracket (18-35 years)?
+                        </label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="founder_is_youth" id="founder_youth_yes" value="Yes" <?php checked($founder_youth_val, 1); ?>>
+                                <label class="form-check-label font-graphik text-cp-deep-ocean small" for="founder_youth_yes">
+                                    <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['YES']; ?>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="founder_is_youth" id="founder_youth_no" value="No" <?php checked($founder_youth_val, 0); ?>>
+                                <label class="form-check-label font-graphik text-cp-deep-ocean small" for="founder_youth_no">
+                                    <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['NO']; ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Mandatory Notice -->
@@ -224,61 +271,20 @@ global $language;
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const pctInputs = document.querySelectorAll('input[type="number"][name$="_pct"]');
-    // We can use the localized string we added
-    const errorMsg = '<?php echo esc_js($language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['PCT_LIMIT_ERROR'] ?? 'Value cannot exceed 100%'); ?>';
-
-    pctInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            const val = parseFloat(this.value);
-            // The structure is usually .input-group -> parent .col or .mb-3
-            // We want to find the .error-feedback sibling or neighbor
-            // Structure: <label> <input-group> <error-feedback>
-            
-            // Find the container that holds the input-group
-            const container = this.closest('.col-md-6') || this.closest('.mb-3'); 
-            const errorDiv = container ? container.querySelector('.error-feedback') : null;
-            
-            if (val > 100 || val < 0) {
-                if (errorDiv) {
-                    const isRTL = document.body.classList.contains('rtl');
-                    const negativeMsg = isRTL ? 'القيمة لا يمكن أن تكون سلبية' : 'Value cannot be negative';
-                    errorDiv.textContent = (val < 0) ? negativeMsg : errorMsg;
-                    errorDiv.classList.remove('d-none');
-                }
-                this.classList.add('is-invalid');
-                // Optional: Prevent submit button? 
-                // Or just show error. The form usually blocks generic is-invalid submission if handled by BS, 
-                // but this is a simple text feedback as requested.
-            } else {
-                if (errorDiv) {
-                    errorDiv.classList.add('d-none');
-                    errorDiv.textContent = '';
-                }
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-
-    // Prevent submission if invalid
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            let hasError = false;
-            pctInputs.forEach(input => {
-                 if (parseFloat(input.value) > 100 || parseFloat(input.value) < 0) {
-                     hasError = true;
-                     input.classList.add('is-invalid'); 
-                 }
-            });
-            
-            if (hasError) {
-                e.preventDefault();
-                 const firstError = document.querySelector('.is-invalid');
-                 if (firstError) firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
-            }
+(function() {
+    // Initialize slider values on load (handles browser cache/soft refreshes)
+    function initSliderDisplays() {
+        const ranges = document.querySelectorAll('input[type="range"]');
+        ranges.forEach(range => {
+            // Trigger the inline oninput handler to sync the span text
+            range.dispatchEvent(new Event('input'));
         });
     }
-});
+
+    // Run immediately and on DOMContentLoaded
+    initSliderDisplays();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSliderDisplays);
+    }
+})();
 </script>
