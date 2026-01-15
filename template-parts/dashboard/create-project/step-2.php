@@ -224,14 +224,18 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                          $num = $sdg->sdg_id;
                          $name = $sdg->$name_col;
                          $is_selected = in_array($num, $project->sdgs ?? []);
-                         $card_class = $is_selected ? 'sdg-card border rounded-3 p-3 h-100 cursor-pointer d-flex align-items-center gap-3 selected' : 'sdg-card border rounded-3 p-3 h-100 cursor-pointer d-flex align-items-center gap-3';
+                         $card_class = $is_selected ? 'sdg-card p-3 h-100 cursor-pointer position-relative selected' : 'sdg-card p-3 h-100 cursor-pointer position-relative';
                        ?>
                        <div class="col-md-4">
-                           <div class="<?php echo $card_class; ?>" data-sdg="<?php echo $num; ?>" onclick="toggleSDG(this)">
-                               <div class="sdg-icon rounded-3 d-flex align-items-center justify-content-center text-white fw-bold" style="width: 40px; height: 40px; background-color: var(--sdg-<?php echo $num; ?>, #E5243B); font-size: 14px;">
-                                   <?php echo $num; ?>
+                           <div class="<?php echo $card_class; ?>" data-sdg="<?php echo $num; ?>" onclick="toggleSDG(this)" style="border: 2px solid #E5E7EB; border-radius: 14px; min-height: 96px;">
+                               <div class="d-flex flex-column align-items-start h-100">
+                                   <div class="sdg-icon d-flex align-items-center justify-content-center text-white fw-bold" style="width: 40px; height: 40px; border-radius: 10px; background-color: var(--sdg-<?php echo $num; ?>, #E5243B); font-family: 'Inter', sans-serif; font-size: 14px;">
+                                       <?php echo $num; ?>
+                                   </div>
+                                   <div class="mt-3 w-100">
+                                       <span class="font-graphik text-cp-deep-ocean fw-medium text-truncate-2" style="font-size: 12px; line-height: 15px;"><?php echo esc_html($name); ?></span>
+                                   </div>
                                </div>
-                               <span class="font-graphik text-cp-deep-ocean small fw-medium text-truncate-2" style="font-size: 11px; line-height: 1.3;"><?php echo esc_html($name); ?></span>
                            </div>
                        </div>
                        <?php endforeach; ?>
@@ -548,10 +552,10 @@ function updateSDGInput() {
 }
 .sdg-card {
     transition: all 0.2s ease;
-    border-color: #dee2e6; /* explicit default */
 }
 .sdg-card:hover {
     background-color: #f8f9fa;
+    border-color: #d1d5db !important;
 }
 .sdg-card.selected {
     border-color: var(--cp-aqua-marine) !important;

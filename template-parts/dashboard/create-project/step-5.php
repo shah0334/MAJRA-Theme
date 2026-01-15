@@ -253,19 +253,20 @@ global $language;
 
     <!-- Sidebar Column -->
     <div class="col-lg-4">
-        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
+        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4" style="background-color: #f7fafb; height: 45%;">
              <!-- Content -->
-             <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SIDEBAR_TITLE']; ?></h3>
-                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SIDEBAR_SUBTITLE']; ?></p>
-                <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
-                    <p><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_5']['SIDEBAR_TEXT']; ?></p>
+             <div class="position-relative z-1 ps-2 pt-2">
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3" style="font-size: 18px; line-height: 27px;">Help us understand your project’s reach.</h3>
+                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3" style="font-size: 14px; line-height: 22.75px;">This information is required for reporting and statistical insights only.</p>
+                <div class="font-graphik text-cp-deep-ocean small" style="font-size: 14px; line-height: 22.75px;">
+                    <p>Completing this section is mandatory, however your responses will not influence public voting results or project assessment.</p>
                 </div>
              </div>
              
-             <!-- Background Image Overlay -->
-             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, #f7fafb 10%, transparent 100%); z-index: 1; pointer-events: none;"></div>
-             <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-5-sidebar-bg.png" alt="" class="position-absolute bottom-0 start-0 w-100" style="height: 60%; object-fit: cover; z-index: 0; opacity: 1;">
+             <!-- Background Image -->
+             <div class="position-absolute top-0 start-0 w-100 h-100 z-0">
+                 <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-5-sidebar-bg.png" alt="" style="position: absolute; width: 100%; height: 210.92%; top: -11.55%; left: 0; max-width: none; object-fit: cover;">
+             </div>
         </div>
     </div>
 </div>

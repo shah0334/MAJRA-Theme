@@ -117,87 +117,88 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 <div class="row">
     <!-- Main Form Column -->
     <div class="col-lg-8">
-        <h2 class="font-mackay fw-bold text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['TITLE']; ?></h2>
-
         <form method="POST" enctype="multipart/form-data" novalidate id="create-project-step-1-form">
             <?php wp_nonce_field( 'sic_create_project' ); ?>
             <input type="hidden" name="sic_project_action" value="save_step_1">
 
-            <!-- Select Organization -->
-            <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG']; ?> <span class="text-danger">*</span></label>
-                <div class="d-flex gap-3">
-                    <select name="org_profile_id" class="form-select flex-grow-1" required <?php echo $project_id ? 'disabled' : ''; ?>>
-                        <option value="" disabled <?php selected(!$selected_org_id); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG_DEFAULT']; ?></option>
-                        <?php if ($orgs): foreach ($orgs as $org): ?>
-                            <option value="<?php echo esc_attr($org->org_profile_id); ?>" <?php selected($selected_org_id, $org->org_profile_id); ?>><?php echo esc_html($org->organization_name); ?></option>
-                        <?php endforeach; endif; ?>
+            <div class="bg-white rounded-4 p-4 shadow-sm">
+                <h2 class="font-graphik fw-medium text-cp-deep-ocean mb-4 fs-5"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['TITLE']; ?></h2>
+
+                <!-- Select Organization -->
+                <div class="mb-4">
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG']; ?> <span class="text-danger">*</span></label>
+                    <div class="d-flex gap-3">
+                        <select name="org_profile_id" class="form-select flex-grow-1" required <?php echo $project_id ? 'disabled' : ''; ?>>
+                            <option value="" disabled <?php selected(!$selected_org_id); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SELECT_ORG_DEFAULT']; ?></option>
+                            <?php if ($orgs): foreach ($orgs as $org): ?>
+                                <option value="<?php echo esc_attr($org->org_profile_id); ?>" <?php selected($selected_org_id, $org->org_profile_id); ?>><?php echo esc_html($org->organization_name); ?></option>
+                            <?php endforeach; endif; ?>
+                        </select>
+                        <?php if ($project_id): ?>
+                             <input type="hidden" name="org_profile_id" value="<?php echo esc_attr($project ? $project->org_profile_id : ''); ?>">
+                        <?php endif; ?>
+                    
+                        <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-outline-info text-nowrap px-4 btn-add-org-custom" style="border-color: #3bc4bd; color: #3bc4bd;">
+                            <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['ADD_ORG_BTN']; ?>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Project Name -->
+                <div class="mb-4">
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_LABEL']; ?> <span class="text-danger">*</span></label>
+                    <input type="text" name="project_name" class="form-control" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_PLACEHOLDER']; ?>" value="<?php echo $project ? esc_attr($project->project_name) : ''; ?>" required>
+                    <div class="form-text font-graphik fw-medium mt-1" style="color: #0020f6; font-size: 14px;">This title will appear in announcements if your project wins.</div>
+                </div>
+
+                <!-- Project Status -->
+                <div class="mb-4">
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_LABEL']; ?> <span class="text-danger">*</span></label>
+                    <select name="project_stage" class="form-select" required>
+                        <option value="" disabled <?php selected(empty($project)); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_DEFAULT']; ?></option>
+                        <option value="Planned" <?php selected($project && $project->project_stage == 'Planned'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_PLANNED']; ?></option>
+                        <option value="In Progress" <?php selected($project && $project->project_stage == 'In Progress'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_IN_PROGRESS']; ?></option>
+                        <option value="Completed" <?php selected($project && $project->project_stage == 'Completed'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_COMPLETED']; ?></option>
                     </select>
-                    <?php if ($project_id): ?>
-                         <input type="hidden" name="org_profile_id" value="<?php echo esc_attr($project ? $project->org_profile_id : ''); ?>">
-                    <?php endif; ?>
+                </div>
+
+                <!-- Project Description -->
+                <div class="mb-4">
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_LABEL']; ?> <span class="text-danger">*</span></label>
+                    <textarea name="project_description" class="form-control" rows="5" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_PLACEHOLDER']; ?>" required><?php echo $project ? esc_textarea($project->project_description) : ''; ?></textarea>
+                </div>
+
+                <!-- Start/End Date -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['START_DATE']; ?> <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <input type="date" name="start_date" class="form-control" value="<?php echo $project ? esc_attr($project->start_date) : ''; ?>" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['END_DATE']; ?> <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <input type="date" name="end_date" class="form-control" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Profile Image -->
+                <div class="mb-4">
+                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_LABEL']; ?> <span class="text-danger">*</span></label>
+                    <div class="position-relative">
+                        <input type="file" name="project_image" id="project_image" class="form-control ps-3 pe-5" <?php echo !empty($profile_image_url) ? '' : 'required'; ?>>
+                        <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary pe-none"></i>
+                    </div>
+                    <div id="project_image_preview" class="mt-2"></div>
+                    <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_HELP']; ?></div>
+                </div>
                 
-                    <a href="<?php echo SIC_Routes::get_create_org_url(); ?>" class="btn btn-outline-info text-nowrap px-4 btn-add-org-custom" style="border-color: #3bc4bd; color: #3bc4bd;">
-                        <?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['ADD_ORG_BTN']; ?>
-                    </a>
+                <div class="text-end">
+                     <button type="submit" class="btn btn-custom-aqua w-auto px-5 py-3 rounded-3 fw-medium text-white font-graphik" style="font-size: 14px; line-height: 20px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SAVE_BTN']; ?></button>
                 </div>
             </div>
-
-            <!-- Project Name -->
-            <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_LABEL']; ?> <span class="text-danger">*</span></label>
-                <input type="text" name="project_name" class="form-control" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_NAME_PLACEHOLDER']; ?>" value="<?php echo $project ? esc_attr($project->project_name) : ''; ?>" required>
-            </div>
-
-            <!-- Project Status -->
-            <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_LABEL']; ?> <span class="text-danger">*</span></label>
-                <select name="project_stage" class="form-select" required>
-                    <option value="" disabled <?php selected(empty($project)); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_STATUS_DEFAULT']; ?></option>
-                    <option value="Planned" <?php selected($project && $project->project_stage == 'Planned'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_PLANNED']; ?></option>
-                    <option value="In Progress" <?php selected($project && $project->project_stage == 'In Progress'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_IN_PROGRESS']; ?></option>
-                    <option value="Completed" <?php selected($project && $project->project_stage == 'Completed'); ?>><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['STATUS_COMPLETED']; ?></option>
-                </select>
-            </div>
-
-            <!-- Project Description -->
-            <div class="mb-4">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_LABEL']; ?> <span class="text-danger">*</span></label>
-                <textarea name="project_description" class="form-control" rows="5" placeholder="<?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_DESC_PLACEHOLDER']; ?>" required><?php echo $project ? esc_textarea($project->project_description) : ''; ?></textarea>
-            </div>
-
-            <!-- Start/End Date -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['START_DATE']; ?> <span class="text-danger">*</span></label>
-                    <div class="position-relative">
-                        <input type="date" name="start_date" class="form-control" value="<?php echo $project ? esc_attr($project->start_date) : ''; ?>" required>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['END_DATE']; ?> <span class="text-danger">*</span></label>
-                    <div class="position-relative">
-                        <input type="date" name="end_date" class="form-control" value="<?php echo $project ? esc_attr($project->end_date) : ''; ?>" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project Profile Image -->
-            <div class="mb-5">
-                <label class="form-label font-graphik fw-medium text-cp-deep-ocean"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_LABEL']; ?> <span class="text-danger">*</span></label>
-                <div class="position-relative">
-                    <input type="file" name="project_image" id="project_image" class="form-control ps-3 pe-5" <?php echo !empty($profile_image_url) ? '' : 'required'; ?>>
-                    <i class="bi bi-upload position-absolute top-50 end-0 translate-middle-y me-3 text-secondary pe-none"></i>
-                </div>
-                <div id="project_image_preview" class="mt-2"></div>
-                <div class="form-text text-secondary mt-2"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['PROJ_IMG_HELP']; ?></div>
-            </div>
-            
-            <div class="text-end mb-5">
-                 <button type="submit" class="btn btn-custom-aqua w-auto px-5 py-3 rounded-pill fw-bold text-white fs-6"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SAVE_BTN']; ?></button>
-            </div>
-
-        </form>
         
         <!-- Navigation Buttons -->
         <!-- <div class="d-flex justify-content-between pt-4 border-top">
@@ -214,19 +215,21 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
     <!-- Sidebar Column -->
     <div class="col-lg-4">
-        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
+        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4" style="background-color: #f7fafb; height: 75%;">
              <!-- Content -->
              <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_TITLE']; ?></h3>
-                <p class="font-graphik fw-medium text-cp-deep-ocean mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_SUBTITLE']; ?></p>
-                <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
-                    <p class="mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_TEXT_1']; ?></p>
-                    <p><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_1']['SIDEBAR_TEXT_2']; ?></p>
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3" style="font-size: 18px; line-height: 27px;">Let’s get into the details.</h3>
+                <p class="font-graphik fw-medium text-cp-deep-ocean mb-4" style="font-size: 14px; line-height: 22.75px;">Tell us about your project and its impact to date.</p>
+                <div class="font-graphik text-cp-deep-ocean small" style="font-size: 14px; line-height: 21px;">
+                    <p class="mb-3">This section is your opportunity to describe your project, its objectives, and the results achieved so far. Please ensure all responses are accurate and verifiable, as shortlisted projects will be required to submit supporting evidence for the Sustainable Impact Award.</p>
+                    <p>Shortlisted projects will also be shared nationally for public review and voting across the CSR and sustainability categories. Ensure that all information and materials submitted reflect your organization and project in the most credible professional manner.</p>
                 </div>
              </div>
              
-             <!-- Background Image Overlay (Placeholder/Gradient for now) -->
-             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, rgba(59, 196, 189, 0.2), transparent); pointer-events: none;"></div>
+             <!-- Background Image -->
+             <div class="position-absolute top-0 start-0 w-100 h-100 z-0">
+                 <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-1-sidebar-bg.png" alt="" style="position: absolute; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 77% 37%;">
+             </div>
         </div>
     </div>
 </div>

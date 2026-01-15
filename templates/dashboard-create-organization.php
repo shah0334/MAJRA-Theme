@@ -351,13 +351,25 @@ if ( current_user_can('manage_options') ) {
 
             <!-- Right Column: Guidance Panel -->
             <div class="col-lg-4">
-                <div class="guidance-panel bg-cp-sandstone border border-cp-coral-sunset rounded-3 p-4 position-relative">
-                    <div class="guidance-icon-container bg-cp-coral-sunset shadow-sm d-flex align-items-center justify-content-center rounded-2 position-absolute">
-                        <i class="bi bi-info-circle text-white fs-5"></i>
+                <div class="guidance-panel rounded-3 p-4 position-relative" style="background-color: #FAEBDA; border: 1px solid #FC9C63; box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1);">
+                    <div class="guidance-icon-container d-flex align-items-center justify-content-center rounded-2 position-absolute" style="width: 35px; height: 35px; background-color: #FC9C63; top: 20px; left: 20px;">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21.0003 5.99996C21.0001 5.44781 20.5522 5.00053 20 5.00053H8C7.44794 5.00068 7.00071 5.44791 7.00056 5.99996V22C7.00056 22.5522 7.44784 23.0002 8 23.0003H20C20.5523 23.0003 21.0003 22.5523 21.0003 22V5.99996ZM23 22C23 23.6569 21.6569 25 20 25H8C6.34327 24.9998 5 23.6568 5 22V5.99996C5.00015 4.34335 6.34337 3.00015 8 3H20C21.6568 3 22.9998 4.34326 23 5.99996V22Z" fill="white"/>
+                            <path d="M15.9996 24.0006V21.0006H12.0004V24.0006C12.0003 24.5527 11.5524 25 11.0002 25C10.4481 25 10.0002 24.5527 10 24.0006V20.0003C10 19.448 10.448 19 11.0002 19H16.9998C17.552 19 18 19.448 18 20.0003V24.0006C17.9998 24.5527 17.5519 25 16.9998 25C16.4476 25 15.9997 24.5527 15.9996 24.0006Z" fill="white"/>
+                            <path d="M10.005 7C10.5543 7.00002 11 7.44788 11 8C11 8.55212 10.5543 8.99998 10.005 9H9.995C9.44563 9 9 8.55213 9 8C9 7.44787 9.44563 7 9.995 7H10.005Z" fill="white"/>
+                            <path d="M18.005 7C18.5543 7.00002 19 7.44788 19 8C19 8.55212 18.5543 8.99998 18.005 9H17.995C17.4456 9 17 8.55213 17 8C17 7.44787 17.4456 7 17.995 7H18.005Z" fill="white"/>
+                            <path d="M14.005 7C14.5543 7.00002 15 7.44788 15 8C15 8.55212 14.5543 8.99998 14.005 9H13.995C13.4456 9 13 8.55213 13 8C13 7.44787 13.4456 7 13.995 7H14.005Z" fill="white"/>
+                            <path d="M14.005 11C14.5543 11 15 11.4479 15 12C15 12.5521 14.5543 13 14.005 13H13.995C13.4456 13 13 12.5521 13 12C13 11.4479 13.4456 11 13.995 11H14.005Z" fill="white"/>
+                            <path d="M14.005 15C14.5543 15 15 15.4479 15 16C15 16.5521 14.5543 17 14.005 17H13.995C13.4456 17 13 16.5521 13 16C13 15.4479 13.4456 15 13.995 15H14.005Z" fill="white"/>
+                            <path d="M18.005 11C18.5543 11 19 11.4479 19 12C19 12.5521 18.5543 13 18.005 13H17.995C17.4456 13 17 12.5521 17 12C17 11.4479 17.4456 11 17.995 11H18.005Z" fill="white"/>
+                            <path d="M18.005 15C18.5543 15 19 15.4479 19 16C19 16.5521 18.5543 17 18.005 17H17.995C17.4456 17 17 16.5521 17 16C17 15.4479 17.4456 15 17.995 15H18.005Z" fill="white"/>
+                            <path d="M10.005 11C10.5543 11 11 11.4479 11 12C11 12.5521 10.5543 13 10.005 13H9.995C9.44563 13 9 12.5521 9 12C9 11.4479 9.44563 11 9.995 11H10.005Z" fill="white"/>
+                            <path d="M10.005 15C10.5543 15 11 15.4479 11 16C11 16.5521 10.5543 17 10.005 17H9.995C9.44563 17 9 16.5521 9 16C9 15.4479 9.44563 15 9.995 15H10.005Z" fill="white"/>
+                        </svg>
                     </div>
-                    <div class="guidance-content pt-2 ps-4 ms-2">
-                        <p class="font-graphik text-cp-deep-ocean mb-0 small lh-base">
-                            <?php echo $language['DASHBOARD']['ORG_FORM']['GUIDANCE_TEXT']; ?>
+                    <div class="guidance-content ms-5">
+                        <p class="font-graphik text-cp-deep-ocean mb-0 small lh-lg" style="color: #00041C;">
+                            Your organization represents the foundation for meaningful change; therefore, it is essential to ensure accuracy from the outset. Please carefully review all details before submitting, as submissions cannot be edited once finalized.
                         </p>
                     </div>
                 </div>

@@ -172,6 +172,15 @@
   border-bottom: 1px solid #e5e7eb;
   position: relative;
   overflow: hidden;
+  border-radius: 16px !important;
+  background: var(
+    --L1,
+    linear-gradient(180deg, #f0f9f8 0%, #fff 100%)
+  ) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+  /* margin-top: 69px !important; */
+  margin-left: 32px;
+  margin-right: 32px;
 }
 
 .welcome-banner h1 {
@@ -239,13 +248,15 @@
     rgba(252, 156, 99, 0.1) 0%,
     rgba(252, 156, 99, 0.2) 100%
   );
-  border-radius: 16px;
+  border-radius: 16px !important;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
   color: var(--cp-coral-sunset);
   font-size: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .step-card h3 {

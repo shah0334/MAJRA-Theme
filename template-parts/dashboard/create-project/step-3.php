@@ -266,12 +266,12 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
 
     <!-- Sidebar Column -->
     <div class="col-lg-4">
-        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4 h-100" style="background-color: #f7fafb;">
+        <div class="guidance-panel-detail position-relative rounded-4 overflow-hidden shadow-sm p-4" style="background-color: #f7fafb; height: 65%;">
              <!-- Content -->
-             <div class="position-relative z-1">
-                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SIDEBAR_TITLE']; ?></h3>
-                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SIDEBAR_SUBTITLE']; ?></p>
-                <div class="font-graphik text-cp-deep-ocean small" style="line-height: 1.6;">
+             <div class="position-relative z-1 ps-2 pt-2">
+                <h3 class="font-mackay fw-bold text-cp-deep-ocean mb-3" style="font-size: 18px; line-height: 27px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SIDEBAR_TITLE']; ?></h3>
+                <p class="font-graphik fw-bold text-cp-deep-ocean small mb-3" style="font-size: 14px; line-height: 22.75px;"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SIDEBAR_SUBTITLE']; ?></p>
+                <div class="font-graphik text-cp-deep-ocean small" style="font-size: 14px; line-height: 22.75px;">
                     <p class="mb-3"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SIDEBAR_TEXT_1']; ?></p>
                     <p class="mb-4"><?php echo $language['DASHBOARD']['PROJ_WIZARD']['STEP_3']['SIDEBAR_TEXT_2']; ?></p>
                     
@@ -284,9 +284,10 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sic_project_action']
                 </div>
              </div>
              
-             <!-- Background Image Overlay -->
-             <div class="position-absolute bottom-0 start-0 w-100 h-50" style="background: linear-gradient(to top, #f7fafb 10%, transparent 100%); z-index: 1; pointer-events: none;"></div>
-             <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-3-sidebar-bg.png" alt="" class="position-absolute bottom-0 start-0 w-100" style="height: 60%; object-fit: cover; z-index: 0; opacity: 1;">
+             <!-- Background Image -->
+             <div class="position-absolute top-0 start-0 w-100 h-100 z-0">
+                 <img src="<?php echo get_template_directory_uri(); ?>/assets/img/step-3-sidebar-bg.png" alt="" style="position: absolute; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 77% 37%;">
+             </div>
         </div>
     </div>
 </div>
